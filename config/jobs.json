@@ -1,0 +1,1980 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "5cc15995-b0be-48d8-bb98-f0eb8e182c44",
+      "agentId": "shelley",
+      "name": "Daily Post at 15:00 AEST",
+      "enabled": true,
+      "createdAtMs": 1771220740585,
+      "updatedAtMs": 1771822839494,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "DAILY_POST_REMINDER: Time for daily tweet at 15:00 AEST"
+      },
+      "state": {
+        "nextRunAtMs": 1771909200000,
+        "lastRunAtMs": 1771822839493,
+        "lastStatus": "skipped",
+        "lastDurationMs": 1,
+        "consecutiveErrors": 0,
+        "lastError": "disabled"
+      }
+    },
+    {
+      "id": "a4a8f8be-54f8-4217-873c-ad7e91764bd1",
+      "agentId": "aria",
+      "name": "Finmills Daily BLUF 1500 Sydney",
+      "enabled": true,
+      "createdAtMs": 1771221197685,
+      "updatedAtMs": 1771819418427,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 15 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "BLUF GENERATION - ROTATING FOCUS SYSTEM\n\nYou are generating today's BLUF for Finmills Pty Ltd Telegram group (-1003859234119). Follow this protocol:\n\n1. READ rotation state: cat /home/agent/.openclaw/workspace-aria/memory/bluf-rotation-state.json\n2. DETERMINE focus aspect: Use 'next_aspect' field. If null/missing, start with 'tiktok-creator-research'.\n3. GENERATE deep-dive report on that aspect:\n   - Read relevant memory files for context\n   - Focus on DETAILS not superficial coverage\n   - Structure: Overview → Key Developments Last 24h → Current Status → Next 24h Actions → Strategic Implications\n   - Include specific metrics, numbers, percentages where possible\n   - Highlight blockers needing user attention\n   - Keep concise but substantive (300-500 words)\n4. UPDATE rotation state:\n   - Increment current_position by 1 (wrap after 7 back to 0)\n   - Update last_covered timestamp for the aspect\n   - Increment coverage_count for the aspect\n   - Set next_aspect based on rotation_order[current_position]\n   - Update last_updated timestamp\n   - Write back: echo 'updated_json' > /home/agent/.openclaw/workspace-aria/memory/bluf-rotation-state.json\n5. POST to Telegram group using message tool:\n   - action=send, target='-1003859234119', channel='telegram'\n   - Message format:\n     🧭 BLUF: [Aspect Name] - [Date]\n     \n     [Deep-dive content]\n     \n     ---\n     Next focus: [Next Aspect Name]\n     Rotation cycle: [X]/8 complete\n\nASPECT DETAILS:\n- TikTok Creator Research: Creator count progress, scoring updates, partnership readiness, discovery challenges\n- MyWeeklyJourney Product: Launch progress, revenue, technical development, funnel optimization\n- Finmills Ecosystem Monitoring: Analytics, Nextcloud changes, system health, automated alerts\n- Strategic Initiatives: New projects, partnerships, growth opportunities\n- Marketing Performance: Campaign results, conversion metrics, ROI analysis\n- Financial Monitoring: Revenue tracking, cash flow, expense management\n- Operational Systems: Cron jobs, automation health, technical infrastructure\n- Competitive Intelligence: Market trends, competitor analysis, positioning\n\nIMPORTANT: This replaces the previous 'dump everything' approach. Focus on depth in ONE area each day.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771905600000,
+        "lastRunAtMs": 1771819204929,
+        "lastStatus": "ok",
+        "lastDurationMs": 213498,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "85d44d81-f547-4b40-95d9-b02629b3ab96",
+      "agentId": "aria",
+      "name": "Finmills Daily Analytics Fetch",
+      "enabled": true,
+      "createdAtMs": 1771221999519,
+      "updatedAtMs": 1771806733347,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 0 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 85d44d81-f547-4b40-95d9-b02629b3ab96 /home/agent/.openclaw/workspace-aria python3 scripts/fetch-umami-stats.py. Then update the dashboard: python3 scripts/update-dashboard.py. Then analyze analytics changes: python3 scripts/analyze-analytics-changes.py. Then analyze for anomalies: python3 scripts/analyze-umami-anomalies.py. Then generate ecosystem status: python3 scripts/generate-ecosystem-status-v2.py. Report any errors or significant findings.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771893000000,
+        "lastRunAtMs": 1771806667669,
+        "lastStatus": "ok",
+        "lastDurationMs": 65678,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "0d481030-4ba3-4e16-acc5-0136f8b7054a",
+      "agentId": "kaira",
+      "name": "Geopolitical monitoring check - 14:30 UTC",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771245697626,
+      "updatedAtMs": 1771252200027,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-16T14:30:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Geopolitical monitoring check - scheduled 14:30 UTC"
+      },
+      "state": {
+        "lastRunAtMs": 1771252200013,
+        "lastStatus": "skipped",
+        "lastDurationMs": 14,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "fee2f321-4569-4584-82db-75fb9fd9eb41",
+      "agentId": "kaira",
+      "name": "Geopolitical monitoring check - 19:30 UTC",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771245705849,
+      "updatedAtMs": 1771270200023,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-16T19:30:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Geopolitical monitoring check - scheduled 19:30 UTC"
+      },
+      "state": {
+        "lastRunAtMs": 1771270200011,
+        "lastStatus": "skipped",
+        "lastDurationMs": 12,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "eca67696-109e-4e74-aecb-297aecd8b4f6",
+      "agentId": "kaira",
+      "name": "Geopolitical monitoring check - 23:30 UTC",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771245709845,
+      "updatedAtMs": 1771284600017,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-16T23:30:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Geopolitical monitoring check - scheduled 23:30 UTC"
+      },
+      "state": {
+        "lastRunAtMs": 1771284600008,
+        "lastStatus": "skipped",
+        "lastDurationMs": 9,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "e89cd7ed-add0-4e2b-b7b7-14ba9e851922",
+      "agentId": "kaira",
+      "name": "Geopolitical morning report - 00:30 UTC",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771245714089,
+      "updatedAtMs": 1771288310850,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-17T00:30:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Geopolitical morning report - scheduled 00:30 UTC"
+      },
+      "state": {
+        "lastRunAtMs": 1771288310849,
+        "lastStatus": "skipped",
+        "lastDurationMs": 1,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "79eae774-b989-4604-b2ea-48576220f652",
+      "agentId": "shelley",
+      "sessionKey": "agent:shelley:main",
+      "name": "Daily Post 10-min reminder",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771387615829,
+      "updatedAtMs": 1771390200049,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-18T04:50:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "DAILY_POST_REMINDER: Daily tweet approval in 10 minutes (05:00 UTC). Be ready to present draft_5 for approval."
+      },
+      "state": {
+        "lastRunAtMs": 1771390200023,
+        "lastStatus": "skipped",
+        "lastDurationMs": 26,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d67388c4-d9ce-4d6f-a869-ea999c581291",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Stroke Task Weekly Check",
+      "enabled": true,
+      "createdAtMs": 1771551809443,
+      "updatedAtMs": 1771800220476,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 604800000,
+        "anchorMs": 1771551832239
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the stroke task check script: python3 /home/agent/.openclaw/workspace-doc/scripts/check_stroke_tasks.py. Capture the output and send it to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772156632239,
+        "lastRunAtMs": 1771551876758,
+        "lastStatus": "ok",
+        "lastDurationMs": 8095,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "8beb11ec-079e-49bc-b801-81332ee87c42",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Donna Daily Standup Report",
+      "enabled": true,
+      "createdAtMs": 1771552736305,
+      "updatedAtMs": 1771800326478,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 8beb11ec-079e-49bc-b801-81332ee87c42 /home/agent/.openclaw/workspace/skills/dartai DARTAI_API_KEY=dsa_32fe74c3c0a9335c5210cdb17aa15ef9bb9804f41ae8d6149df863103392a6c7 ./bin/dartai standup. Format the output for Telegram delivery with emojis and clarity.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771880400000,
+        "lastRunAtMs": 1771794001165,
+        "lastStatus": "ok",
+        "lastDurationMs": 114696,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "a6ece971-5b58-4758-a48e-b99259f11dd9",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Edward Mills Daily Standup",
+      "enabled": true,
+      "createdAtMs": 1771557113778,
+      "updatedAtMs": 1771800115167,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the dashboard report script: python3 /home/agent/.openclaw/workspace-doc/scripts/dashboard_report.py. Output only the script's output, no additional commentary.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771880400000,
+        "lastRunAtMs": 1771797468980,
+        "lastStatus": "ok",
+        "lastDurationMs": 16323,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "98831ab4-80d4-4987-8da6-7fff0023b2ad",
+      "agentId": "danny",
+      "sessionKey": "agent:danny:telegram:direct:548072941",
+      "name": "Danny FastLoop BTC 5-min",
+      "enabled": true,
+      "createdAtMs": 1771560224580,
+      "updatedAtMs": 1771855508297,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 300000,
+        "anchorMs": 1771560224580
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 98831ab4-80d4-4987-8da6-7fff0023b2ad /home/agent/.openclaw/workspace-danny ./scripts/run_fastloop.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "lastRunAtMs": 1771855424596,
+        "lastStatus": "ok",
+        "lastDurationMs": 83701,
+        "consecutiveErrors": 0,
+        "nextRunAtMs": 1771855724580
+      }
+    },
+    {
+      "id": "7b84a385-304e-4dda-98fb-397eb6bbbcdd",
+      "agentId": "danny",
+      "sessionKey": "agent:danny:telegram:direct:548072941",
+      "name": "Danny Weather Trader",
+      "enabled": true,
+      "createdAtMs": 1771560229301,
+      "updatedAtMs": 1771855628493,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 120000,
+        "anchorMs": 1771560229301
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 7b84a385-304e-4dda-98fb-397eb6bbbcdd /home/agent/.openclaw/workspace-danny ./scripts/run_weather.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "lastRunAtMs": 1771855615419,
+        "lastStatus": "ok",
+        "lastDurationMs": 13074,
+        "consecutiveErrors": 0,
+        "nextRunAtMs": 1771855669301,
+        "runningAtMs": 1771855669315
+      }
+    },
+    {
+      "id": "01a0de4d-bc08-48ae-a5aa-955ef046dfa7",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Finmills Daily Standup Report",
+      "enabled": true,
+      "createdAtMs": 1771560433116,
+      "updatedAtMs": 1771800333313,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 22 * * 0,2,5",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 01a0de4d-bc08-48ae-a5aa-955ef046dfa7 /home/agent/.openclaw/workspace-aria python3 skills/dart-ai/scripts/generate-standup.py --output doc --dartboard 'Finmills/Tasks' --folder 'Finmills/'. Output confirmation that report was generated.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771970400000,
+        "lastRunAtMs": 1771797602898,
+        "lastStatus": "ok",
+        "lastDurationMs": 70130,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "95c8f005-0eb3-4c22-8c6a-e8c8c9bdeb88",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Finmills Nextcloud Folder Monitoring",
+      "enabled": true,
+      "createdAtMs": 1771561228341,
+      "updatedAtMs": 1771808475373,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 1 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 95c8f005-0eb3-4c22-8c6a-e8c8c9bdeb88 /home/agent/.openclaw/workspace-aria python3 scripts/monitor-nextcloud-folders.py. Output summary of changes detected.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771894800000,
+        "lastRunAtMs": 1771808424414,
+        "lastStatus": "ok",
+        "lastDurationMs": 50959,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "93a14152-05c2-42f5-b53e-f48fd6012ada",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Finmills Daily Ecosystem Heartbeat",
+      "enabled": true,
+      "createdAtMs": 1771562894698,
+      "updatedAtMs": 1771801268799,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 93a14152-05c2-42f5-b53e-f48fd6012ada /home/agent/.openclaw/workspace-aria python3 scripts/post-daily-heartbeat.py. Then post the generated message from memory/finmills/heartbeat_message.txt to Telegram group -1003859234119. Use message tool with channel=telegram.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771887600000,
+        "lastRunAtMs": 1771801203526,
+        "lastStatus": "ok",
+        "lastDurationMs": 65273,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "39ff9949-38d1-4fc9-bf38-91f1b1d94599",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "DartAI Weekly Pruning",
+      "enabled": true,
+      "createdAtMs": 1771566023543,
+      "updatedAtMs": 1771800294710,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 39ff9949-38d1-4fc9-bf38-91f1b1d94599 /home/agent/.openclaw/workspace/skills/dartai DARTAI_API_KEY=dsa_32fe74c3c0a9335c5210cdb17aa15ef9bb9804f41ae8d6149df863103392a6c7 python3 tools/prune_tasks.py --execute --limit 200 --quiet. Then send summary report.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1772355600000,
+        "lastRunAtMs": 1771750801017,
+        "lastStatus": "error",
+        "lastDurationMs": 75063,
+        "lastError": "cron announce delivery failed",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "cf54e6ec-e56e-4c1f-a433-0859ff3d751b",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Reminder: Pay ERK 08Q registration",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771582098272,
+      "updatedAtMs": 1771800557617,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-20T11:37:57.000Z"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Reminder for Bayani: Pay registration for ERK 08Q today. Please confirm when done.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "lastRunAtMs": 1771587477012,
+        "lastStatus": "error",
+        "lastDurationMs": 23597,
+        "lastError": "cron announce delivery failed",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "e1dc48df-b453-4f51-915a-5548881a0866",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Finmills Financial Monitoring",
+      "enabled": true,
+      "createdAtMs": 1771589253410,
+      "updatedAtMs": 1771812116170,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh e1dc48df-b453-4f51-915a-5548881a0866 /home/agent/.openclaw/workspace-aria python3 scripts/financial-monitoring-fixed.py. Output summary of findings.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771898400000,
+        "lastRunAtMs": 1771812035944,
+        "lastStatus": "ok",
+        "lastDurationMs": 80226,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "memory-palace-audit-rotation-20260220",
+      "agentId": "main",
+      "name": "Memory Palace Audit Rotation",
+      "enabled": true,
+      "createdAtMs": 1771600000000,
+      "updatedAtMs": 1771729215651,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Rotate memory-palace audit logs: /home/agent/.openclaw/scripts/rotate_audit.sh"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771902000000,
+        "lastRunAtMs": 1771729208338,
+        "lastStatus": "ok",
+        "lastDurationMs": 7313,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "de66b0ac-fa94-473b-b8e4-dd0f08165235",
+      "agentId": "danny",
+      "sessionKey": "agent:danny:telegram:direct:548072941",
+      "name": "Danny Trade Journal Sync",
+      "enabled": true,
+      "createdAtMs": 1771636259636,
+      "updatedAtMs": 1771812147289,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh trade-journal-sync /home/agent/.openclaw/workspace-danny ./scripts/run_tradejournal.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771898400000,
+        "lastRunAtMs": 1771812116170,
+        "lastStatus": "ok",
+        "lastDurationMs": 31119,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "e409c861-4ca7-4252-874c-07101cfc4fd2",
+      "agentId": "shelley",
+      "sessionKey": "agent:shelley:telegram:direct:548072941",
+      "name": "Daily 8am Email Check",
+      "enabled": true,
+      "createdAtMs": 1771636361174,
+      "updatedAtMs": 1771794235983,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Check emails for Shop Bitcoin Australia. Run the daily email check script and report any urgent issues. Focus on service@shopbitcoin.com.au for customer support emails and bayanimills@gmail.com for business emails. Look for urgent keywords: overheating, issue, problem, urgent, emergency.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771880400000,
+        "lastRunAtMs": 1771794179896,
+        "lastStatus": "ok",
+        "lastDurationMs": 56087,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f53bdadb-3cbc-4d52-8bda-f0b6ef635bda",
+      "agentId": "shelley",
+      "sessionKey": "agent:shelley:telegram:direct:548072941",
+      "name": "Daily 1pm Email Check",
+      "enabled": true,
+      "createdAtMs": 1771636366130,
+      "updatedAtMs": 1771812223550,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 13 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Check emails for Shop Bitcoin Australia. Run the daily email check script and report any urgent issues. Focus on service@shopbitcoin.com.au for customer support emails. This is the afternoon check - prioritize any emails that came in since the morning check.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771898400000,
+        "lastRunAtMs": 1771812147289,
+        "lastStatus": "ok",
+        "lastDurationMs": 76261,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "31fd54e6-67fb-41af-85bb-1c016ba2c88d",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Andrew Document Tracking",
+      "enabled": true,
+      "createdAtMs": 1771641507845,
+      "updatedAtMs": 1771848339747,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */6 * * *",
+        "tz": "UTC",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh andrew-doc-tracker /home/agent/.openclaw/workspace-aria python3 scripts/track-andrew-documents.py. Output summary of findings.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771869841806,
+        "lastRunAtMs": 1771848309027,
+        "lastStatus": "ok",
+        "lastDurationMs": 30720,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "4cc4d2bd-ebd9-4ab0-94c6-54500d07bfad",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Document Processing Pipeline",
+      "enabled": true,
+      "createdAtMs": 1771641561547,
+      "updatedAtMs": 1771855279360,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/30 * * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh document-pipeline /home/agent/.openclaw/workspace-aria ./scripts/run-document-pipeline.sh. If documents were processed (inbox_files > 0 in status), output 'DOCUMENTS_PROCESSED: X' where X is count. If no documents, output 'NO_REPLY'. If errors occurred, output error details.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771857000000,
+        "lastRunAtMs": 1771855258699,
+        "lastStatus": "ok",
+        "lastDurationMs": 20661,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "71941d3d-fe72-43c8-8ba0-886bfbef0de9",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Document System Health Check",
+      "enabled": true,
+      "createdAtMs": 1771641652219,
+      "updatedAtMs": 1771729251024,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh doc-system-health /home/agent/.openclaw/workspace-aria python3 scripts/check-document-system-health.py. Only report if status is unhealthy or degraded.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771902000000,
+        "lastRunAtMs": 1771729229449,
+        "lastStatus": "ok",
+        "lastDurationMs": 21575,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "2ece169c-b3ba-480f-a547-85b312fbf55e",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Gmail Skill hourly digest",
+      "enabled": true,
+      "createdAtMs": 1771641927991,
+      "updatedAtMs": 1771855295419,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Australia/Sydney",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace/skills/gmail-skill && ./scripts/monitor_gmail_enhanced.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771858833658,
+        "lastRunAtMs": 1771855279360,
+        "lastStatus": "ok",
+        "lastDurationMs": 16059,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "74414eb9-d56e-4ffa-b6d9-8d1ce7916a9b",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Aged Care Database Daily Check",
+      "enabled": true,
+      "createdAtMs": 1771643676701,
+      "updatedAtMs": 1771800195597,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the aged-care-transition database update check script. Use exec to run python3 skills/aged-care-transition/enhancements/cron_check_updates.py and log results.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771880400000,
+        "lastRunAtMs": 1771797512230,
+        "lastStatus": "ok",
+        "lastDurationMs": 5440,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "4362e52a-34ac-417c-88dd-0acaf05f9625",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Dart Daily Sync",
+      "enabled": true,
+      "createdAtMs": 1771644058281,
+      "updatedAtMs": 1771837338289,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh dart-daily-sync /home/agent/.openclaw/workspace-aria python3 scripts/dart-daily-sync.py. Report summary of alerts found and tasks created.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771923600000,
+        "lastRunAtMs": 1771837265946,
+        "lastStatus": "ok",
+        "lastDurationMs": 72343,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "c5a1bcd9-ef7f-4b6e-9ba9-c96688f6953d",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Edward Mills Notion Sync",
+      "enabled": true,
+      "createdAtMs": 1771661849272,
+      "updatedAtMs": 1771800202420,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the Notion sync script: cd /home/agent/.openclaw/workspace-doc && python3 sync_dart_to_notion.py. Output summary of tasks synced (count).",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771884000000,
+        "lastRunAtMs": 1771797687537,
+        "lastStatus": "ok",
+        "lastDurationMs": 82766,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "b2436d80-4ba3-41d7-aee0-8b1b3b230752",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Weekly skill validation",
+      "enabled": true,
+      "createdAtMs": 1771663214034,
+      "updatedAtMs": 1771800348931,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 21 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run weekly skill validation: execute python3 /home/agent/.openclaw/workspace-donna/validate_skills.py and report results."
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772359200000,
+        "lastRunAtMs": 1771754418952,
+        "lastStatus": "ok",
+        "lastDurationMs": 135509,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "cc4a20e6-5ce1-41e3-bbaa-afc396f86840",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Weekly skill usage report",
+      "enabled": true,
+      "createdAtMs": 1771663260090,
+      "updatedAtMs": 1771800355563,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 22 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Generate weekly skill usage report: execute python3 /home/agent/.openclaw/workspace-donna/skill_usage_report.py and send results."
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772362800000,
+        "lastRunAtMs": 1771758026401,
+        "lastStatus": "ok",
+        "lastDurationMs": 51286,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "b533e37e-6225-4567-a5ee-aed4c60d4756",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "End-of-Life Tasks Reminder",
+      "enabled": true,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771664048066,
+      "updatedAtMs": 1771800226843,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-27T22:00:00.000Z"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Reminder: Edward Mills' high‑priority end‑of‑life tasks due 2026‑03‑01 (Update Will, Advance Care Directive, Funeral Plan). Check Notion End‑of‑Life Tasks database for updates. Send this reminder to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "state": {
+        "nextRunAtMs": 1772229600000
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      }
+    },
+    {
+      "id": "d2a2034a-1085-42c9-9082-0c1b128e1a7c",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Palliative Care Reminder",
+      "enabled": true,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771664236255,
+      "updatedAtMs": 1771800211613,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-23T22:00:00.000Z"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Reminder: Palliative care assessment for Edward Mills due tomorrow (2026‑02‑25). Check Notion End‑of‑Life Tasks database for updates. Send this reminder to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "state": {
+        "nextRunAtMs": 1771884000000
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      }
+    },
+    {
+      "id": "06c1eaea-300b-426e-8618-9d9c2f3bfc8c",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Test weekly skills validation",
+      "enabled": true,
+      "createdAtMs": 1771664808707,
+      "updatedAtMs": 1771800344438,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 604800000,
+        "anchorMs": 1771664808707
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run weekly skill validation and testing: execute python3 /home/agent/.openclaw/workspace-donna/validate_and_test_skills.py and report results."
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772269608707
+      }
+    },
+    {
+      "id": "0ca9dc63-b4cd-47ef-8207-1dce16d35cab",
+      "agentId": "doc",
+      "name": "Edward Mills Weekly Review",
+      "enabled": true,
+      "createdAtMs": 1771666855361,
+      "updatedAtMs": 1771800239087,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run weekly dashboard report: cd /home/agent/.openclaw/workspace-doc && python3 scripts/dashboard_report.py. Capture the output and send it to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY."
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772316000000,
+        "lastRunAtMs": 1771711393020,
+        "lastStatus": "ok",
+        "lastDurationMs": 34515,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "90702801-161b-43a4-9f8b-fadcc2bff83a",
+      "agentId": "main",
+      "sessionKey": "agent:main:telegram:direct:548072941",
+      "name": "Cron Manager Hourly Sync",
+      "enabled": true,
+      "createdAtMs": 1771676323917,
+      "updatedAtMs": 1771855542222,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Australia/Sydney",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace/skills/cron-manager && python3 quick_monitor.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771859095293,
+        "lastRunAtMs": 1771855524524,
+        "lastStatus": "ok",
+        "lastDurationMs": 17698,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f1aeef18-bddc-492e-a570-eae19769cd0a",
+      "agentId": "main",
+      "sessionKey": "agent:main:telegram:direct:548072941",
+      "name": "Cron Manager Weekly Report",
+      "enabled": true,
+      "createdAtMs": 1771676328995,
+      "updatedAtMs": 1771711601806,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace/skills/cron-manager && python3 report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772316000000,
+        "lastRunAtMs": 1771711427535,
+        "lastStatus": "ok",
+        "lastDurationMs": 174271,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "e3ebcc49-4da6-44a2-bc3b-8c0ee38e8b0d",
+      "agentId": "shelley",
+      "sessionKey": "agent:shelley:telegram:direct:548072941",
+      "name": "SBA Email Periodic Archiving",
+      "enabled": true,
+      "createdAtMs": 1771679123609,
+      "updatedAtMs": 1771848106996,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 23 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the SBA email periodic archiving script: cd /home/agent/.openclaw/workspace-shelley/skills/sba-email-manager && python3 scripts/periodic_archive.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771934400000,
+        "lastRunAtMs": 1771848082704,
+        "lastStatus": "ok",
+        "lastDurationMs": 24292,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d35d18dd-a50e-45f8-b614-b65bbf9e5586",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Night Executive Skill",
+      "enabled": true,
+      "createdAtMs": 1771691141869,
+      "updatedAtMs": 1771837672450,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace/skills/night-executive && python3 scripts/night_review.py"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771923600000,
+        "lastRunAtMs": 1771837338289,
+        "lastStatus": "ok",
+        "lastDurationMs": 334161,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "8af2b8fa-7b6b-4f02-9d97-f1a61c693f27",
+      "agentId": "main",
+      "sessionKey": "agent:main:telegram:direct:548072941",
+      "name": "USER.md Baseline Sync",
+      "enabled": true,
+      "createdAtMs": 1771717485920,
+      "updatedAtMs": 1771774238303,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 2 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace && python3 scripts/sync-user-baseline.py --apply --log",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771860600000,
+        "lastRunAtMs": 1771774231993,
+        "lastStatus": "ok",
+        "lastDurationMs": 6310,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d9b84511-cf75-48b1-8393-c9a26e2b829f",
+      "agentId": "doc",
+      "sessionKey": "agent:doc:telegram:direct:548072941",
+      "name": "Dad cushion reminder",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771724118914,
+      "updatedAtMs": 1771729251025,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-22T03:00:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Reminder: Get a small cushion for dad."
+      },
+      "state": {
+        "lastRunAtMs": 1771729251024,
+        "lastStatus": "skipped",
+        "lastDurationMs": 1,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "acb63a43-9355-4fb9-95df-91cdbc8e78d2",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Heartbeat System Health Check",
+      "enabled": true,
+      "createdAtMs": 1771726486658,
+      "updatedAtMs": 1771851785751,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */2 * * *",
+        "tz": "Australia/Sydney",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Perform system health checks as documented in WORKFLOW_AUTO.md and HEARTBEAT.md:\n1. Verify workspace integrity (check AGENTS.md, SOUL.md, IDENTITY.md, USER.md exist)\n2. Verify GITS connection (git remote -v)\n3. Check memory usage (session_status)\n4. Log results to memory/YYYY-MM-DD.md with timestamp\n\nExecute checks and provide summary report.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771858828830,
+        "lastRunAtMs": 1771851689059,
+        "lastStatus": "ok",
+        "lastDurationMs": 96692,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f1a0e158-3ba6-409b-89d4-a8a742645c9b",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Geopolitical Monitoring Check",
+      "enabled": true,
+      "createdAtMs": 1771726493755,
+      "updatedAtMs": 1771852038588,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */4 * * *",
+        "tz": "Australia/Sydney",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Perform geopolitical monitoring check as documented in WORKFLOW_AUTO.md and HEARTBEAT.md:\n1. Check major news sources for significant geopolitical events\n2. Assess event significance (high/medium/low urgency)\n3. Determine reporting need (immediate alert vs next heartbeat)\n4. Document findings in memory/YYYY-MM-DD.md with assessment\n5. Focus on events affecting Bitcoin/crypto markets, Asia-Pacific stability, major global conflicts\n6. Respect user sleep hours (23:00-07:00 local time)\n\nExecute check and provide summary.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771866246530,
+        "lastRunAtMs": 1771851936375,
+        "lastStatus": "ok",
+        "lastDurationMs": 102213,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "8625f2b8-c758-4ffe-b00d-c9b565212ad2",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Agent Coordination Check",
+      "enabled": true,
+      "createdAtMs": 1771726500335,
+      "updatedAtMs": 1771853649165,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 */4 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Perform agent coordination check as documented in WORKFLOW_AUTO.md and HEARTBEAT.md:\n1. Check Jarvis status (main agent operational status)\n2. Review task queue for pending delegated tasks\n3. Update status report with current operational state\n4. Verify cron jobs are running (cron list)\n5. Log results to memory/YYYY-MM-DD.md\n\nExecute check and provide summary.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771867800000,
+        "lastRunAtMs": 1771853475650,
+        "lastStatus": "ok",
+        "lastDurationMs": 173515,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "6a6399f3-2732-4cc0-9766-b5530d33fd2c",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Daily Backup Procedures",
+      "enabled": true,
+      "createdAtMs": 1771726507743,
+      "updatedAtMs": 1771772462861,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh kaira-daily-backup /home/agent/.openclaw/workspace-kaira ./backup.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771858800000,
+        "lastRunAtMs": 1771772447440,
+        "lastStatus": "ok",
+        "lastDurationMs": 15421,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "fb1033e3-be9d-4df4-87a9-0e6030d1e171",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Self-Maintenance Review",
+      "enabled": true,
+      "createdAtMs": 1771726513893,
+      "updatedAtMs": 1771776399107,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Perform self-maintenance review as documented in WORKFLOW_AUTO.md and HEARTBEAT.md:\n1. Review memory logs and archive old logs\n2. Update documentation (AGENTS.md, TOOLS.md, etc.)\n3. Test recovery scripts\n4. Summarize learnings for MEMORY.md\n5. Log results to memory/YYYY-MM-DD.md\n\nExecute review and provide summary.",
+        "model": "deepseek/deepseek-reasoner"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1771862400000,
+        "lastRunAtMs": 1771776046623,
+        "lastStatus": "ok",
+        "lastDurationMs": 352484,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "27343ef6-8279-44d9-9786-507e22f084bd",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Natural Adoption Test - 18:00 Status Check",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771727731126,
+      "updatedAtMs": 1771743624723,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-22T07:00:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "[2026-02-22 18:00] ⏰ Natural Adoption Test Deadline Reached. Check agent WORKFLOW_AUTO.md files for updates against template v2.0.0. Compare modification timestamps after Feb 22 11:19. Report adoption status to user."
+      },
+      "state": {
+        "lastRunAtMs": 1771743624722,
+        "lastStatus": "skipped",
+        "lastDurationMs": 1,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "a391d9bf-6948-4e03-bb61-ac9ec3270045",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "WORKFLOW_AUTO.md Weekly Version Check",
+      "enabled": true,
+      "createdAtMs": 1771728254514,
+      "updatedAtMs": 1771808565498,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 1 * * 1",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run workflow version check: /home/agent/.openclaw/workspace-kaira/check_workflow_versions.sh. Report summary of outdated/missing files.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772413200000,
+        "lastRunAtMs": 1771808490435,
+        "lastStatus": "ok",
+        "lastDurationMs": 75063,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "4e5fc7bd-a538-4d21-bd3c-0a59085ab646",
+      "agentId": "main",
+      "name": "Weekly Flag Review",
+      "enabled": true,
+      "createdAtMs": 1771730073533,
+      "updatedAtMs": 1771800340290,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 15 * * 6"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace && python3 scripts/weekly_flag_review.py",
+        "model": "deepseek/deepseek-chat",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772251200000
+      }
+    },
+    {
+      "id": "4d9950c9-8648-4434-85e6-31b0156c0c72",
+      "agentId": "main",
+      "name": "Daily Session Validation",
+      "enabled": true,
+      "createdAtMs": 1771730101849,
+      "updatedAtMs": 1771819450581,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 15 * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace && ./scripts/daily-session-validation.sh",
+        "model": "deepseek/deepseek-chat",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771905600000,
+        "lastRunAtMs": 1771819432727,
+        "lastStatus": "ok",
+        "lastDurationMs": 17854,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "4bc14d40-73e4-490b-96ee-0655e06aaad7",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Evening Preparation",
+      "enabled": true,
+      "createdAtMs": 1771731147482,
+      "updatedAtMs": 1771826671308,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 17 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use the exec tool to run: cd /home/agent/.openclaw/workspace/skills/evening-prep && python3 scripts/evening_prep.py. Do not output anything else.",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771912800000,
+        "lastRunAtMs": 1771740024500,
+        "lastStatus": "error",
+        "lastDurationMs": 40900,
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "eba1b3aa-bbf5-49d3-a254-5d698f81e1a0",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "System Maintenance",
+      "enabled": true,
+      "createdAtMs": 1771733490246,
+      "updatedAtMs": 1771842673440,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 21 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace/skills/system-maintenance && python3 scripts/system_maintenance.py"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771929000000,
+        "lastRunAtMs": 1771842650304,
+        "lastStatus": "ok",
+        "lastDurationMs": 23136,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "ed5f7be1-e918-4e12-98e7-7b03700f90ac",
+      "agentId": "main",
+      "sessionKey": "agent:main:telegram:direct:548072941",
+      "name": "Weekly Skill Audit Rotation",
+      "enabled": true,
+      "createdAtMs": 1771734873043,
+      "updatedAtMs": 1771800299550,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 22 * * 0",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace && python3 scripts/weekly-skill-audit.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "telegram:548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772402400000,
+        "lastRunAtMs": 1771797770303,
+        "lastStatus": "error",
+        "lastDurationMs": 31523,
+        "lastError": "cron announce delivery failed",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "fac29126-bc5b-4f0c-af34-6a81bc175733",
+      "agentId": "danny",
+      "sessionKey": "agent:danny:telegram:direct:548072941",
+      "name": "Danny AI Divergence Scanner",
+      "enabled": true,
+      "createdAtMs": 1771767060364,
+      "updatedAtMs": 1771855353123,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 1800000,
+        "anchorMs": 1771767060364
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh ai-divergence-scanner /home/agent/.openclaw/workspace-danny ./scripts/run_ai_divergence.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771857060364,
+        "lastRunAtMs": 1771855323887,
+        "lastStatus": "ok",
+        "lastDurationMs": 29236,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "8385ef23-f358-4f09-b35c-2a78d0d96467",
+      "agentId": "danny",
+      "sessionKey": "agent:danny:telegram:direct:548072941",
+      "name": "Danny Mert Sniper",
+      "enabled": true,
+      "createdAtMs": 1771767492725,
+      "updatedAtMs": 1771855160493,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 600000,
+        "anchorMs": 1771767492725
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh mert-sniper /home/agent/.openclaw/workspace-danny ./scripts/run_mert_sniper.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771855692725,
+        "lastRunAtMs": 1771855092742,
+        "lastStatus": "ok",
+        "lastDurationMs": 67751,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "8c44a221-0713-46b6-a267-be067072fd98",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "NAWS 01:05 Log Check",
+      "enabled": false,
+      "deleteAfterRun": true,
+      "createdAtMs": 1771768488094,
+      "updatedAtMs": 1771769166117,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-22T14:05:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "[2026-02-23 01:05 AEDT] NAWS 01:00 execution log check. Please check logs/nighttime-check.log for execution evidence."
+      },
+      "state": {
+        "lastRunAtMs": 1771769166116,
+        "lastStatus": "skipped",
+        "lastDurationMs": 1,
+        "lastError": "disabled",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f1b53d5c-4897-4092-9cd3-41e7899a01ac",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "Calendar reminders (every 15m)",
+      "enabled": true,
+      "createdAtMs": 1771812072241,
+      "updatedAtMs": 1771855300781,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/15 * * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use the exec tool to run the script at /home/agent/.openclaw/workspace-donna/calendar_reminders.py. Do not output anything else.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771856100000,
+        "lastRunAtMs": 1771855295419,
+        "lastStatus": "ok",
+        "lastDurationMs": 5362,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "7d6e840a-272e-4e04-aaeb-d4ebf1cc0d92",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "NAWS check-in 23:00",
+      "enabled": true,
+      "createdAtMs": 1771813471012,
+      "updatedAtMs": 1771848124289,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 23 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771934400000,
+        "lastRunAtMs": 1771848112481,
+        "lastStatus": "ok",
+        "lastDurationMs": 11808,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "84cc90c1-8f6e-4a8a-bf77-e7649dd482ed",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "NAWS check-in 01:00",
+      "enabled": true,
+      "createdAtMs": 1771813477113,
+      "updatedAtMs": 1771855312807,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 1 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771941600000,
+        "lastRunAtMs": 1771855300781,
+        "lastStatus": "ok",
+        "lastDurationMs": 12026,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "ba0cab42-b43d-4aa6-9420-09197eb8a955",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "NAWS check-in 03:00",
+      "enabled": true,
+      "createdAtMs": 1771813482703,
+      "updatedAtMs": 1771818161858,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771862400000
+      }
+    },
+    {
+      "id": "e369acb4-7812-4305-b085-f99171a63a0b",
+      "agentId": "donna",
+      "sessionKey": "agent:donna:telegram:direct:548072941",
+      "name": "NAWS check-in 05:00",
+      "enabled": true,
+      "createdAtMs": 1771813488351,
+      "updatedAtMs": 1771818165191,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1771869600000
+      }
+    },
+    {
+      "id": "6332bdab-278a-48fa-9294-e32284d26988",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira Phase 3 Prototype Test",
+      "enabled": true,
+      "createdAtMs": 1771817852766,
+      "updatedAtMs": 1771855615321,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5,20,35,50 * * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /home/agent/.openclaw/workspace-kaira && python3 phase3-autonomous/autonomous-check-v3.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "state": {
+        "nextRunAtMs": 1771856400000,
+        "lastRunAtMs": 1771855542222,
+        "lastStatus": "ok",
+        "lastDurationMs": 73099,
+        "consecutiveErrors": 0
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    }
+  ]
+}

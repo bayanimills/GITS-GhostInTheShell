@@ -1,0 +1,21 @@
+# Agents list restored: 2026-02-15 09:50 UTC
+- id: main
+  configured: false
+  path: /home/agent/.openclaw/agents/main
+  sessions: 188
+  last_session: 2026-02-15 08:40:00
+- id: aria
+  configured: false
+  path: /home/agent/.openclaw/agents/aria
+  sessions: 8
+  last_session: 2026-02-15 08:36:07
+- id: shelley
+  configured: false
+  path: /home/agent/.openclaw/agents/shelley
+  sessions: 9
+  last_session: 2026-02-15 08:36:07
+- id: kaira
+  configured: false
+  path: /home/agent/.openclaw/agents/kaira
+  sessions: 60
+  last_session: 2026-02-15 08:36:07
