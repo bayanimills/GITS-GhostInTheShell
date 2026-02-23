@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-02-22T12:10:22.576Z"
+    "lastTouchedAt": "2026-02-23T14:47:43.312Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -289,6 +289,16 @@
         "openai/gpt-5.2-codex": {
           "alias": "OpenAI Codex"
         }
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "heartbeat": {
+        "every": "30m"
       }
     },
     "list": [
@@ -569,6 +579,18 @@
     "entries": {
       "telegram": {
         "enabled": true
+      },
+      "openclaw-workspace-governance": {
+        "enabled": true
+      }
+    },
+    "installs": {
+      "openclaw-workspace-governance": {
+        "source": "npm",
+        "spec": "@adamchanadam/openclaw-workspace-governance@latest",
+        "installPath": "/home/agent/.openclaw/extensions/openclaw-workspace-governance",
+        "version": "0.1.41",
+        "installedAt": "2026-02-23T14:47:42.738Z"
       }
     }
   }

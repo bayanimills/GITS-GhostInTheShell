@@ -326,7 +326,7 @@
       "name": "Danny FastLoop BTC 5-min",
       "enabled": true,
       "createdAtMs": 1771560224580,
-      "updatedAtMs": 1771855508297,
+      "updatedAtMs": 1771858506372,
       "schedule": {
         "kind": "every",
         "everyMs": 300000,
@@ -345,11 +345,12 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1771855424596,
+        "lastRunAtMs": 1771858424599,
         "lastStatus": "ok",
-        "lastDurationMs": 83701,
+        "lastDurationMs": 81773,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1771855724580
+        "nextRunAtMs": 1771858724580,
+        "runningAtMs": 1771858786164
       }
     },
     {
@@ -359,7 +360,7 @@
       "name": "Danny Weather Trader",
       "enabled": true,
       "createdAtMs": 1771560229301,
-      "updatedAtMs": 1771855628493,
+      "updatedAtMs": 1771858685841,
       "schedule": {
         "kind": "every",
         "everyMs": 120000,
@@ -378,12 +379,11 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1771855615419,
+        "lastRunAtMs": 1771858669337,
         "lastStatus": "ok",
-        "lastDurationMs": 13074,
+        "lastDurationMs": 16504,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1771855669301,
-        "runningAtMs": 1771855669315
+        "nextRunAtMs": 1771858789301
       }
     },
     {
@@ -757,7 +757,7 @@
       "name": "Document Processing Pipeline",
       "enabled": true,
       "createdAtMs": 1771641561547,
-      "updatedAtMs": 1771855279360,
+      "updatedAtMs": 1771857134612,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -776,10 +776,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1771857000000,
-        "lastRunAtMs": 1771855258699,
+        "nextRunAtMs": 1771858800000,
+        "lastRunAtMs": 1771857114176,
         "lastStatus": "ok",
-        "lastDurationMs": 20661,
+        "lastDurationMs": 20436,
         "consecutiveErrors": 0
       }
     },
@@ -1702,7 +1702,7 @@
       "name": "Danny AI Divergence Scanner",
       "enabled": true,
       "createdAtMs": 1771767060364,
-      "updatedAtMs": 1771855353123,
+      "updatedAtMs": 1771857171869,
       "schedule": {
         "kind": "every",
         "everyMs": 1800000,
@@ -1721,10 +1721,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1771857060364,
-        "lastRunAtMs": 1771855323887,
+        "nextRunAtMs": 1771858860364,
+        "lastRunAtMs": 1771857140704,
         "lastStatus": "ok",
-        "lastDurationMs": 29236,
+        "lastDurationMs": 31165,
         "consecutiveErrors": 0
       }
     },
@@ -1735,7 +1735,7 @@
       "name": "Danny Mert Sniper",
       "enabled": true,
       "createdAtMs": 1771767492725,
-      "updatedAtMs": 1771855160493,
+      "updatedAtMs": 1771858786130,
       "schedule": {
         "kind": "every",
         "everyMs": 600000,
@@ -1754,10 +1754,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1771855692725,
-        "lastRunAtMs": 1771855092742,
+        "nextRunAtMs": 1771859292725,
+        "lastRunAtMs": 1771858692741,
         "lastStatus": "ok",
-        "lastDurationMs": 67751,
+        "lastDurationMs": 93389,
         "consecutiveErrors": 0
       }
     },
@@ -1795,7 +1795,7 @@
       "name": "Calendar reminders (every 15m)",
       "enabled": true,
       "createdAtMs": 1771812072241,
-      "updatedAtMs": 1771855300781,
+      "updatedAtMs": 1771857931463,
       "schedule": {
         "kind": "cron",
         "expr": "*/15 * * * *",
@@ -1814,10 +1814,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1771856100000,
-        "lastRunAtMs": 1771855295419,
+        "nextRunAtMs": 1771858800000,
+        "lastRunAtMs": 1771857924137,
         "lastStatus": "ok",
-        "lastDurationMs": 5362,
+        "lastDurationMs": 7326,
         "consecutiveErrors": 0
       }
     },
@@ -1952,7 +1952,7 @@
       "name": "Kaira Phase 3 Prototype Test",
       "enabled": true,
       "createdAtMs": 1771817852766,
-      "updatedAtMs": 1771855615321,
+      "updatedAtMs": 1771857419307,
       "schedule": {
         "kind": "cron",
         "expr": "5,20,35,50 * * * *",
@@ -1966,10 +1966,10 @@
         "model": "deepseek/deepseek-chat"
       },
       "state": {
-        "nextRunAtMs": 1771856400000,
-        "lastRunAtMs": 1771855542222,
+        "nextRunAtMs": 1771859100000,
+        "lastRunAtMs": 1771857321676,
         "lastStatus": "ok",
-        "lastDurationMs": 73099,
+        "lastDurationMs": 97631,
         "consecutiveErrors": 0
       },
       "delivery": {
