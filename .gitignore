@@ -1,0 +1,22 @@
+# Temporary files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.swp
+*~
+
+# Logs
+*.log
+logs/
+
+# Local backups (tarballs) are kept in repository, but we ignore any stray files
+backup-*.tar.gz
+
+# System files
+.env
+.secret
+
+# IDE
+.vscode/
+.idea/
