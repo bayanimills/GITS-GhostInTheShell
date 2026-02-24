@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-02-23T14:47:43.312Z"
+    "lastTouchedAt": "2026-02-23T15:35:07.347Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -581,7 +581,7 @@
         "enabled": true
       },
       "openclaw-workspace-governance": {
-        "enabled": true
+        "enabled": false
       }
     },
     "installs": {
