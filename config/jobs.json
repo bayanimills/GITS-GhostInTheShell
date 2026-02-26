@@ -7,7 +7,7 @@
       "name": "Daily Post at 15:00 AEST",
       "enabled": true,
       "createdAtMs": 1771220740585,
-      "updatedAtMs": 1771995615212,
+      "updatedAtMs": 1772082000752,
       "schedule": {
         "kind": "cron",
         "expr": "0 5 * * *",
@@ -20,8 +20,8 @@
         "text": "DAILY_POST_REMINDER: Time for daily tweet at 15:00 AEST"
       },
       "state": {
-        "nextRunAtMs": 1772082000000,
-        "lastRunAtMs": 1771995615211,
+        "nextRunAtMs": 1772168400000,
+        "lastRunAtMs": 1772082000751,
         "lastStatus": "skipped",
         "lastDurationMs": 1,
         "consecutiveErrors": 0,
@@ -34,7 +34,7 @@
       "name": "Finmills Daily BLUF 1500 Sydney",
       "enabled": true,
       "createdAtMs": 1771221197685,
-      "updatedAtMs": 1771992190196,
+      "updatedAtMs": 1772097302322,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * *",
@@ -44,17 +44,17 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "BLUF GENERATION - ROTATING FOCUS SYSTEM\n\nYou are generating today's BLUF for Finmills Pty Ltd Telegram group (-1003859234119). Follow this protocol:\n\n1. READ rotation state: cat /home/agent/.openclaw/workspace-aria/memory/bluf-rotation-state.json\n2. DETERMINE focus aspect: Use 'next_aspect' field. If null/missing, start with 'tiktok-creator-research'.\n3. GENERATE deep-dive report on that aspect:\n   - Read relevant memory files for context\n   - Focus on DETAILS not superficial coverage\n   - Structure: Overview → Key Developments Last 24h → Current Status → Next 24h Actions → Strategic Implications\n   - Include specific metrics, numbers, percentages where possible\n   - Highlight blockers needing user attention\n   - Keep concise but substantive (300-500 words)\n4. UPDATE rotation state:\n   - Increment current_position by 1 (wrap after 7 back to 0)\n   - Update last_covered timestamp for the aspect\n   - Increment coverage_count for the aspect\n   - Set next_aspect based on rotation_order[current_position]\n   - Update last_updated timestamp\n   - Write back: echo 'updated_json' > /home/agent/.openclaw/workspace-aria/memory/bluf-rotation-state.json\n5. POST to Telegram group using message tool:\n   - action=send, target='-1003859234119', channel='telegram'\n   - Message format:\n     🧭 BLUF: [Aspect Name] - [Date]\n     \n     [Deep-dive content]\n     \n     ---\n     Next focus: [Next Aspect Name]\n     Rotation cycle: [X]/8 complete\n\nASPECT DETAILS:\n- TikTok Creator Research: Creator count progress, scoring updates, partnership readiness, discovery challenges\n- MyWeeklyJourney Product: Launch progress, revenue, technical development, funnel optimization\n- Finmills Ecosystem Monitoring: Analytics, Nextcloud changes, system health, automated alerts\n- Strategic Initiatives: New projects, partnerships, growth opportunities\n- Marketing Performance: Campaign results, conversion metrics, ROI analysis\n- Financial Monitoring: Revenue tracking, cash flow, expense management\n- Operational Systems: Cron jobs, automation health, technical infrastructure\n- Competitive Intelligence: Market trends, competitor analysis, positioning\n\nIMPORTANT: This replaces the previous 'dump everything' approach. Focus on depth in ONE area each day.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh bluf-rotation /home/agent/.openclaw/workspace-aria python3 scripts/bluf_rotation_runner.py. Output NO_REPLY on success; output errors only.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772078400000,
-        "lastRunAtMs": 1771992021632,
+        "nextRunAtMs": 1772164800000,
+        "lastRunAtMs": 1772078401159,
         "lastStatus": "ok",
-        "lastDurationMs": 168564,
+        "lastDurationMs": 134054,
         "consecutiveErrors": 0
       }
     },
@@ -64,7 +64,7 @@
       "name": "Finmills Daily Analytics Fetch",
       "enabled": true,
       "createdAtMs": 1771221999519,
-      "updatedAtMs": 1771979507679,
+      "updatedAtMs": 1772100068431,
       "schedule": {
         "kind": "cron",
         "expr": "30 0 * * *",
@@ -74,17 +74,17 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 85d44d81-f547-4b40-95d9-b02629b3ab96 /home/agent/.openclaw/workspace-aria python3 scripts/fetch-umami-stats.py. Then update the dashboard: python3 scripts/update-dashboard.py. Then analyze analytics changes: python3 scripts/analyze-analytics-changes.py. Then analyze for anomalies: python3 scripts/analyze-umami-anomalies.py. Then generate ecosystem status: python3 scripts/generate-ecosystem-status-v2.py. Report any errors or significant findings.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh finmills-analytics /home/agent/.openclaw/workspace-aria bash scripts/run_finmills_analytics_pack.sh. Output NO_REPLY on success; output errors/significant anomalies only.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772065800000,
-        "lastRunAtMs": 1771979415002,
+        "nextRunAtMs": 1772152200000,
+        "lastRunAtMs": 1772065805655,
         "lastStatus": "ok",
-        "lastDurationMs": 92677,
+        "lastDurationMs": 68465,
         "consecutiveErrors": 0
       }
     },
@@ -259,7 +259,7 @@
       "name": "Donna Daily Standup Report",
       "enabled": true,
       "createdAtMs": 1771552736305,
-      "updatedAtMs": 1771966884636,
+      "updatedAtMs": 1772095800840,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -270,7 +270,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 8beb11ec-079e-49bc-b801-81332ee87c42 /home/agent/.openclaw/workspace/skills/dartai DARTAI_API_KEY=dsa_32fe74c3c0a9335c5210cdb17aa15ef9bb9804f41ae8d6149df863103392a6c7 ./bin/dartai standup. Format the output for Telegram delivery with emojis and clarity.",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -279,10 +279,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772053200000,
-        "lastRunAtMs": 1771966813498,
+        "nextRunAtMs": 1772139600000,
+        "lastRunAtMs": 1772053210279,
         "lastStatus": "ok",
-        "lastDurationMs": 71138,
+        "lastDurationMs": 84133,
         "consecutiveErrors": 0
       }
     },
@@ -293,7 +293,7 @@
       "name": "Edward Mills Daily Standup",
       "enabled": true,
       "createdAtMs": 1771557113778,
-      "updatedAtMs": 1771966919368,
+      "updatedAtMs": 1772099410975,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -304,7 +304,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Run the dashboard report script: python3 /home/agent/.openclaw/workspace-doc/scripts/dashboard_report.py. Output only the script's output, no additional commentary.",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -312,10 +312,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772053200000,
-        "lastRunAtMs": 1771966884636,
+        "nextRunAtMs": 1772139600000,
+        "lastRunAtMs": 1772053294412,
         "lastStatus": "ok",
-        "lastDurationMs": 34732,
+        "lastDurationMs": 39461,
         "consecutiveErrors": 0
       }
     },
@@ -326,7 +326,7 @@
       "name": "Danny FastLoop BTC 5-min",
       "enabled": true,
       "createdAtMs": 1771560224580,
-      "updatedAtMs": 1772031565391,
+      "updatedAtMs": 1772117939790,
       "schedule": {
         "kind": "every",
         "everyMs": 300000,
@@ -345,11 +345,11 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1772031524600,
+        "lastRunAtMs": 1772117924601,
         "lastStatus": "ok",
-        "lastDurationMs": 40791,
+        "lastDurationMs": 15189,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1772031824580
+        "nextRunAtMs": 1772118224580
       }
     },
     {
@@ -359,7 +359,7 @@
       "name": "Danny Weather Trader",
       "enabled": true,
       "createdAtMs": 1771560229301,
-      "updatedAtMs": 1772031593573,
+      "updatedAtMs": 1772117894746,
       "schedule": {
         "kind": "every",
         "everyMs": 120000,
@@ -378,11 +378,12 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1772031589322,
+        "lastRunAtMs": 1772117869317,
         "lastStatus": "ok",
-        "lastDurationMs": 4251,
+        "lastDurationMs": 25429,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1772031709301
+        "nextRunAtMs": 1772117989301,
+        "runningAtMs": 1772117989323
       }
     },
     {
@@ -392,7 +393,7 @@
       "name": "Finmills Daily Standup Report",
       "enabled": true,
       "createdAtMs": 1771560433116,
-      "updatedAtMs": 1771970504476,
+      "updatedAtMs": 1772099411036,
       "schedule": {
         "kind": "cron",
         "expr": "0 22 * * 0,2,5",
@@ -403,7 +404,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 01a0de4d-bc08-48ae-a5aa-955ef046dfa7 /home/agent/.openclaw/workspace-aria python3 skills/dart-ai/scripts/generate-standup.py --output doc --dartboard 'Finmills/Tasks' --folder 'Finmills/'. Output confirmation that report was generated.",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -426,7 +427,7 @@
       "name": "Finmills Nextcloud Folder Monitoring",
       "enabled": true,
       "createdAtMs": 1771561228341,
-      "updatedAtMs": 1771981393586,
+      "updatedAtMs": 1772067662575,
       "schedule": {
         "kind": "cron",
         "expr": "0 1 * * *",
@@ -445,10 +446,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772067600000,
-        "lastRunAtMs": 1771981212567,
+        "nextRunAtMs": 1772154000000,
+        "lastRunAtMs": 1772067612311,
         "lastStatus": "ok",
-        "lastDurationMs": 181019,
+        "lastDurationMs": 50264,
         "consecutiveErrors": 0
       }
     },
@@ -459,7 +460,7 @@
       "name": "Finmills Daily Ecosystem Heartbeat",
       "enabled": true,
       "createdAtMs": 1771562894698,
-      "updatedAtMs": 1771974051937,
+      "updatedAtMs": 1772097302342,
       "schedule": {
         "kind": "cron",
         "expr": "0 10 * * *",
@@ -469,8 +470,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 93a14152-05c2-42f5-b53e-f48fd6012ada /home/agent/.openclaw/workspace-aria python3 scripts/post-daily-heartbeat.py. Then post the generated message from memory/finmills/heartbeat_message.txt to Telegram group -1003859234119. Use message tool with channel=telegram.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh finmills-heartbeat /home/agent/.openclaw/workspace-aria python3 scripts/post-daily-heartbeat.py. Output NO_REPLY on success; output errors only.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -479,10 +480,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772060400000,
-        "lastRunAtMs": 1771974010541,
+        "nextRunAtMs": 1772146800000,
+        "lastRunAtMs": 1772060407585,
         "lastStatus": "ok",
-        "lastDurationMs": 41396,
+        "lastDurationMs": 44066,
         "consecutiveErrors": 0
       }
     },
@@ -561,7 +562,7 @@
       "name": "Finmills Financial Monitoring",
       "enabled": true,
       "createdAtMs": 1771589253410,
-      "updatedAtMs": 1771984886879,
+      "updatedAtMs": 1772099411019,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -572,7 +573,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh e1dc48df-b453-4f51-915a-5548881a0866 /home/agent/.openclaw/workspace-aria python3 scripts/financial-monitoring-fixed.py. Output summary of findings.",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -580,10 +581,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772071200000,
-        "lastRunAtMs": 1771984819001,
+        "nextRunAtMs": 1772157600000,
+        "lastRunAtMs": 1772071203138,
         "lastStatus": "ok",
-        "lastDurationMs": 67878,
+        "lastDurationMs": 243433,
         "consecutiveErrors": 0
       }
     },
@@ -593,7 +594,7 @@
       "name": "Memory Palace Audit Rotation",
       "enabled": true,
       "createdAtMs": 1771600000000,
-      "updatedAtMs": 1771988507111,
+      "updatedAtMs": 1772074986491,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -609,10 +610,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772074800000,
-        "lastRunAtMs": 1771988417417,
+        "nextRunAtMs": 1772161200000,
+        "lastRunAtMs": 1772074866339,
         "lastStatus": "ok",
-        "lastDurationMs": 89694,
+        "lastDurationMs": 120152,
         "consecutiveErrors": 0
       }
     },
@@ -623,7 +624,7 @@
       "name": "Danny Trade Journal Sync",
       "enabled": true,
       "createdAtMs": 1771636259636,
-      "updatedAtMs": 1771984897693,
+      "updatedAtMs": 1772071483396,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -642,10 +643,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772071200000,
-        "lastRunAtMs": 1771984886879,
+        "nextRunAtMs": 1772157600000,
+        "lastRunAtMs": 1772071446571,
         "lastStatus": "ok",
-        "lastDurationMs": 10814,
+        "lastDurationMs": 36825,
         "consecutiveErrors": 0
       }
     },
@@ -656,7 +657,7 @@
       "name": "Daily 8am Email Check",
       "enabled": true,
       "createdAtMs": 1771636361174,
-      "updatedAtMs": 1771967078851,
+      "updatedAtMs": 1772053495269,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -675,10 +676,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772053200000,
-        "lastRunAtMs": 1771966919368,
+        "nextRunAtMs": 1772139600000,
+        "lastRunAtMs": 1772053333873,
         "lastStatus": "ok",
-        "lastDurationMs": 159483,
+        "lastDurationMs": 161396,
         "consecutiveErrors": 0
       }
     },
@@ -689,7 +690,7 @@
       "name": "Daily 1pm Email Check",
       "enabled": true,
       "createdAtMs": 1771636366130,
-      "updatedAtMs": 1771985025925,
+      "updatedAtMs": 1772071643874,
       "schedule": {
         "kind": "cron",
         "expr": "0 13 * * *",
@@ -708,10 +709,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772071200000,
-        "lastRunAtMs": 1771984897693,
+        "nextRunAtMs": 1772157600000,
+        "lastRunAtMs": 1772071483396,
         "lastStatus": "ok",
-        "lastDurationMs": 128232,
+        "lastDurationMs": 160478,
         "consecutiveErrors": 0
       }
     },
@@ -722,7 +723,7 @@
       "name": "Andrew Document Tracking",
       "enabled": true,
       "createdAtMs": 1771641507845,
-      "updatedAtMs": 1772021220809,
+      "updatedAtMs": 1772107706934,
       "schedule": {
         "kind": "cron",
         "expr": "0 */6 * * *",
@@ -742,10 +743,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772042641806,
-        "lastRunAtMs": 1772021096470,
+        "nextRunAtMs": 1772129041806,
+        "lastRunAtMs": 1772107671105,
         "lastStatus": "ok",
-        "lastDurationMs": 124339,
+        "lastDurationMs": 35829,
         "consecutiveErrors": 0
       }
     },
@@ -756,7 +757,7 @@
       "name": "Document Processing Pipeline",
       "enabled": true,
       "createdAtMs": 1771641561547,
-      "updatedAtMs": 1772029818407,
+      "updatedAtMs": 1772116228422,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -775,12 +776,11 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772031600000,
-        "lastRunAtMs": 1772029800020,
+        "nextRunAtMs": 1772118000000,
+        "lastRunAtMs": 1772116213067,
         "lastStatus": "ok",
-        "lastDurationMs": 18387,
-        "consecutiveErrors": 0,
-        "runningAtMs": 1772031600021
+        "lastDurationMs": 15355,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -790,7 +790,7 @@
       "name": "Document System Health Check",
       "enabled": true,
       "createdAtMs": 1771641652219,
-      "updatedAtMs": 1771988638461,
+      "updatedAtMs": 1772075012681,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -809,10 +809,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772074800000,
-        "lastRunAtMs": 1771988523016,
+        "nextRunAtMs": 1772161200000,
+        "lastRunAtMs": 1772075003101,
         "lastStatus": "ok",
-        "lastDurationMs": 115445,
+        "lastDurationMs": 9580,
         "consecutiveErrors": 0
       }
     },
@@ -823,7 +823,7 @@
       "name": "Gmail Skill hourly digest",
       "enabled": true,
       "createdAtMs": 1771641927991,
-      "updatedAtMs": 1772028104125,
+      "updatedAtMs": 1772114512345,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -843,10 +843,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772031633658,
-        "lastRunAtMs": 1772028053003,
+        "nextRunAtMs": 1772118033658,
+        "lastRunAtMs": 1772114481239,
         "lastStatus": "ok",
-        "lastDurationMs": 51122,
+        "lastDurationMs": 31106,
         "consecutiveErrors": 0
       }
     },
@@ -857,7 +857,7 @@
       "name": "Aged Care Database Daily Check",
       "enabled": true,
       "createdAtMs": 1771643676701,
-      "updatedAtMs": 1771967098217,
+      "updatedAtMs": 1772053513525,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -876,10 +876,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772053200000,
-        "lastRunAtMs": 1771967091534,
+        "nextRunAtMs": 1772139600000,
+        "lastRunAtMs": 1772053507265,
         "lastStatus": "ok",
-        "lastDurationMs": 6683,
+        "lastDurationMs": 6260,
         "consecutiveErrors": 0
       }
     },
@@ -890,7 +890,7 @@
       "name": "Dart Daily Sync",
       "enabled": true,
       "createdAtMs": 1771644058281,
-      "updatedAtMs": 1772010165594,
+      "updatedAtMs": 1772096714915,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -910,10 +910,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772096400000,
-        "lastRunAtMs": 1772010055684,
+        "nextRunAtMs": 1772182800000,
+        "lastRunAtMs": 1772096605790,
         "lastStatus": "ok",
-        "lastDurationMs": 109910,
+        "lastDurationMs": 109125,
         "consecutiveErrors": 0
       }
     },
@@ -924,7 +924,7 @@
       "name": "Edward Mills Notion Sync",
       "enabled": true,
       "createdAtMs": 1771661849272,
-      "updatedAtMs": 1771970746158,
+      "updatedAtMs": 1772099411001,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -935,7 +935,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Run the Notion sync script: cd /home/agent/.openclaw/workspace-doc && python3 sync_dart_to_notion.py. Output summary of tasks synced (count).",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -943,10 +943,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772056800000,
-        "lastRunAtMs": 1771970518427,
+        "nextRunAtMs": 1772143200000,
+        "lastRunAtMs": 1772056820435,
         "lastStatus": "ok",
-        "lastDurationMs": 227731,
+        "lastDurationMs": 122242,
         "consecutiveErrors": 0
       }
     },
@@ -957,7 +957,7 @@
       "name": "Weekly skill validation",
       "enabled": true,
       "createdAtMs": 1771663214034,
-      "updatedAtMs": 1771800348931,
+      "updatedAtMs": 1772091668882,
       "schedule": {
         "kind": "cron",
         "expr": "0 21 * * 0",
@@ -967,7 +967,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run weekly skill validation: execute python3 /home/agent/.openclaw/workspace-donna/validate_skills.py and report results."
+        "message": "Run weekly skill validation: execute python3 /home/agent/.openclaw/workspace-donna/validate_skills.py and report results.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -989,7 +990,7 @@
       "name": "Weekly skill usage report",
       "enabled": true,
       "createdAtMs": 1771663260090,
-      "updatedAtMs": 1771800355563,
+      "updatedAtMs": 1772091668902,
       "schedule": {
         "kind": "cron",
         "expr": "0 22 * * 0",
@@ -999,7 +1000,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Generate weekly skill usage report: execute python3 /home/agent/.openclaw/workspace-donna/skill_usage_report.py and send results."
+        "message": "Generate weekly skill usage report: execute python3 /home/agent/.openclaw/workspace-donna/skill_usage_report.py and send results.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -1022,7 +1024,7 @@
       "enabled": true,
       "deleteAfterRun": true,
       "createdAtMs": 1771664048066,
-      "updatedAtMs": 1771800226843,
+      "updatedAtMs": 1772095800863,
       "schedule": {
         "kind": "at",
         "at": "2026-02-27T22:00:00.000Z"
@@ -1032,7 +1034,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Reminder: Edward Mills' high‑priority end‑of‑life tasks due 2026‑03‑01 (Update Will, Advance Care Directive, Funeral Plan). Check Notion End‑of‑Life Tasks database for updates. Send this reminder to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY.",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "deepseek/deepseek-chat"
       },
       "state": {
         "nextRunAtMs": 1772229600000
@@ -1048,9 +1050,9 @@
       "agentId": "donna",
       "sessionKey": "agent:donna:telegram:direct:548072941",
       "name": "Test weekly skills validation",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1771664808707,
-      "updatedAtMs": 1771800344438,
+      "updatedAtMs": 1772092264459,
       "schedule": {
         "kind": "every",
         "everyMs": 604800000,
@@ -1060,16 +1062,15 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run weekly skill validation and testing: execute python3 /home/agent/.openclaw/workspace-donna/validate_and_test_skills.py and report results."
+        "message": "Run weekly skill validation and testing: execute python3 /home/agent/.openclaw/workspace-donna/validate_and_test_skills.py and report results.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
         "channel": "telegram",
         "to": "548072941"
       },
-      "state": {
-        "nextRunAtMs": 1772269608707
-      }
+      "state": {}
     },
     {
       "id": "0ca9dc63-b4cd-47ef-8207-1dce16d35cab",
@@ -1077,7 +1078,7 @@
       "name": "Edward Mills Weekly Review",
       "enabled": true,
       "createdAtMs": 1771666855361,
-      "updatedAtMs": 1771800239087,
+      "updatedAtMs": 1772095800891,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * 0",
@@ -1087,7 +1088,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run weekly dashboard report: cd /home/agent/.openclaw/workspace-doc && python3 scripts/dashboard_report.py. Capture the output and send it to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY."
+        "message": "Run weekly dashboard report: cd /home/agent/.openclaw/workspace-doc && python3 scripts/dashboard_report.py. Capture the output and send it to Telegram channel=telegram to=548072941 using the message tool. Then reply NO_REPLY.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -1109,7 +1111,7 @@
       "name": "Cron Manager Hourly Sync",
       "enabled": true,
       "createdAtMs": 1771676323917,
-      "updatedAtMs": 1772028310181,
+      "updatedAtMs": 1772114733464,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -1127,10 +1129,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772031895293,
-        "lastRunAtMs": 1772028295311,
+        "nextRunAtMs": 1772118295293,
+        "lastRunAtMs": 1772114713051,
         "lastStatus": "ok",
-        "lastDurationMs": 14870,
+        "lastDurationMs": 20413,
         "consecutiveErrors": 0
       }
     },
@@ -1172,7 +1174,7 @@
       "name": "SBA Email Periodic Archiving",
       "enabled": true,
       "createdAtMs": 1771679123609,
-      "updatedAtMs": 1772020862649,
+      "updatedAtMs": 1772107598639,
       "schedule": {
         "kind": "cron",
         "expr": "0 23 * * *",
@@ -1191,10 +1193,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772107200000,
-        "lastRunAtMs": 1772020831250,
+        "nextRunAtMs": 1772193600000,
+        "lastRunAtMs": 1772107561608,
         "lastStatus": "ok",
-        "lastDurationMs": 31399,
+        "lastDurationMs": 37031,
         "consecutiveErrors": 0
       }
     },
@@ -1205,7 +1207,7 @@
       "name": "Night Executive Skill",
       "enabled": true,
       "createdAtMs": 1771691141869,
-      "updatedAtMs": 1772010261991,
+      "updatedAtMs": 1772099411053,
       "schedule": {
         "kind": "cron",
         "expr": "0 20 * * *",
@@ -1215,7 +1217,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "cd /home/agent/.openclaw/workspace/skills/night-executive && python3 scripts/night_review.py"
+        "message": "cd /home/agent/.openclaw/workspace/skills/night-executive && python3 scripts/night_review.py",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "announce",
@@ -1224,10 +1227,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772096400000,
-        "lastRunAtMs": 1772010165594,
+        "nextRunAtMs": 1772182800000,
+        "lastRunAtMs": 1772096714915,
         "lastStatus": "ok",
-        "lastDurationMs": 96397,
+        "lastDurationMs": 147198,
         "consecutiveErrors": 0
       }
     },
@@ -1238,7 +1241,7 @@
       "name": "USER.md Baseline Sync",
       "enabled": true,
       "createdAtMs": 1771717485920,
-      "updatedAtMs": 1771947053904,
+      "updatedAtMs": 1772033429512,
       "schedule": {
         "kind": "cron",
         "expr": "30 2 * * *",
@@ -1255,10 +1258,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772033400000,
-        "lastRunAtMs": 1771947043275,
+        "nextRunAtMs": 1772119800000,
+        "lastRunAtMs": 1772033421018,
         "lastStatus": "ok",
-        "lastDurationMs": 10629,
+        "lastDurationMs": 8494,
         "consecutiveErrors": 0
       }
     },
@@ -1296,7 +1299,7 @@
       "name": "Kaira Heartbeat System Health Check",
       "enabled": true,
       "createdAtMs": 1771726486658,
-      "updatedAtMs": 1772024665426,
+      "updatedAtMs": 1772110917502,
       "schedule": {
         "kind": "cron",
         "expr": "0 */2 * * *",
@@ -1307,17 +1310,17 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Perform system health checks as documented in WORKFLOW_AUTO.md and HEARTBEAT.md.\n\nIf there is NO urgent issue requiring Bayani action, output exactly: NO_REPLY\n\nOnly send a user-visible message when BOTH are true:\n1) urgency is Critical/High, and\n2) a specific action is required from Bayani now.\n\nIf alerting, include:\n- issue\n- urgency\n- required action\n- deadline/window\n\nOtherwise log results to memory/YYYY-MM-DD.md and return NO_REPLY.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run AWS health check (lean mode).\n\nUse log/task deltas only (do not re-read multi-day memory unless post-compaction or anomaly).\nIf no Critical/High issue requiring Bayani action now, output exactly NO_REPLY.\nIf alerting, output max 4 bullets: issue, urgency, required action, deadline/window.\nAlways log details to memory/YYYY-MM-DD.md.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772031628830,
-        "lastRunAtMs": 1772024545378,
+        "nextRunAtMs": 1772118028830,
+        "lastRunAtMs": 1772110916588,
         "lastStatus": "ok",
-        "lastDurationMs": 120048,
+        "lastDurationMs": 914,
         "consecutiveErrors": 0
       }
     },
@@ -1328,7 +1331,7 @@
       "name": "Kaira Geopolitical Monitoring Check",
       "enabled": true,
       "createdAtMs": 1771726493755,
-      "updatedAtMs": 1771998578830,
+      "updatedAtMs": 1772111095012,
       "schedule": {
         "kind": "cron",
         "expr": "0 */4 * * *",
@@ -1339,17 +1342,17 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Perform geopolitical monitoring check as documented in WORKFLOW_AUTO.md and HEARTBEAT.md.\n\nOutput policy:\n- If no urgent action required from Bayani: output exactly NO_REPLY\n- Only alert when urgency is Critical/High and a concrete action/decision is needed.\n\nFor alerts include:\n1) event summary\n2) expected downstream effects\n3) time windows\n4) probabilities + confidence\n5) required action by Bayani and when\n\nLog full analysis to memory/YYYY-MM-DD.md and return NO_REPLY for non-actionable/routine updates.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run geopolitical monitoring (lean mode).\n\nAssess only significant new events + downstream effects.\nIf no Critical/High event requiring Bayani action now, output exactly NO_REPLY.\nIf alerting, output max 6 bullets: event, urgency, downstream effects, time windows, probability/confidence, required action/window.\nLog full analysis to memory/YYYY-MM-DD.md.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772039046530,
-        "lastRunAtMs": 1771995868548,
+        "nextRunAtMs": 1772125446530,
+        "lastRunAtMs": 1772111094152,
         "lastStatus": "ok",
-        "lastDurationMs": 206576,
+        "lastDurationMs": 860,
         "consecutiveErrors": 0
       }
     },
@@ -1360,7 +1363,7 @@
       "name": "Kaira Agent Coordination Check",
       "enabled": true,
       "createdAtMs": 1771726500335,
-      "updatedAtMs": 1772026358405,
+      "updatedAtMs": 1772112702222,
       "schedule": {
         "kind": "cron",
         "expr": "30 */4 * * *",
@@ -1370,17 +1373,17 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Perform agent coordination check as documented in WORKFLOW_AUTO.md and HEARTBEAT.md.\n\nIf there is NO urgent issue requiring Bayani action, output exactly: NO_REPLY\n\nOnly send a user-visible message when BOTH are true:\n1) urgency is Critical/High, and\n2) a concrete Bayani action is required.\n\nIf alerting, include:\n- issue\n- urgency\n- required action\n- deadline/window\n\nAlways log full details to memory/YYYY-MM-DD.md. Return NO_REPLY for routine/healthy status.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run AWS coordination check (lean mode).\n\nUse queue/log/session deltas only (no routine 2-day memory sweep).\nIf no Critical/High issue requiring Bayani action now, output exactly NO_REPLY.\nIf alerting, output max 4 bullets: issue, urgency, required action, deadline/window.\nLog details to memory/YYYY-MM-DD.md.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772040600000,
-        "lastRunAtMs": 1772026233103,
+        "nextRunAtMs": 1772127000000,
+        "lastRunAtMs": 1772112636383,
         "lastStatus": "ok",
-        "lastDurationMs": 125302,
+        "lastDurationMs": 65839,
         "consecutiveErrors": 0
       }
     },
@@ -1391,7 +1394,7 @@
       "name": "Kaira Daily Backup Procedures",
       "enabled": true,
       "createdAtMs": 1771726507743,
-      "updatedAtMs": 1771945273588,
+      "updatedAtMs": 1772031636462,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -1408,12 +1411,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772031600000,
-        "lastRunAtMs": 1771945259925,
+        "nextRunAtMs": 1772118000000,
+        "lastRunAtMs": 1772031624096,
         "lastStatus": "ok",
-        "lastDurationMs": 13663,
-        "consecutiveErrors": 0,
-        "runningAtMs": 1772031600021
+        "lastDurationMs": 12366,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -1423,7 +1425,7 @@
       "name": "Kaira Self-Maintenance Review",
       "enabled": true,
       "createdAtMs": 1771726513893,
-      "updatedAtMs": 1772025736564,
+      "updatedAtMs": 1772100068448,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -1433,18 +1435,19 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Perform self-maintenance review as documented in WORKFLOW_AUTO.md and HEARTBEAT.md:\n1. Review memory logs and archive old logs\n2. Update documentation (AGENTS.md, TOOLS.md, etc.)\n3. Test recovery scripts\n4. Summarize learnings for MEMORY.md\n5. Run `tasks/meta-learning/nightly-extraction-checklist.md` and update meta-learning logs\n6. Log results to memory/YYYY-MM-DD.md\n\nExecute review and provide summary.",
-        "model": "deepseek/deepseek-reasoner"
+        "message": "Run self-maintenance profile: review logs/docs/scripts, execute tasks/meta-learning/nightly-extraction-checklist.md, log concise outcomes to memory/YYYY-MM-DD.md. Output NO_REPLY unless action required.",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772035200000,
-        "lastRunAtMs": 1771949513963,
-        "lastStatus": "ok",
-        "lastDurationMs": 458207,
-        "consecutiveErrors": 0
+        "nextRunAtMs": 1772121600000,
+        "lastRunAtMs": 1772035238097,
+        "lastStatus": "error",
+        "lastDurationMs": 600001,
+        "consecutiveErrors": 1,
+        "lastError": "Error: cron: job execution timed out"
       }
     },
     {
@@ -1541,7 +1544,7 @@
       "name": "Daily Session Validation",
       "enabled": true,
       "createdAtMs": 1771730101849,
-      "updatedAtMs": 1771992226413,
+      "updatedAtMs": 1772078581590,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * *"
@@ -1560,10 +1563,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772078400000,
-        "lastRunAtMs": 1771992205031,
+        "nextRunAtMs": 1772164800000,
+        "lastRunAtMs": 1772078548986,
         "lastStatus": "ok",
-        "lastDurationMs": 21382,
+        "lastDurationMs": 32604,
         "consecutiveErrors": 0
       }
     },
@@ -1574,7 +1577,7 @@
       "name": "Evening Preparation",
       "enabled": true,
       "createdAtMs": 1771731147482,
-      "updatedAtMs": 1771999278901,
+      "updatedAtMs": 1772091668819,
       "schedule": {
         "kind": "cron",
         "expr": "0 17 * * *",
@@ -1585,7 +1588,8 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Use the exec tool to run: cd /home/agent/.openclaw/workspace/skills/evening-prep && python3 scripts/evening_prep.py. Do not output anything else.",
-        "timeoutSeconds": 60
+        "timeoutSeconds": 60,
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -1594,10 +1598,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772085600000,
-        "lastRunAtMs": 1771999257563,
+        "nextRunAtMs": 1772172000000,
+        "lastRunAtMs": 1772085622273,
         "lastStatus": "ok",
-        "lastDurationMs": 21338,
+        "lastDurationMs": 13163,
         "consecutiveErrors": 0
       }
     },
@@ -1608,7 +1612,7 @@
       "name": "System Maintenance",
       "enabled": true,
       "createdAtMs": 1771733490246,
-      "updatedAtMs": 1772015522347,
+      "updatedAtMs": 1772101847891,
       "schedule": {
         "kind": "cron",
         "expr": "30 21 * * *",
@@ -1618,7 +1622,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "cd /home/agent/.openclaw/workspace/skills/system-maintenance && python3 scripts/system_maintenance.py"
+        "message": "cd /home/agent/.openclaw/workspace/skills/system-maintenance && python3 scripts/system_maintenance.py",
+        "model": "deepseek/deepseek-chat"
       },
       "delivery": {
         "mode": "none",
@@ -1626,10 +1631,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772101800000,
-        "lastRunAtMs": 1772015449714,
+        "nextRunAtMs": 1772188200000,
+        "lastRunAtMs": 1772101828580,
         "lastStatus": "ok",
-        "lastDurationMs": 72633,
+        "lastDurationMs": 19311,
         "consecutiveErrors": 0
       }
     },
@@ -1674,7 +1679,7 @@
       "name": "Danny AI Divergence Scanner",
       "enabled": true,
       "createdAtMs": 1771767060364,
-      "updatedAtMs": 1772029868686,
+      "updatedAtMs": 1772116281533,
       "schedule": {
         "kind": "every",
         "everyMs": 1800000,
@@ -1693,10 +1698,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772031660364,
-        "lastRunAtMs": 1772029860391,
+        "nextRunAtMs": 1772118060364,
+        "lastRunAtMs": 1772116260382,
         "lastStatus": "ok",
-        "lastDurationMs": 8295,
+        "lastDurationMs": 21151,
         "consecutiveErrors": 0
       }
     },
@@ -1705,9 +1710,9 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny Mert Sniper",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1771767492725,
-      "updatedAtMs": 1772031508167,
+      "updatedAtMs": 1772114953723,
       "schedule": {
         "kind": "every",
         "everyMs": 600000,
@@ -1726,10 +1731,9 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772032092725,
-        "lastRunAtMs": 1772031492745,
+        "lastRunAtMs": 1772114894094,
         "lastStatus": "ok",
-        "lastDurationMs": 15422,
+        "lastDurationMs": 59629,
         "consecutiveErrors": 0
       }
     },
@@ -1767,7 +1771,7 @@
       "name": "Calendar reminders (every 15m)",
       "enabled": true,
       "createdAtMs": 1771812072241,
-      "updatedAtMs": 1772030706549,
+      "updatedAtMs": 1772117108811,
       "schedule": {
         "kind": "cron",
         "expr": "*/15 * * * *",
@@ -1786,12 +1790,11 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772031600000,
-        "lastRunAtMs": 1772030700023,
+        "nextRunAtMs": 1772118000000,
+        "lastRunAtMs": 1772117100032,
         "lastStatus": "ok",
-        "lastDurationMs": 6526,
-        "consecutiveErrors": 0,
-        "runningAtMs": 1772031600021
+        "lastDurationMs": 8779,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -1801,7 +1804,7 @@
       "name": "NAWS check-in 23:00",
       "enabled": false,
       "createdAtMs": 1771813471012,
-      "updatedAtMs": 1771859354534,
+      "updatedAtMs": 1772097336745,
       "schedule": {
         "kind": "cron",
         "expr": "0 23 * * *",
@@ -1811,7 +1814,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/autonomous-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Output NO_REPLY unless critical issue.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -1833,7 +1836,7 @@
       "name": "NAWS check-in 01:00",
       "enabled": false,
       "createdAtMs": 1771813477113,
-      "updatedAtMs": 1771859360726,
+      "updatedAtMs": 1772097336727,
       "schedule": {
         "kind": "cron",
         "expr": "0 1 * * *",
@@ -1843,7 +1846,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/autonomous-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Output NO_REPLY unless critical issue.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -1865,7 +1868,7 @@
       "name": "NAWS check-in 03:00",
       "enabled": false,
       "createdAtMs": 1771813482703,
-      "updatedAtMs": 1771859365504,
+      "updatedAtMs": 1772097336710,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -1875,7 +1878,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/autonomous-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Output NO_REPLY unless critical issue.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -1892,7 +1895,7 @@
       "name": "NAWS check-in 05:00",
       "enabled": false,
       "createdAtMs": 1771813488351,
-      "updatedAtMs": 1771859371009,
+      "updatedAtMs": 1772097336692,
       "schedule": {
         "kind": "cron",
         "expr": "0 5 * * *",
@@ -1902,7 +1905,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the nighttime autonomous work check-in script. Set environment variable OPENCLAW_WORKSPACE to /home/agent/.openclaw/workspace-donna. Execute: python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/autonomous-check.py. Capture stdout and stderr. If there is any output (errors or status messages), forward it exactly. If there is no output, output nothing.",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/nighttime-check.py. Output NO_REPLY unless critical issue.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -1919,7 +1922,7 @@
       "name": "Kaira Phase 3 Prototype Test",
       "enabled": true,
       "createdAtMs": 1771817852766,
-      "updatedAtMs": 1772031177373,
+      "updatedAtMs": 1772117432327,
       "schedule": {
         "kind": "cron",
         "expr": "5,20,35,50 * * * *",
@@ -1933,14 +1936,377 @@
         "model": "deepseek/deepseek-chat"
       },
       "state": {
-        "nextRunAtMs": 1772031900000,
-        "lastRunAtMs": 1772031000023,
+        "nextRunAtMs": 1772118300000,
+        "lastRunAtMs": 1772117417171,
         "lastStatus": "ok",
-        "lastDurationMs": 177350,
+        "lastDurationMs": 15156,
         "consecutiveErrors": 0
       },
       "delivery": {
         "mode": "none"
+      }
+    },
+    {
+      "id": "91e7c9df-b30b-450d-a762-ec6f35c7d78c",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772052731845,
+      "updatedAtMs": 1772095800805,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000,
+        "lastRunAtMs": 1772093476499,
+        "lastStatus": "error",
+        "lastDurationMs": 171939,
+        "lastError": "cron announce delivery failed",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "821b2ac4-1af6-4d63-b24f-09c057c1cd69",
+      "agentId": "aria",
+      "sessionKey": "agent:aria:telegram:direct:548072941",
+      "name": "Proton Bridge Daily 9am Email Scan",
+      "enabled": true,
+      "createdAtMs": 1772066572019,
+      "updatedAtMs": 1772066572019,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh proton-email-daily /home/agent/.openclaw/workspace-aria python3 scripts/email-proton-daily.py. If human action required, output the summary. If no human action required, output exactly NO_REPLY.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772143200000
+      }
+    },
+    {
+      "id": "ab857849-a82b-42f6-b2eb-1cc3a177314d",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Aria AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822896,
+      "updatedAtMs": 1772099401576,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-aria python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "f704a509-7c51-4a4f-b7cb-76182abe3ea5",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Danny AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822917,
+      "updatedAtMs": 1772099401602,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-danny python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "16ef5c33-8a59-4828-aa04-d36c26b3fb7c",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Doc AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822936,
+      "updatedAtMs": 1772099401620,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-doc python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "932417a6-8d49-42c5-821c-6ca71b7e126c",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Donna AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822954,
+      "updatedAtMs": 1772099401638,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-donna python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "9435a08b-6bd7-4b72-b6fb-ca5c0b2f9fa7",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Shelley AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822975,
+      "updatedAtMs": 1772099401669,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-shelley python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "f80f7577-70cd-4d87-989b-73f380f4bb18",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Main AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094822995,
+      "updatedAtMs": 1772099401688,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-main python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "e05bb033-6345-44ae-9282-090425119a93",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Rescue AWS 12h Completion Report (7am/7pm)",
+      "enabled": true,
+      "createdAtMs": 1772094823015,
+      "updatedAtMs": 1772099401725,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7,19 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-rescue python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772136000000
+      }
+    },
+    {
+      "id": "8b1f7381-00bd-4fc4-9fc8-b07a1efe8762",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "Kaira AWS Backlog Seeder (every 6h)",
+      "enabled": true,
+      "createdAtMs": 1772095392511,
+      "updatedAtMs": 1772111717777,
+      "schedule": {
+        "kind": "cron",
+        "expr": "15 */6 * * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-kaira python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-backlog-seeder.py. If seeded or changed, output one-line summary. Otherwise output NO_REPLY.",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772133300000,
+        "lastRunAtMs": 1772111709684,
+        "lastStatus": "ok",
+        "lastDurationMs": 8093,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "fa42bb75-73fb-48e6-8b7d-5090e9be171a",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "AWS Cron Consolidation Audit (weekly)",
+      "enabled": true,
+      "createdAtMs": 1772095403612,
+      "updatedAtMs": 1772100068413,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 18 * * 0",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: bash /home/agent/.openclaw/workspace-kaira/scripts/run_cron_audit_pack.sh",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772350200000
+      }
+    },
+    {
+      "id": "c5b3ac62-c37a-408f-8549-e6a59718f1f9",
+      "name": "Appointment Cancellation Reminder",
+      "enabled": true,
+      "deleteAfterRun": true,
+      "createdAtMs": 1772099591441,
+      "updatedAtMs": 1772112847841,
+      "schedule": {
+        "kind": "at",
+        "at": "2026-02-26T23:00:00.000Z"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Reminder to call and cancel appointments:\n• Dr. Tew (Skin Specialist) – 02 9411 2266\n• Paul Boccanfuso (Podiatrist) – 02 9905 7444\n• Cris David (Diabetes specialist) – 940-365-7019"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last",
+        "to": "548072941"
+      },
+      "state": {
+        "nextRunAtMs": 1772146800000
+      }
+    },
+    {
+      "id": "6074e885-c675-49b9-afc5-1b5c1f3673cf",
+      "agentId": "kaira",
+      "sessionKey": "agent:kaira:telegram:direct:548072941",
+      "name": "AWS Monthly Token Burn Report",
+      "enabled": true,
+      "createdAtMs": 1772099710260,
+      "updatedAtMs": 1772099710260,
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 8 1 * *",
+        "tz": "Australia/Sydney"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: python3 /home/agent/.openclaw/workspace/skills/aws-token-optimizer/scripts/token_burn_monthly_report.py --outdir /home/agent/.openclaw/workspace-kaira --target 548072941",
+        "model": "deepseek/deepseek-chat"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772314500000
       }
     }
   ]
