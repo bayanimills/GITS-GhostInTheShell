@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-02-25T05:24:59.144Z"
+    "lastTouchedAt": "2026-02-27T06:55:31.307Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -297,6 +297,7 @@
       "compaction": {
         "mode": "safeguard"
       },
+      "timeoutSeconds": 1800,
       "heartbeat": {
         "every": "30m"
       }
