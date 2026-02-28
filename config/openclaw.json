@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-02-27T06:55:31.307Z"
+    "lastTouchedAt": "2026-02-28T11:57:21.291Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -299,7 +299,8 @@
       },
       "timeoutSeconds": 1800,
       "heartbeat": {
-        "every": "30m"
+        "every": "2h",
+        "target": "none"
       }
     },
     "list": [
@@ -464,6 +465,13 @@
     }
   },
   "channels": {
+    "defaults": {
+      "heartbeat": {
+        "showOk": false,
+        "showAlerts": true,
+        "useIndicator": true
+      }
+    },
     "telegram": {
       "enabled": true,
       "commands": {
