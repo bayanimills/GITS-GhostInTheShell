@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-02-28T11:57:21.291Z"
+    "lastTouchedAt": "2026-03-01T02:21:20.891Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -290,6 +290,7 @@
           "alias": "OpenAI Codex"
         }
       },
+      "userTimezone": "Australia/Sydney",
       "contextPruning": {
         "mode": "cache-ttl",
         "ttl": "1h"
