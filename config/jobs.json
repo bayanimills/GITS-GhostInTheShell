@@ -226,7 +226,7 @@
       "name": "Donna Daily Standup Report",
       "enabled": true,
       "createdAtMs": 1771552736305,
-      "updatedAtMs": 1772312465293,
+      "updatedAtMs": 1772398856420,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -246,10 +246,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772398800000,
-        "lastRunAtMs": 1772312416832,
+        "nextRunAtMs": 1772485200000,
+        "lastRunAtMs": 1772398800025,
         "lastStatus": "ok",
-        "lastDurationMs": 48461,
+        "lastDurationMs": 56395,
         "consecutiveErrors": 0
       }
     },
@@ -258,19 +258,19 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny FastLoop BTC 5-min",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1771560224580,
-      "updatedAtMs": 1772376905069,
+      "updatedAtMs": 1772400634652,
       "schedule": {
-        "kind": "every",
-        "everyMs": 300000,
-        "anchorMs": 1771560224580
+        "kind": "cron",
+        "expr": "*/5 7-22 * * *",
+        "tz": "Australia/Sydney"
       },
       "sessionTarget": "isolated",
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh fastloop-btc5min /home/agent/.openclaw/workspace-danny ./scripts/run_fastloop_aligned.sh",
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, perform FastLoop Bitcoin trading analysis. If you find actionable signals, send them via Telegram using the message tool. Do not output anything to stdout; use message tool for notifications.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -279,12 +279,10 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1772376834200,
+        "lastRunAtMs": 1772400600026,
         "lastStatus": "ok",
-        "lastDurationMs": 70869,
-        "consecutiveErrors": 0,
-        "nextRunAtMs": 1772377124580,
-        "runningAtMs": 1772377164058
+        "lastDurationMs": 34626,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -294,17 +292,17 @@
       "name": "Danny Weather Trader",
       "enabled": true,
       "createdAtMs": 1771560229301,
-      "updatedAtMs": 1772376952965,
+      "updatedAtMs": 1772402447639,
       "schedule": {
-        "kind": "every",
-        "everyMs": 120000,
-        "anchorMs": 1771560229301
+        "kind": "cron",
+        "expr": "*/2 7-22 * * *",
+        "tz": "Australia/Sydney"
       },
       "sessionTarget": "isolated",
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh 7b84a385-304e-4dda-98fb-397eb6bbbcdd /home/agent/.openclaw/workspace-danny ./scripts/run_weather.sh",
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, perform weather-based trading analysis. If you find actionable signals, send them via Telegram using the message tool. Do not output anything to stdout; use message tool for notifications.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -313,12 +311,11 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1772376905069,
+        "lastRunAtMs": 1772402348871,
         "lastStatus": "ok",
-        "lastDurationMs": 47896,
+        "lastDurationMs": 98768,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1772377069301,
-        "runningAtMs": 1772377164058
+        "nextRunAtMs": 1772402520000
       }
     },
     {
@@ -352,7 +349,8 @@
         "lastRunAtMs": 1772229702574,
         "lastStatus": "ok",
         "lastDurationMs": 58577,
-        "consecutiveErrors": 0
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -556,9 +554,9 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny Trade Journal Sync",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1771636259636,
-      "updatedAtMs": 1772330481242,
+      "updatedAtMs": 1772400765165,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -568,7 +566,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh trade-journal-sync /home/agent/.openclaw/workspace-danny ./scripts/run_tradejournal.sh",
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, perform trade journal synchronization and output results.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -577,7 +575,6 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772416800000,
         "lastRunAtMs": 1772330469623,
         "lastStatus": "ok",
         "lastDurationMs": 11619,
@@ -591,7 +588,7 @@
       "name": "Daily 8am Email Check",
       "enabled": true,
       "createdAtMs": 1771636361174,
-      "updatedAtMs": 1772312543890,
+      "updatedAtMs": 1772399145016,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -610,10 +607,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772398800000,
-        "lastRunAtMs": 1772312465293,
+        "nextRunAtMs": 1772485200000,
+        "lastRunAtMs": 1772398972027,
         "lastStatus": "ok",
-        "lastDurationMs": 78597,
+        "lastDurationMs": 172989,
         "consecutiveErrors": 0
       }
     },
@@ -657,7 +654,7 @@
       "name": "Andrew Document Tracking",
       "enabled": true,
       "createdAtMs": 1771641507845,
-      "updatedAtMs": 1772366778584,
+      "updatedAtMs": 1772388318579,
       "schedule": {
         "kind": "cron",
         "expr": "0 */6 * * *",
@@ -677,10 +674,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772388241806,
-        "lastRunAtMs": 1772366723485,
+        "nextRunAtMs": 1772409841806,
+        "lastRunAtMs": 1772388248544,
         "lastStatus": "ok",
-        "lastDurationMs": 55099,
+        "lastDurationMs": 70035,
         "consecutiveErrors": 0
       }
     },
@@ -691,7 +688,7 @@
       "name": "Document Processing Pipeline",
       "enabled": true,
       "createdAtMs": 1771641561547,
-      "updatedAtMs": 1772375861624,
+      "updatedAtMs": 1772400718460,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -710,11 +707,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772377200000,
-        "lastRunAtMs": 1772375838911,
+        "nextRunAtMs": 1772402400000,
+        "lastRunAtMs": 1772400703785,
         "lastStatus": "ok",
-        "lastDurationMs": 22713,
-        "consecutiveErrors": 0
+        "lastDurationMs": 14675,
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -757,7 +755,7 @@
       "name": "Gmail Skill hourly digest",
       "enabled": true,
       "createdAtMs": 1771641927991,
-      "updatedAtMs": 1772374461988,
+      "updatedAtMs": 1772399726674,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -777,11 +775,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772377233658,
-        "lastRunAtMs": 1772374383239,
+        "nextRunAtMs": 1772402433658,
+        "lastRunAtMs": 1772399682219,
         "lastStatus": "ok",
-        "lastDurationMs": 78749,
-        "consecutiveErrors": 0
+        "lastDurationMs": 44455,
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -918,7 +917,7 @@
       "name": "Cron Manager Hourly Sync",
       "enabled": true,
       "createdAtMs": 1771676323917,
-      "updatedAtMs": 1772374534569,
+      "updatedAtMs": 1772399745757,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -936,10 +935,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772377495293,
-        "lastRunAtMs": 1772374461988,
+        "nextRunAtMs": 1772402695293,
+        "lastRunAtMs": 1772399726674,
         "lastStatus": "ok",
-        "lastDurationMs": 72581,
+        "lastDurationMs": 19083,
         "consecutiveErrors": 0
       }
     },
@@ -1048,7 +1047,7 @@
       "name": "USER.md Baseline Sync",
       "enabled": true,
       "createdAtMs": 1771717485920,
-      "updatedAtMs": 1772292645485,
+      "updatedAtMs": 1772379160211,
       "schedule": {
         "kind": "cron",
         "expr": "30 2 * * *",
@@ -1065,10 +1064,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772379000000,
-        "lastRunAtMs": 1772292633208,
+        "nextRunAtMs": 1772465400000,
+        "lastRunAtMs": 1772379149871,
         "lastStatus": "ok",
-        "lastDurationMs": 12277,
+        "lastDurationMs": 10340,
         "consecutiveErrors": 0
       }
     },
@@ -1106,7 +1105,7 @@
       "name": "Kaira Heartbeat System Health Check",
       "enabled": true,
       "createdAtMs": 1771726486658,
-      "updatedAtMs": 1772370346421,
+      "updatedAtMs": 1772399864668,
       "schedule": {
         "kind": "cron",
         "expr": "0 */2 * * *",
@@ -1124,10 +1123,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772377228830,
-        "lastRunAtMs": 1772370241977,
+        "nextRunAtMs": 1772406028830,
+        "lastRunAtMs": 1772399745757,
         "lastStatus": "ok",
-        "lastDurationMs": 104444,
+        "lastDurationMs": 118911,
         "consecutiveErrors": 0
       }
     },
@@ -1138,7 +1137,7 @@
       "name": "Kaira Geopolitical Monitoring Check",
       "enabled": true,
       "createdAtMs": 1771726493755,
-      "updatedAtMs": 1772370876900,
+      "updatedAtMs": 1772399971489,
       "schedule": {
         "kind": "cron",
         "expr": "0 */4 * * *",
@@ -1156,10 +1155,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772384646530,
-        "lastRunAtMs": 1772370726890,
+        "nextRunAtMs": 1772413446530,
+        "lastRunAtMs": 1772399864668,
         "lastStatus": "ok",
-        "lastDurationMs": 150010,
+        "lastDurationMs": 106821,
         "consecutiveErrors": 0
       }
     },
@@ -1170,7 +1169,7 @@
       "name": "Kaira Agent Coordination Check",
       "enabled": true,
       "createdAtMs": 1771726500335,
-      "updatedAtMs": 1772372155869,
+      "updatedAtMs": 1772400797127,
       "schedule": {
         "kind": "cron",
         "expr": "30 */4 * * *",
@@ -1187,10 +1186,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772386200000,
-        "lastRunAtMs": 1772371998060,
+        "nextRunAtMs": 1772415000000,
+        "lastRunAtMs": 1772400718460,
         "lastStatus": "ok",
-        "lastDurationMs": 157809,
+        "lastDurationMs": 78667,
         "consecutiveErrors": 0
       }
     },
@@ -1201,7 +1200,7 @@
       "name": "Kaira Daily Backup Procedures",
       "enabled": true,
       "createdAtMs": 1771726507743,
-      "updatedAtMs": 1772291090127,
+      "updatedAtMs": 1772377857167,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -1218,10 +1217,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772377200000,
-        "lastRunAtMs": 1772290853751,
+        "nextRunAtMs": 1772463600000,
+        "lastRunAtMs": 1772377815687,
         "lastStatus": "ok",
-        "lastDurationMs": 236376,
+        "lastDurationMs": 41480,
         "consecutiveErrors": 0
       }
     },
@@ -1232,7 +1231,7 @@
       "name": "Kaira Self-Maintenance Review",
       "enabled": true,
       "createdAtMs": 1771726513893,
-      "updatedAtMs": 1772294979055,
+      "updatedAtMs": 1772381501457,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -1249,11 +1248,12 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772380800000,
-        "lastRunAtMs": 1772294460414,
-        "lastStatus": "ok",
-        "lastDurationMs": 518641,
-        "consecutiveErrors": 0
+        "nextRunAtMs": 1772467200000,
+        "lastRunAtMs": 1772380901456,
+        "lastStatus": "error",
+        "lastDurationMs": 600001,
+        "consecutiveErrors": 1,
+        "lastError": "Error: cron: job execution timed out"
       }
     },
     {
@@ -1478,8 +1478,8 @@
         "lastRunAtMs": 1771797770303,
         "lastStatus": "error",
         "lastDurationMs": 31523,
-        "lastError": "cron announce delivery failed",
-        "consecutiveErrors": 1
+        "consecutiveErrors": 1,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -1487,19 +1487,19 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny AI Divergence Scanner",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1771767060364,
-      "updatedAtMs": 1772375873273,
+      "updatedAtMs": 1772400841878,
       "schedule": {
-        "kind": "every",
-        "everyMs": 1800000,
-        "anchorMs": 1771767060364
+        "kind": "cron",
+        "expr": "*/30 7-22 * * *",
+        "tz": "Australia/Sydney"
       },
       "sessionTarget": "isolated",
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run safe: /home/agent/.openclaw/scripts/cron_safe_runner.sh ai-divergence-scanner /home/agent/.openclaw/workspace-danny ./scripts/run_ai_divergence_aligned.sh",
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, perform AI divergence scanning for trading signals. If you find actionable signals, send them via Telegram using the message tool. Do not output anything to stdout; use message tool for notifications.",
         "model": "deepseek/deepseek-chat"
       },
       "delivery": {
@@ -1508,10 +1508,9 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772377260364,
-        "lastRunAtMs": 1772375861624,
+        "lastRunAtMs": 1772400797127,
         "lastStatus": "ok",
-        "lastDurationMs": 11649,
+        "lastDurationMs": 44751,
         "consecutiveErrors": 0
       }
     },
@@ -1581,7 +1580,7 @@
       "name": "Calendar reminders (every 15m)",
       "enabled": true,
       "createdAtMs": 1771812072241,
-      "updatedAtMs": 1772376802625,
+      "updatedAtMs": 1772401505670,
       "schedule": {
         "kind": "cron",
         "expr": "*/15 * * * *",
@@ -1600,11 +1599,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772377200000,
-        "lastRunAtMs": 1772376795156,
+        "nextRunAtMs": 1772402400000,
+        "lastRunAtMs": 1772401500026,
         "lastStatus": "ok",
-        "lastDurationMs": 7469,
-        "consecutiveErrors": 0
+        "lastDurationMs": 5644,
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -1732,7 +1732,7 @@
       "name": "Kaira Phase 3 Prototype Test",
       "enabled": true,
       "createdAtMs": 1771817852766,
-      "updatedAtMs": 1772375958616,
+      "updatedAtMs": 1772400891752,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -1746,11 +1746,12 @@
         "model": "deepseek/deepseek-chat"
       },
       "state": {
-        "nextRunAtMs": 1772377200000,
-        "lastRunAtMs": 1772375881651,
+        "nextRunAtMs": 1772402400000,
+        "lastRunAtMs": 1772400846983,
         "lastStatus": "ok",
-        "lastDurationMs": 76965,
-        "consecutiveErrors": 0
+        "lastDurationMs": 44769,
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       },
       "delivery": {
         "mode": "none"
@@ -1786,7 +1787,8 @@
         "lastRunAtMs": 1772316199000,
         "lastStatus": "ok",
         "lastDurationMs": 20257,
-        "consecutiveErrors": 0
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -1796,7 +1798,7 @@
       "name": "Kaira AWS Backlog Seeder (every 6h)",
       "enabled": true,
       "createdAtMs": 1772095392511,
-      "updatedAtMs": 1772371065680,
+      "updatedAtMs": 1772392512683,
       "schedule": {
         "kind": "cron",
         "expr": "15 */6 * * *",
@@ -1813,10 +1815,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772392500000,
-        "lastRunAtMs": 1772371058680,
+        "nextRunAtMs": 1772414100000,
+        "lastRunAtMs": 1772392505893,
         "lastStatus": "ok",
-        "lastDurationMs": 7000,
+        "lastDurationMs": 6790,
         "consecutiveErrors": 0
       }
     },
@@ -2007,7 +2009,7 @@
       "name": "Classifier Review 8am",
       "enabled": true,
       "createdAtMs": 1772180470874,
-      "updatedAtMs": 1772312673805,
+      "updatedAtMs": 1772399322908,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -2025,12 +2027,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772398800000,
-        "lastRunAtMs": 1772312613803,
-        "lastStatus": "error",
-        "lastDurationMs": 60002,
-        "consecutiveErrors": 1,
-        "lastError": "Error: cron: job execution timed out"
+        "nextRunAtMs": 1772485200000,
+        "lastRunAtMs": 1772399285680,
+        "lastStatus": "ok",
+        "lastDurationMs": 37228,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2089,7 +2090,8 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772402400000
+        "nextRunAtMs": 1772402400000,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -2099,7 +2101,7 @@
       "name": "Archive promotional emails with 3-day delay",
       "enabled": true,
       "createdAtMs": 1772186099742,
-      "updatedAtMs": 1772373782825,
+      "updatedAtMs": 1772402348723,
       "schedule": {
         "kind": "every",
         "everyMs": 14400000,
@@ -2118,10 +2120,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772387699742,
-        "lastRunAtMs": 1772373396535,
+        "nextRunAtMs": 1772416499742,
+        "lastRunAtMs": 1772402099762,
         "lastStatus": "ok",
-        "lastDurationMs": 386290,
+        "lastDurationMs": 248961,
         "consecutiveErrors": 0
       }
     },
@@ -2149,7 +2151,8 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772402400000
+        "nextRunAtMs": 1772402400000,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -2157,9 +2160,9 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny Mert Sniper Counter (underdog)",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772188554707,
-      "updatedAtMs": 1772377163906,
+      "updatedAtMs": 1772400758435,
       "schedule": {
         "kind": "every",
         "everyMs": 600000,
@@ -2178,11 +2181,10 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1772377038610,
+        "lastRunAtMs": 1772400354734,
         "lastStatus": "ok",
-        "lastDurationMs": 125296,
-        "consecutiveErrors": 0,
-        "nextRunAtMs": 1772377554707
+        "lastDurationMs": 9914,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2190,9 +2192,9 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny Trading Report (8am/8pm)",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772191984574,
-      "updatedAtMs": 1772356274424,
+      "updatedAtMs": 1772400769798,
       "schedule": {
         "kind": "cron",
         "expr": "0 8,20 * * *",
@@ -2202,7 +2204,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the daily trading report for the last 24 hours. Use the reporting framework in /home/agent/.openclaw/workspace-danny/reporting/. Generate a concise summary and send it to Telegram using the message tool with action=send, channel=telegram, to=548072941. Format it with emojis and clarity."
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, generate trading report and output results."
       },
       "delivery": {
         "mode": "none",
@@ -2210,10 +2212,9 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772398800000,
-        "lastRunAtMs": 1772356045877,
+        "lastRunAtMs": 1772399322908,
         "lastStatus": "ok",
-        "lastDurationMs": 228547,
+        "lastDurationMs": 231969,
         "consecutiveErrors": 0
       }
     },
@@ -2224,7 +2225,7 @@
       "name": "Classifier rule updater (nightly)",
       "enabled": true,
       "createdAtMs": 1772193893717,
-      "updatedAtMs": 1772296369830,
+      "updatedAtMs": 1772382841622,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -2242,11 +2243,12 @@
         "channel": "telegram"
       },
       "state": {
-        "nextRunAtMs": 1772382600000,
-        "lastRunAtMs": 1772296314312,
-        "lastStatus": "ok",
-        "lastDurationMs": 55518,
-        "consecutiveErrors": 0
+        "nextRunAtMs": 1772469000000,
+        "lastRunAtMs": 1772382769929,
+        "lastStatus": "error",
+        "lastDurationMs": 71693,
+        "consecutiveErrors": 1,
+        "lastError": "cron announce delivery failed"
       }
     },
     {
@@ -2312,7 +2314,7 @@
       "name": "Kaira AWS Daily Completion Report (7am)",
       "enabled": true,
       "createdAtMs": 1772232317257,
-      "updatedAtMs": 1772331123640,
+      "updatedAtMs": 1772395984664,
       "schedule": {
         "kind": "cron",
         "expr": "0 7 * * *",
@@ -2330,10 +2332,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772395200000,
-        "lastRunAtMs": 1772311546974,
+        "nextRunAtMs": 1772481600000,
+        "lastRunAtMs": 1772395584977,
         "lastStatus": "ok",
-        "lastDurationMs": 86009,
+        "lastDurationMs": 399687,
         "consecutiveErrors": 0
       }
     },
@@ -2344,7 +2346,7 @@
       "name": "Aria AWS Daily Completion Report (7:05am)",
       "enabled": true,
       "createdAtMs": 1772232324824,
-      "updatedAtMs": 1772331128774,
+      "updatedAtMs": 1772396442281,
       "schedule": {
         "kind": "cron",
         "expr": "5 7 * * *",
@@ -2362,12 +2364,11 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772395500000,
-        "lastRunAtMs": 1772308942109,
-        "lastStatus": "error",
-        "lastDurationMs": 33875,
-        "consecutiveErrors": 1,
-        "lastError": "cron announce delivery failed"
+        "nextRunAtMs": 1772481900000,
+        "lastRunAtMs": 1772396263538,
+        "lastStatus": "ok",
+        "lastDurationMs": 178743,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2375,9 +2376,9 @@
       "agentId": "danny",
       "sessionKey": "agent:main:telegram:direct:548072941",
       "name": "Danny AWS Daily Completion Report (7:10am)",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772232332406,
-      "updatedAtMs": 1772331135237,
+      "updatedAtMs": 1772400774723,
       "schedule": {
         "kind": "cron",
         "expr": "10 7 * * *",
@@ -2387,7 +2388,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "OPENCLAW_WORKSPACE=/home/agent/.openclaw/workspace-danny python3 /home/agent/.openclaw/workspace/skills/nighttime-autonomous-work/aws-completion-report.py"
+        "message": "Check current Sydney time. If between 23:00 and 07:00 local Sydney time, log 'Quiet hours - skipping' to your memory file and exit. Otherwise, execute aws-completion-report.py and output results."
       },
       "delivery": {
         "mode": "none",
@@ -2395,12 +2396,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772395800000,
-        "lastRunAtMs": 1772308975985,
-        "lastStatus": "error",
-        "lastDurationMs": 66408,
-        "consecutiveErrors": 1,
-        "lastError": "cron announce delivery failed"
+        "lastRunAtMs": 1772396442283,
+        "lastStatus": "ok",
+        "lastDurationMs": 241809,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2428,7 +2427,7 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772396100000,
+        "nextRunAtMs": 1772482500000,
         "lastRunAtMs": 1772309042393,
         "lastStatus": "error",
         "lastDurationMs": 31307,
@@ -2461,7 +2460,7 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772396400000,
+        "nextRunAtMs": 1772482800000,
         "lastRunAtMs": 1772309073700,
         "lastStatus": "error",
         "lastDurationMs": 110491,
@@ -2495,7 +2494,7 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772396700000,
+        "nextRunAtMs": 1772483100000,
         "lastRunAtMs": 1772309794904,
         "lastStatus": "error",
         "lastDurationMs": 41780,
@@ -2510,7 +2509,7 @@
       "name": "Main AWS Daily Completion Report (7:30am)",
       "enabled": true,
       "createdAtMs": 1772232360350,
-      "updatedAtMs": 1772331155707,
+      "updatedAtMs": 1772397408766,
       "schedule": {
         "kind": "cron",
         "expr": "30 7 * * *",
@@ -2528,12 +2527,11 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772397000000,
-        "lastRunAtMs": 1772309246576,
-        "lastStatus": "error",
-        "lastDurationMs": 27189,
-        "consecutiveErrors": 1,
-        "lastError": "cron announce delivery failed"
+        "nextRunAtMs": 1772483400000,
+        "lastRunAtMs": 1772397252303,
+        "lastStatus": "ok",
+        "lastDurationMs": 156463,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2543,7 +2541,7 @@
       "name": "Rescue AWS Daily Completion Report (7:35am)",
       "enabled": true,
       "createdAtMs": 1772232367401,
-      "updatedAtMs": 1772331160409,
+      "updatedAtMs": 1772397761198,
       "schedule": {
         "kind": "cron",
         "expr": "35 7 * * *",
@@ -2561,10 +2559,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1772397300000,
-        "lastRunAtMs": 1772309648177,
+        "nextRunAtMs": 1772483700000,
+        "lastRunAtMs": 1772397509392,
         "lastStatus": "ok",
-        "lastDurationMs": 44517,
+        "lastDurationMs": 251806,
         "consecutiveErrors": 0
       }
     },
@@ -2630,7 +2628,8 @@
         "lastRunAtMs": 1772316219257,
         "lastStatus": "ok",
         "lastDurationMs": 343890,
-        "consecutiveErrors": 0
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -2673,7 +2672,7 @@
       "name": "Kaira Presence Heartbeat (10-min)",
       "enabled": true,
       "createdAtMs": 1772249956825,
-      "updatedAtMs": 1772376834019,
+      "updatedAtMs": 1772401811584,
       "schedule": {
         "kind": "cron",
         "expr": "*/10 * * * *",
@@ -2690,11 +2689,12 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772377200000,
-        "lastRunAtMs": 1772376802625,
+        "nextRunAtMs": 1772402400000,
+        "lastRunAtMs": 1772401800030,
         "lastStatus": "ok",
-        "lastDurationMs": 31394,
-        "consecutiveErrors": 0
+        "lastDurationMs": 11554,
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772402447683
       }
     },
     {
@@ -2737,7 +2737,7 @@
       "name": "System Coordination Heartbeat",
       "enabled": true,
       "createdAtMs": 1772333387517,
-      "updatedAtMs": 1772375265790,
+      "updatedAtMs": 1772400052308,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -2750,10 +2750,10 @@
         "text": "System coordination heartbeat check"
       },
       "state": {
-        "nextRunAtMs": 1772377323091,
-        "lastRunAtMs": 1772374789898,
+        "nextRunAtMs": 1772402523091,
+        "lastRunAtMs": 1772399983558,
         "lastStatus": "ok",
-        "lastDurationMs": 475892,
+        "lastDurationMs": 68750,
         "consecutiveErrors": 0
       }
     },
@@ -2786,7 +2786,7 @@
       "name": "Backup Verification",
       "enabled": true,
       "createdAtMs": 1772333534119,
-      "updatedAtMs": 1772333534119,
+      "updatedAtMs": 1772378256675,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *"
@@ -2798,7 +2798,11 @@
         "text": "Backup verification"
       },
       "state": {
-        "nextRunAtMs": 1772377200000
+        "nextRunAtMs": 1772463600000,
+        "lastRunAtMs": 1772378136612,
+        "lastStatus": "ok",
+        "lastDurationMs": 120063,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -2806,9 +2810,9 @@
       "agentId": "danny",
       "sessionKey": "agent:danny:telegram:direct:548072941",
       "name": "Danny Micro‑Arbitrage Scanner",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772347488676,
-      "updatedAtMs": 1772377038529,
+      "updatedAtMs": 1772400754691,
       "schedule": {
         "kind": "every",
         "everyMs": 600000,
@@ -2827,12 +2831,10 @@
         "channel": "telegram"
       },
       "state": {
-        "nextRunAtMs": 1772380638529,
-        "lastRunAtMs": 1772376952965,
-        "lastStatus": "error",
-        "lastDurationMs": 85564,
-        "consecutiveErrors": 5,
-        "lastError": "cron announce delivery failed"
+        "lastRunAtMs": 1772400555255,
+        "lastStatus": "ok",
+        "lastDurationMs": 15889,
+        "consecutiveErrors": 0
       }
     },
     {

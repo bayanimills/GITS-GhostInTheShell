@@ -9,7 +9,7 @@
     "lastRunCommand": "onboard",
     "lastRunMode": "local"
   },
-  "auth": {
+   "auth": {
     "profiles": {
       "anthropic:default": {
         "provider": "anthropic",
@@ -577,7 +577,7 @@
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "loopback",
+    "bind": "loopback", // never set to all
     "auth": {
       "mode": "token",
       "token": "d6af2040f8d8ce512f87d856639218ed5d58c5efb516f31d"
