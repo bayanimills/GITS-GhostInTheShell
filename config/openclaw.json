@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-03-03T11:34:11.062Z"
+    "lastTouchedAt": "2026-03-03T21:59:27.921Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -447,7 +447,7 @@
     }
   },
   "cron": {
-    "enabled": false
+    "enabled": true
   },
   "hooks": {
     "internal": {
