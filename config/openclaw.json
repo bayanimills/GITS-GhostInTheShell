@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-03-03T21:59:27.921Z"
+    "lastTouchedAt": "2026-03-05T08:42:24.009Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -100,6 +100,22 @@
             },
             "contextWindow": 131072,
             "maxTokens": 8192
+          },
+          {
+            "id": "deepseek-reasoner-128k",
+            "name": "DeepSeek Reasoner (128K)",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 32768
           }
         ]
       },
@@ -288,6 +304,9 @@
         },
         "openai/gpt-5.2-codex": {
           "alias": "OpenAI Codex"
+        },
+        "deepseek/deepseek-reasoner-128k": {
+          "alias": "DeepSeek Reasoner 128K"
         }
       },
       "userTimezone": "Australia/Sydney",
@@ -599,18 +618,6 @@
     "entries": {
       "telegram": {
         "enabled": true
-      },
-      "openclaw-workspace-governance": {
-        "enabled": false
-      }
-    },
-    "installs": {
-      "openclaw-workspace-governance": {
-        "source": "npm",
-        "spec": "@adamchanadam/openclaw-workspace-governance@latest",
-        "installPath": "/home/agent/.openclaw/extensions/openclaw-workspace-governance",
-        "version": "0.1.41",
-        "installedAt": "2026-02-23T14:47:42.738Z"
       }
     }
   }
