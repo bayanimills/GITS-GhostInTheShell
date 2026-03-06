@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.18",
-    "lastTouchedAt": "2026-03-05T08:42:24.009Z"
+    "lastTouchedAt": "2026-03-06T13:24:21.874Z"
   },
   "wizard": {
     "lastRunAt": "2026-02-20T22:59:20.658Z",
@@ -454,6 +454,18 @@
       }
     }
   ],
+  "messages": {
+    "tts": {
+      "provider": "edge",
+      "openai": {
+        "voice": "nova"
+      },
+      "edge": {
+        "voice": "en-US-MichelleNeural",
+        "lang": "en-US"
+      }
+    }
+  },
   "commands": {
     "native": false,
     "nativeSkills": false,
