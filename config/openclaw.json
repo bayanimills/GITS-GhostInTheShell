@@ -330,56 +330,56 @@
         "name": "Jarvis",
         "workspace": "/home/agent/.openclaw/workspace",
         "agentDir": "/home/agent/.openclaw/agents/main/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "kaira",
         "name": "Kaira",
         "workspace": "/home/agent/.openclaw/workspace-kaira",
         "agentDir": "/home/agent/.openclaw/agents/kaira/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "shelley",
         "name": "Shelley",
         "workspace": "/home/agent/.openclaw/workspace-shelley",
         "agentDir": "/home/agent/.openclaw/agents/shelley/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "aria",
         "name": "Aria",
         "workspace": "/home/agent/.openclaw/workspace-aria",
         "agentDir": "/home/agent/.openclaw/agents/aria/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "donna",
         "name": "Donna",
         "workspace": "/home/agent/.openclaw/workspace-donna",
         "agentDir": "/home/agent/.openclaw/agents/donna/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "doc",
         "name": "Doc",
         "workspace": "/home/agent/.openclaw/workspace-doc",
         "agentDir": "/home/agent/.openclaw/agents/doc/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "kimi-agent",
         "name": "Kimi Agent (wrapper)",
         "workspace": "/home/agent/.openclaw/workspace-kimi",
         "agentDir": "/home/agent/.openclaw/agents/kimi-agent/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       },
       {
         "id": "danny",
         "name": "Danny",
         "workspace": "/home/agent/.openclaw/workspace-danny",
         "agentDir": "/home/agent/.openclaw/agents/danny/agent",
-        "model": "deepseek/deepseek-reasoner"
+        "model": "openai/gpt-5-mini"
       }
     ]
   },
