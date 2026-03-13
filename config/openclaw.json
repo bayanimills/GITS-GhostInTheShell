@@ -380,6 +380,13 @@
         "workspace": "/home/agent/.openclaw/workspace-danny",
         "agentDir": "/home/agent/.openclaw/agents/danny/agent",
         "model": "deepseek/deepseek-chat"
+      },
+      {
+        "id": "abby",
+        "name": "Abby",
+        "workspace": "/home/agent/.openclaw/workspace-abby",
+        "agentDir": "/home/agent/.openclaw/agents/abby/agent",
+        "model": "deepseek/deepseek-chat"
       }
     ]
   },
@@ -399,7 +406,8 @@
         "shelley",
         "aria",
         "donna",
-        "doc"
+        "doc",
+        "abby"
       ]
     }
   },
@@ -451,6 +459,13 @@
       "match": {
         "channel": "telegram",
         "accountId": "danny"
+      }
+    },
+    {
+      "agentId": "abby",
+      "match": {
+        "channel": "telegram",
+        "accountId": "abby"
       }
     }
   ],
@@ -596,6 +611,18 @@
         "danny": {
           "dmPolicy": "pairing",
           "botToken": "8513222652:AAEkyG8rKSR9EI5EeahLcBEIjnxJ9fvlbkI",
+          "allowFrom": [
+            548072941
+          ],
+          "groupAllowFrom": [
+            548072941
+          ],
+          "groupPolicy": "allowlist",
+          "streamMode": "partial"
+        },
+        "abby": {
+          "dmPolicy": "pairing",
+          "botToken": "8537327368:AAHGEKJoaDkShiEZDxWoe93RCioVab1IlQA",
           "allowFrom": [
             548072941
           ],
