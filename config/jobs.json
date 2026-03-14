@@ -7,7 +7,7 @@
       "name": "Daily Post at 15:00 AEST",
       "enabled": true,
       "createdAtMs": 1771220740585,
-      "updatedAtMs": 1773291817466,
+      "updatedAtMs": 1773464545753,
       "schedule": {
         "kind": "cron",
         "expr": "0 5 * * *",
@@ -20,11 +20,12 @@
         "text": "DAILY_POST_REMINDER: Time for daily tweet at 15:00 AEST"
       },
       "state": {
-        "nextRunAtMs": 1773464400000,
-        "lastRunAtMs": 1773291817460,
+        "nextRunAtMs": 1773550800000,
+        "lastRunAtMs": 1773464545752,
         "lastStatus": "skipped",
-        "lastDurationMs": 6,
-        "consecutiveErrors": 0
+        "lastDurationMs": 1,
+        "consecutiveErrors": 0,
+        "lastError": "disabled"
       }
     },
     {
@@ -33,7 +34,7 @@
       "name": "Finmills Daily BLUF 1500 Sydney",
       "enabled": true,
       "createdAtMs": 1771221197685,
-      "updatedAtMs": 1773374674703,
+      "updatedAtMs": 1773460956040,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * *",
@@ -50,10 +51,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773460800000,
-        "lastRunAtMs": 1773374658984,
+        "nextRunAtMs": 1773547200000,
+        "lastRunAtMs": 1773460939301,
         "lastStatus": "ok",
-        "lastDurationMs": 15719,
+        "lastDurationMs": 16739,
         "consecutiveErrors": 0
       }
     },
@@ -63,7 +64,7 @@
       "name": "Finmills Daily Analytics Fetch",
       "enabled": true,
       "createdAtMs": 1771221999519,
-      "updatedAtMs": 1773361968149,
+      "updatedAtMs": 1773448340961,
       "schedule": {
         "kind": "cron",
         "expr": "30 0 * * *",
@@ -80,10 +81,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773448200000,
-        "lastRunAtMs": 1773361955874,
+        "nextRunAtMs": 1773534600000,
+        "lastRunAtMs": 1773448329472,
         "lastStatus": "ok",
-        "lastDurationMs": 12275,
+        "lastDurationMs": 11489,
         "consecutiveErrors": 0
       }
     },
@@ -322,7 +323,7 @@
       "name": "Finmills Daily Standup Report",
       "enabled": true,
       "createdAtMs": 1771560433116,
-      "updatedAtMs": 1773180023405,
+      "updatedAtMs": 1773439430249,
       "schedule": {
         "kind": "cron",
         "expr": "0 22 * * 0,2,5",
@@ -342,10 +343,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1773439200000,
-        "lastRunAtMs": 1773180000028,
+        "nextRunAtMs": 1773612000000,
+        "lastRunAtMs": 1773439310392,
         "lastStatus": "ok",
-        "lastDurationMs": 23377,
+        "lastDurationMs": 119857,
         "consecutiveErrors": 0
       }
     },
@@ -356,7 +357,7 @@
       "name": "Finmills Nextcloud Folder Monitoring",
       "enabled": true,
       "createdAtMs": 1771561228341,
-      "updatedAtMs": 1773363863555,
+      "updatedAtMs": 1773450290912,
       "schedule": {
         "kind": "cron",
         "expr": "0 1 * * *",
@@ -375,10 +376,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773450000000,
-        "lastRunAtMs": 1773363789365,
+        "nextRunAtMs": 1773536400000,
+        "lastRunAtMs": 1773450202375,
         "lastStatus": "ok",
-        "lastDurationMs": 74190,
+        "lastDurationMs": 88537,
         "consecutiveErrors": 0
       }
     },
@@ -389,7 +390,7 @@
       "name": "Finmills Daily Ecosystem Heartbeat",
       "enabled": true,
       "createdAtMs": 1771562894698,
-      "updatedAtMs": 1773356596211,
+      "updatedAtMs": 1773442929398,
       "schedule": {
         "kind": "cron",
         "expr": "0 10 * * *",
@@ -409,10 +410,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1773442800000,
-        "lastRunAtMs": 1773356589852,
+        "nextRunAtMs": 1773529200000,
+        "lastRunAtMs": 1773442923387,
         "lastStatus": "ok",
-        "lastDurationMs": 6359,
+        "lastDurationMs": 6011,
         "consecutiveErrors": 0
       }
     },
@@ -457,7 +458,7 @@
       "name": "Finmills Financial Monitoring",
       "enabled": true,
       "createdAtMs": 1771589253410,
-      "updatedAtMs": 1773367489226,
+      "updatedAtMs": 1773453779156,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -476,36 +477,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773453600000,
-        "lastRunAtMs": 1773367430205,
+        "nextRunAtMs": 1773540000000,
+        "lastRunAtMs": 1773453714058,
         "lastStatus": "ok",
-        "lastDurationMs": 59021,
-        "consecutiveErrors": 0
-      }
-    },
-    {
-      "id": "memory-palace-audit-rotation-20260220",
-      "agentId": "main",
-      "name": "System Monitoring Audit Rotation",
-      "enabled": true,
-      "createdAtMs": 1771600000000,
-      "updatedAtMs": 1773371213186,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 3 * * *",
-        "tz": "UTC"
-      },
-      "sessionTarget": "main",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "systemEvent",
-        "text": "Rotate system monitoring logs: /home/agent/.openclaw/scripts/rotate_memory_palace_logs.sh"
-      },
-      "state": {
-        "nextRunAtMs": 1773457200000,
-        "lastRunAtMs": 1773371076364,
-        "lastStatus": "ok",
-        "lastDurationMs": 136822,
+        "lastDurationMs": 65098,
         "consecutiveErrors": 0
       }
     },
@@ -548,7 +523,7 @@
       "name": "Andrew Document Tracking",
       "enabled": true,
       "createdAtMs": 1771641507845,
-      "updatedAtMs": 1773403794887,
+      "updatedAtMs": 1773490116344,
       "schedule": {
         "kind": "cron",
         "expr": "0 */6 * * *",
@@ -568,10 +543,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773425041806,
-        "lastRunAtMs": 1773403741652,
+        "nextRunAtMs": 1773511441806,
+        "lastRunAtMs": 1773490059613,
         "lastStatus": "ok",
-        "lastDurationMs": 53235,
+        "lastDurationMs": 56731,
         "consecutiveErrors": 0
       }
     },
@@ -582,7 +557,7 @@
       "name": "Document Processing Pipeline",
       "enabled": true,
       "createdAtMs": 1771641561547,
-      "updatedAtMs": 1773412514135,
+      "updatedAtMs": 1773498780944,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -601,10 +576,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773412462524,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773498754667,
         "lastStatus": "ok",
-        "lastDurationMs": 51611,
+        "lastDurationMs": 26277,
         "consecutiveErrors": 0
       }
     },
@@ -615,7 +590,7 @@
       "name": "Document System Health Check",
       "enabled": true,
       "createdAtMs": 1771641652219,
-      "updatedAtMs": 1773371477821,
+      "updatedAtMs": 1773457450963,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -634,10 +609,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773457200000,
-        "lastRunAtMs": 1773371268350,
+        "nextRunAtMs": 1773543600000,
+        "lastRunAtMs": 1773457407284,
         "lastStatus": "ok",
-        "lastDurationMs": 209471,
+        "lastDurationMs": 43679,
         "consecutiveErrors": 0
       }
     },
@@ -648,7 +623,7 @@
       "name": "Gmail Skill hourly digest",
       "enabled": true,
       "createdAtMs": 1771641927991,
-      "updatedAtMs": 1773410755434,
+      "updatedAtMs": 1773497045478,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -668,10 +643,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773414033658,
-        "lastRunAtMs": 1773410693023,
+        "nextRunAtMs": 1773500433658,
+        "lastRunAtMs": 1773496995668,
         "lastStatus": "ok",
-        "lastDurationMs": 62411,
+        "lastDurationMs": 49810,
         "consecutiveErrors": 0
       }
     },
@@ -682,7 +657,7 @@
       "name": "Dart Daily Sync",
       "enabled": true,
       "createdAtMs": 1771644058281,
-      "updatedAtMs": 1773393156864,
+      "updatedAtMs": 1773479224883,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -702,10 +677,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1773478800000,
-        "lastRunAtMs": 1773392939638,
+        "nextRunAtMs": 1773565200000,
+        "lastRunAtMs": 1773479032816,
         "lastStatus": "ok",
-        "lastDurationMs": 217226,
+        "lastDurationMs": 192067,
         "consecutiveErrors": 0
       }
     },
@@ -809,7 +784,7 @@
       "name": "Cron Manager Hourly Sync",
       "enabled": true,
       "createdAtMs": 1771676323917,
-      "updatedAtMs": 1773410961825,
+      "updatedAtMs": 1773497341907,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -827,10 +802,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773414295293,
-        "lastRunAtMs": 1773410947778,
+        "nextRunAtMs": 1773500695293,
+        "lastRunAtMs": 1773497327700,
         "lastStatus": "ok",
-        "lastDurationMs": 14047,
+        "lastDurationMs": 14207,
         "consecutiveErrors": 0
       }
     },
@@ -872,7 +847,7 @@
       "name": "USER.md Baseline Sync",
       "enabled": true,
       "createdAtMs": 1771717485920,
-      "updatedAtMs": 1773329537724,
+      "updatedAtMs": 1773416086319,
       "schedule": {
         "kind": "cron",
         "expr": "30 2 * * *",
@@ -889,10 +864,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773415800000,
-        "lastRunAtMs": 1773329526378,
+        "nextRunAtMs": 1773502200000,
+        "lastRunAtMs": 1773416071292,
         "lastStatus": "ok",
-        "lastDurationMs": 11346,
+        "lastDurationMs": 15027,
         "consecutiveErrors": 0
       }
     },
@@ -930,7 +905,7 @@
       "name": "Kaira Heartbeat System Health Check",
       "enabled": true,
       "createdAtMs": 1771726486658,
-      "updatedAtMs": 1773407425938,
+      "updatedAtMs": 1773493590436,
       "schedule": {
         "kind": "cron",
         "expr": "0 */2 * * *",
@@ -948,10 +923,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773414028830,
-        "lastRunAtMs": 1773407154617,
+        "nextRunAtMs": 1773500428830,
+        "lastRunAtMs": 1773493409710,
         "lastStatus": "ok",
-        "lastDurationMs": 271321,
+        "lastDurationMs": 180726,
         "consecutiveErrors": 0
       }
     },
@@ -962,7 +937,7 @@
       "name": "Kaira Geopolitical Monitoring Check",
       "enabled": true,
       "createdAtMs": 1771726493755,
-      "updatedAtMs": 1773407908528,
+      "updatedAtMs": 1773494024766,
       "schedule": {
         "kind": "cron",
         "expr": "0 */4 * * *",
@@ -980,10 +955,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773421446530,
-        "lastRunAtMs": 1773407636493,
+        "nextRunAtMs": 1773507846530,
+        "lastRunAtMs": 1773493894317,
         "lastStatus": "ok",
-        "lastDurationMs": 272035,
+        "lastDurationMs": 130449,
         "consecutiveErrors": 0
       }
     },
@@ -994,7 +969,7 @@
       "name": "Kaira Agent Coordination Check",
       "enabled": true,
       "createdAtMs": 1771726500335,
-      "updatedAtMs": 1773408995073,
+      "updatedAtMs": 1773495322335,
       "schedule": {
         "kind": "cron",
         "expr": "30 */4 * * *",
@@ -1011,10 +986,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773423000000,
-        "lastRunAtMs": 1773408889498,
+        "nextRunAtMs": 1773509400000,
+        "lastRunAtMs": 1773495190024,
         "lastStatus": "ok",
-        "lastDurationMs": 105575,
+        "lastDurationMs": 132311,
         "consecutiveErrors": 0
       }
     },
@@ -1025,7 +1000,7 @@
       "name": "Kaira Daily Backup Procedures",
       "enabled": true,
       "createdAtMs": 1771726507743,
-      "updatedAtMs": 1773369149356,
+      "updatedAtMs": 1773414678757,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -1043,10 +1018,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773328248517,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773414657805,
         "lastStatus": "ok",
-        "lastDurationMs": 517554,
+        "lastDurationMs": 20952,
         "consecutiveErrors": 0
       }
     },
@@ -1057,7 +1032,7 @@
       "name": "Kaira Self-Maintenance Review",
       "enabled": true,
       "createdAtMs": 1771726513893,
-      "updatedAtMs": 1773332714082,
+      "updatedAtMs": 1773418476180,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -1075,12 +1050,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773417600000,
-        "lastRunAtMs": 1773331514081,
-        "lastStatus": "error",
-        "lastDurationMs": 1200001,
-        "consecutiveErrors": 1,
-        "lastError": "Error: cron: job execution timed out"
+        "nextRunAtMs": 1773504000000,
+        "lastRunAtMs": 1773418060697,
+        "lastStatus": "ok",
+        "lastDurationMs": 415483,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -1149,7 +1123,7 @@
       "name": "Weekly Flag Review",
       "enabled": true,
       "createdAtMs": 1771730073533,
-      "updatedAtMs": 1772856095804,
+      "updatedAtMs": 1773461037900,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * 6"
@@ -1168,10 +1142,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773460800000,
-        "lastRunAtMs": 1772856054552,
+        "nextRunAtMs": 1774065600000,
+        "lastRunAtMs": 1773461021532,
         "lastStatus": "ok",
-        "lastDurationMs": 41252,
+        "lastDurationMs": 16368,
         "consecutiveErrors": 0
       }
     },
@@ -1181,7 +1155,7 @@
       "name": "Daily Session Validation",
       "enabled": true,
       "createdAtMs": 1771730101849,
-      "updatedAtMs": 1773374776106,
+      "updatedAtMs": 1773461637901,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * *"
@@ -1200,11 +1174,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773460800000,
-        "lastRunAtMs": 1773374749527,
-        "lastStatus": "ok",
-        "lastDurationMs": 26579,
-        "consecutiveErrors": 0
+        "nextRunAtMs": 1773547200000,
+        "lastRunAtMs": 1773461037900,
+        "lastStatus": "error",
+        "lastDurationMs": 600001,
+        "consecutiveErrors": 1,
+        "lastError": "Error: cron: job execution timed out"
       }
     },
     {
@@ -1214,7 +1189,7 @@
       "name": "Evening Preparation",
       "enabled": true,
       "createdAtMs": 1771731147482,
-      "updatedAtMs": 1773382191756,
+      "updatedAtMs": 1773468210221,
       "schedule": {
         "kind": "cron",
         "expr": "0 17 * * *",
@@ -1235,10 +1210,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1773468000000,
-        "lastRunAtMs": 1773382182264,
+        "nextRunAtMs": 1773554400000,
+        "lastRunAtMs": 1773468198294,
         "lastStatus": "ok",
-        "lastDurationMs": 9492,
+        "lastDurationMs": 11927,
         "consecutiveErrors": 0
       }
     },
@@ -1249,7 +1224,7 @@
       "name": "System Maintenance",
       "enabled": true,
       "createdAtMs": 1771733490246,
-      "updatedAtMs": 1773398164435,
+      "updatedAtMs": 1773484401049,
       "schedule": {
         "kind": "cron",
         "expr": "30 21 * * *",
@@ -1268,10 +1243,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773484200000,
-        "lastRunAtMs": 1773398117170,
+        "nextRunAtMs": 1773570600000,
+        "lastRunAtMs": 1773484369046,
         "lastStatus": "ok",
-        "lastDurationMs": 47265,
+        "lastDurationMs": 32003,
         "consecutiveErrors": 0
       }
     },
@@ -1406,7 +1381,7 @@
       "name": "Calendar reminders (every 15m)",
       "enabled": true,
       "createdAtMs": 1771812072241,
-      "updatedAtMs": 1773413147690,
+      "updatedAtMs": 1773499508522,
       "schedule": {
         "kind": "cron",
         "expr": "*/15 * * * *",
@@ -1425,10 +1400,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773413138440,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773499500023,
         "lastStatus": "ok",
-        "lastDurationMs": 9250,
+        "lastDurationMs": 8499,
         "consecutiveErrors": 0
       }
     },
@@ -1557,7 +1532,7 @@
       "name": "Kaira Phase 3 Prototype Test",
       "enabled": true,
       "createdAtMs": 1771817852766,
-      "updatedAtMs": 1773413581101,
+      "updatedAtMs": 1773499888200,
       "schedule": {
         "kind": "cron",
         "expr": "*/30 * * * *",
@@ -1571,10 +1546,10 @@
         "model": "deepseek/deepseek-chat"
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773413431665,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773499811034,
         "lastStatus": "ok",
-        "lastDurationMs": 149436,
+        "lastDurationMs": 77166,
         "consecutiveErrors": 0
       },
       "delivery": {
@@ -1588,7 +1563,7 @@
       "name": "Proton Bridge Daily 9am Email Scan",
       "enabled": true,
       "createdAtMs": 1772066572019,
-      "updatedAtMs": 1773353100760,
+      "updatedAtMs": 1773439559040,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -1607,10 +1582,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773439200000,
-        "lastRunAtMs": 1773353055802,
+        "nextRunAtMs": 1773525600000,
+        "lastRunAtMs": 1773439530263,
         "lastStatus": "ok",
-        "lastDurationMs": 44958,
+        "lastDurationMs": 28777,
         "consecutiveErrors": 0
       }
     },
@@ -1621,7 +1596,7 @@
       "name": "Kaira AWS Backlog Seeder (every 6h)",
       "enabled": true,
       "createdAtMs": 1772095392511,
-      "updatedAtMs": 1773408335345,
+      "updatedAtMs": 1773472569636,
       "schedule": {
         "kind": "cron",
         "expr": "15 */6 * * *",
@@ -1638,10 +1613,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773429300000,
-        "lastRunAtMs": 1773408326483,
+        "nextRunAtMs": 1773515700000,
+        "lastRunAtMs": 1773472563380,
         "lastStatus": "ok",
-        "lastDurationMs": 8862,
+        "lastDurationMs": 6256,
         "consecutiveErrors": 0
       }
     },
@@ -1746,7 +1721,7 @@
       "name": "Classifier Review 8am",
       "enabled": true,
       "createdAtMs": 1772180470874,
-      "updatedAtMs": 1773349670699,
+      "updatedAtMs": 1773435996288,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -1764,11 +1739,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773435600000,
-        "lastRunAtMs": 1773349610698,
+        "nextRunAtMs": 1773522000000,
+        "lastRunAtMs": 1773435936287,
         "lastStatus": "error",
         "lastDurationMs": 60001,
-        "consecutiveErrors": 1,
+        "consecutiveErrors": 2,
         "lastError": "Error: cron: job execution timed out"
       }
     },
@@ -1779,7 +1754,7 @@
       "name": "Classifier Review 2pm",
       "enabled": true,
       "createdAtMs": 1772180486002,
-      "updatedAtMs": 1773372034245,
+      "updatedAtMs": 1773457754290,
       "schedule": {
         "kind": "cron",
         "expr": "0 14 * * *",
@@ -1797,10 +1772,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773457200000,
-        "lastRunAtMs": 1773371959971,
+        "nextRunAtMs": 1773543600000,
+        "lastRunAtMs": 1773457701281,
         "lastStatus": "ok",
-        "lastDurationMs": 74274,
+        "lastDurationMs": 53009,
         "consecutiveErrors": 0
       }
     },
@@ -1841,7 +1816,7 @@
       "name": "Daily promotional email check-in",
       "enabled": true,
       "createdAtMs": 1772186099742,
-      "updatedAtMs": 1773349705952,
+      "updatedAtMs": 1773436036910,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -1861,10 +1836,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773435600000,
-        "lastRunAtMs": 1773349670699,
+        "nextRunAtMs": 1773522000000,
+        "lastRunAtMs": 1773435996288,
         "lastStatus": "ok",
-        "lastDurationMs": 35253,
+        "lastDurationMs": 40622,
         "consecutiveErrors": 0
       }
     },
@@ -1969,7 +1944,7 @@
       "name": "Kaira AWS Seed Prioritizer (nightly)",
       "enabled": true,
       "createdAtMs": 1772231162532,
-      "updatedAtMs": 1773405921281,
+      "updatedAtMs": 1773492318108,
       "schedule": {
         "kind": "cron",
         "expr": "45 23 * * *",
@@ -1986,10 +1961,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773492300000,
-        "lastRunAtMs": 1773405908582,
+        "nextRunAtMs": 1773578700000,
+        "lastRunAtMs": 1773492307266,
         "lastStatus": "ok",
-        "lastDurationMs": 12699,
+        "lastDurationMs": 10842,
         "consecutiveErrors": 0
       }
     },
@@ -2000,7 +1975,7 @@
       "name": "Edward Mills Daily Consolidated",
       "enabled": true,
       "createdAtMs": 1772238843914,
-      "updatedAtMs": 1773353195522,
+      "updatedAtMs": 1773439639376,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -2018,10 +1993,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773439200000,
-        "lastRunAtMs": 1773353100760,
+        "nextRunAtMs": 1773525600000,
+        "lastRunAtMs": 1773439559040,
         "lastStatus": "ok",
-        "lastDurationMs": 94762,
+        "lastDurationMs": 80336,
         "consecutiveErrors": 0
       }
     },
@@ -2064,7 +2039,7 @@
       "name": "Kaira Presence Heartbeat (10-min)",
       "enabled": true,
       "createdAtMs": 1772249956825,
-      "updatedAtMs": 1773413495309,
+      "updatedAtMs": 1773499832049,
       "schedule": {
         "kind": "cron",
         "expr": "*/10 * * * *",
@@ -2081,10 +2056,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773413400023,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773499800020,
         "lastStatus": "ok",
-        "lastDurationMs": 95286,
+        "lastDurationMs": 32029,
         "consecutiveErrors": 0
       }
     },
@@ -2128,7 +2103,7 @@
       "name": "System Coordination Heartbeat",
       "enabled": true,
       "createdAtMs": 1772333387517,
-      "updatedAtMs": 1773410913270,
+      "updatedAtMs": 1773497273428,
       "schedule": {
         "kind": "cron",
         "expr": "0 * * * *",
@@ -2142,10 +2117,10 @@
         "model": "deepseek/deepseek-chat"
       },
       "state": {
-        "nextRunAtMs": 1773414123091,
-        "lastRunAtMs": 1773410834426,
+        "nextRunAtMs": 1773500523091,
+        "lastRunAtMs": 1773497137623,
         "lastStatus": "ok",
-        "lastDurationMs": 78844,
+        "lastDurationMs": 135805,
         "consecutiveErrors": 0
       },
       "delivery": {
@@ -2184,7 +2159,7 @@
       "name": "Backup Verification",
       "enabled": true,
       "createdAtMs": 1772333534119,
-      "updatedAtMs": 1773369134891,
+      "updatedAtMs": 1773414924408,
       "schedule": {
         "kind": "cron",
         "expr": "0 2 * * *",
@@ -2198,10 +2173,10 @@
         "timeoutSeconds": 300
       },
       "state": {
-        "nextRunAtMs": 1773414000000,
-        "lastRunAtMs": 1773329116693,
+        "nextRunAtMs": 1773500400000,
+        "lastRunAtMs": 1773414850422,
         "lastStatus": "ok",
-        "lastDurationMs": 15326,
+        "lastDurationMs": 73986,
         "consecutiveErrors": 0
       },
       "delivery": {
@@ -2247,7 +2222,7 @@
       "name": "Daily 8am Email Check",
       "enabled": true,
       "createdAtMs": 1772679127800,
-      "updatedAtMs": 1773349788086,
+      "updatedAtMs": 1773436118765,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *",
@@ -2265,10 +2240,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773435600000,
-        "lastRunAtMs": 1773349769628,
+        "nextRunAtMs": 1773522000000,
+        "lastRunAtMs": 1773436050760,
         "lastStatus": "ok",
-        "lastDurationMs": 18458,
+        "lastDurationMs": 68005,
         "consecutiveErrors": 0
       }
     },
@@ -2279,7 +2254,7 @@
       "name": "Daily 1pm Email Check",
       "enabled": true,
       "createdAtMs": 1772679150493,
-      "updatedAtMs": 1773367781087,
+      "updatedAtMs": 1773453979876,
       "schedule": {
         "kind": "cron",
         "expr": "0 13 * * *",
@@ -2297,10 +2272,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773453600000,
-        "lastRunAtMs": 1773367743003,
+        "nextRunAtMs": 1773540000000,
+        "lastRunAtMs": 1773453893975,
         "lastStatus": "ok",
-        "lastDurationMs": 38084,
+        "lastDurationMs": 85901,
         "consecutiveErrors": 0
       }
     },
@@ -2342,7 +2317,7 @@
       "name": "BLUF rotation (15:00 Sydney)",
       "enabled": true,
       "createdAtMs": 1772970884855,
-      "updatedAtMs": 1773374912746,
+      "updatedAtMs": 1773461851804,
       "schedule": {
         "kind": "cron",
         "expr": "0 15 * * *",
@@ -2359,10 +2334,10 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773460800000,
-        "lastRunAtMs": 1773374895301,
+        "nextRunAtMs": 1773547200000,
+        "lastRunAtMs": 1773461847117,
         "lastStatus": "ok",
-        "lastDurationMs": 17445,
+        "lastDurationMs": 4687,
         "consecutiveErrors": 0
       }
     },
@@ -2403,7 +2378,7 @@
       "name": "Automated 3hr Health Check",
       "enabled": true,
       "createdAtMs": 1773011161612,
-      "updatedAtMs": 1773411168413,
+      "updatedAtMs": 1773497383566,
       "schedule": {
         "kind": "every",
         "everyMs": 10800000,
@@ -2416,10 +2391,10 @@
         "text": "Automated health check: run HEARTBEAT.md health checks and report only if action required."
       },
       "state": {
-        "nextRunAtMs": 1773421561612,
-        "lastRunAtMs": 1773410961825,
+        "nextRunAtMs": 1773507961612,
+        "lastRunAtMs": 1773497341907,
         "lastStatus": "ok",
-        "lastDurationMs": 206588,
+        "lastDurationMs": 41659,
         "consecutiveErrors": 0
       }
     },
@@ -2430,7 +2405,7 @@
       "name": "Danny FastLoop Trader",
       "enabled": true,
       "createdAtMs": 1773198309236,
-      "updatedAtMs": 1773413798808,
+      "updatedAtMs": 1773500164385,
       "schedule": {
         "kind": "every",
         "everyMs": 300000,
@@ -2448,10 +2423,10 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773414009236,
-        "lastRunAtMs": 1773413709259,
+        "nextRunAtMs": 1773500409236,
+        "lastRunAtMs": 1773500109259,
         "lastStatus": "ok",
-        "lastDurationMs": 89549,
+        "lastDurationMs": 55126,
         "consecutiveErrors": 0
       }
     },
@@ -2525,7 +2500,7 @@
       "name": "LMSR Trader - 30min Scan",
       "enabled": true,
       "createdAtMs": 1773241521117,
-      "updatedAtMs": 1773413001250,
+      "updatedAtMs": 1773499275942,
       "schedule": {
         "kind": "every",
         "everyMs": 1800000,
@@ -2543,11 +2518,11 @@
         "to": "548072941"
       },
       "state": {
-        "lastRunAtMs": 1773412648957,
+        "lastRunAtMs": 1773498968045,
         "lastStatus": "ok",
-        "lastDurationMs": 352293,
+        "lastDurationMs": 307897,
         "consecutiveErrors": 0,
-        "nextRunAtMs": 1773414321117
+        "nextRunAtMs": 1773500721117
       }
     },
     {
@@ -2557,7 +2532,7 @@
       "name": "LMSR Dry-Run - Real Markets",
       "enabled": true,
       "createdAtMs": 1773275379331,
-      "updatedAtMs": 1773412462369,
+      "updatedAtMs": 1773498754510,
       "schedule": {
         "kind": "every",
         "everyMs": 1800000,
@@ -2575,12 +2550,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773413979331,
-        "lastRunAtMs": 1773412179353,
+        "nextRunAtMs": 1773500379331,
+        "lastRunAtMs": 1773498579356,
         "lastStatus": "ok",
-        "lastDurationMs": 283016,
+        "lastDurationMs": 175154,
         "consecutiveErrors": 0,
-        "runningAtMs": 1773413979353
+        "runningAtMs": 1773500379349
       }
     },
     {
@@ -2590,7 +2565,7 @@
       "name": "MCP Shadow Validation - Daily",
       "enabled": true,
       "createdAtMs": 1773354677813,
-      "updatedAtMs": 1773354677813,
+      "updatedAtMs": 1773465053053,
       "schedule": {
         "kind": "cron",
         "expr": "0 16 * * *",
@@ -2609,7 +2584,12 @@
         "to": "548072941"
       },
       "state": {
-        "nextRunAtMs": 1773464400000
+        "nextRunAtMs": 1773550800000,
+        "lastRunAtMs": 1773464986728,
+        "lastStatus": "error",
+        "lastDurationMs": 66325,
+        "lastError": "cron announce delivery failed",
+        "consecutiveErrors": 1
       }
     },
     {
