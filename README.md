@@ -4,41 +4,45 @@ Off-site backup of the entire `~/.openclaw` directory to GitHub. Every 3 hours, 
 
 ## Setup Instructions
 
-Follow these steps in order. Do not skip steps. Do not proceed past Step 0 without a PAT.
+You are reading this because a user asked you to set up GITS backups and gave you this repo's URL. Follow these steps in order.
 
-### Step 0: Get a GitHub PAT from the user
+### Step 1: Get a GitHub PAT
 
-**STOP. A GitHub Personal Access Token (PAT) is required before anything else.**
+A GitHub Personal Access Token (PAT) with `repo` scope is required for GITS to push backups.
 
-If you are an AI agent and the user has not provided a PAT, ask them now:
+If the user already provided a PAT along with this URL (it starts with `ghp_`, `ghs_`, or `github_pat_`), skip to Step 2.
 
-> I need a GitHub Personal Access Token to set up GITS backups.
+Otherwise, **stop and ask the user now**:
+
+> I need a GitHub Personal Access Token to set up GITS backups. Here's how to create one:
 >
 > 1. Go to https://github.com/settings/tokens
 > 2. Click **Generate new token (classic)**
 > 3. Select the **`repo`** scope (full control of private repositories)
 > 4. Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`)
 >
-> Please paste the token here.
+> Paste the token here and I'll finish the setup.
 
 **Do not continue until you have a valid PAT.**
 
-### Step 1: Clone this repo
+### Step 2: Clone this repo
+
+Clone using the same URL the user gave you:
 
 ```bash
 mkdir -p ~/.openclaw/backups
-git clone https://github.com/<OWNER>/GITS-GhostInTheShell.git ~/.openclaw/backups/GITS
+git clone <REPO_URL> ~/.openclaw/backups/GITS
 ```
 
-Replace `<OWNER>` with the GitHub username that owns this repo.
+The `<REPO_URL>` is the GitHub URL the user provided when they asked you to set up GITS (e.g. `https://github.com/someone/GITS-GhostInTheShell.git`).
 
-### Step 2: Run setup with the PAT
+### Step 3: Run setup with the PAT
 
 ```bash
 ~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT>
 ```
 
-Replace `<PAT>` with the token from Step 0. The setup script will:
+The setup script will:
 
 1. Validate the PAT format
 2. Verify the PAT can access this repo (via GitHub API)
@@ -48,7 +52,7 @@ Replace `<PAT>` with the token from Step 0. The setup script will:
 
 **If setup fails, stop and report the error to the user.** Do not continue.
 
-### Step 3: Run the first backup
+### Step 4: Run the first backup
 
 ```bash
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
@@ -56,7 +60,7 @@ Replace `<PAT>` with the token from Step 0. The setup script will:
 
 This creates a tarball of `~/.openclaw/`, commits it to this repo, and pushes to GitHub. Verify it succeeds — look for `"Successfully pushed to remote"` in the output.
 
-### Step 4: Schedule automatic backups
+### Step 5: Schedule automatic backups
 
 ```bash
 (crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/GITS/scripts/gits-backup.sh >> /tmp/gits-backup.log 2>&1") | crontab -
