@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AgentBoxGITS Backup Script
+# GITS Backup Script
 # Snapshots the entire ~/.openclaw directory into a single dated tarball
 # and pushes to git. Run every 3 hours via cron.
 
@@ -90,7 +90,7 @@ commit_and_push() {
     git add --force .
 
     if git status --porcelain | grep -q '.'; then
-        COMMIT_MSG="AgentBoxGITS snapshot: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+        COMMIT_MSG="GITS snapshot: $(date '+%Y-%m-%d %H:%M:%S %Z')"
         git commit -m "$COMMIT_MSG"
         log_message "Committed: $COMMIT_MSG"
 
@@ -121,7 +121,7 @@ commit_and_push() {
 }
 
 main() {
-    log_message "=== Starting AgentBoxGITS backup ==="
+    log_message "=== Starting GITS backup ==="
 
     check_prerequisites
     check_git_config || exit 1

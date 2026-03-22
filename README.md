@@ -1,4 +1,4 @@
-# AgentBoxGITS – OpenClaw Recovery System
+# GITS (Ghost In The Shell) – OpenClaw Recovery System
 
 Automated snapshots of the entire `~/.openclaw` directory every 3 hours, pushed to git. Full disaster recovery from a single repo.
 
@@ -14,7 +14,7 @@ You are an AI agent being asked to enable automated backups for this OpenClaw sy
 
 ```bash
 mkdir -p ~/.openclaw/backups
-git clone <REPO_URL> ~/.openclaw/backups/AgentBoxGITS
+git clone <REPO_URL> ~/.openclaw/backups/GITS
 ```
 
 ### 2. Verify OpenClaw is installed
@@ -28,7 +28,7 @@ If this file doesn't exist, OpenClaw isn't configured yet — set that up first.
 ### 3. Run the first snapshot
 
 ```bash
-~/.openclaw/backups/AgentBoxGITS/scripts/agentbox-backup.sh
+~/.openclaw/backups/GITS/scripts/agentbox-backup.sh
 ```
 
 This creates a tarball of `~/.openclaw/` in the `snapshots/` directory, commits, and pushes. Check output for errors. If push fails, verify `git remote -v` and authentication.
@@ -36,7 +36,7 @@ This creates a tarball of `~/.openclaw/` in the `snapshots/` directory, commits,
 ### 4. Schedule snapshots every 3 hours
 
 ```bash
-(crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/AgentBoxGITS/scripts/agentbox-backup.sh >> /tmp/agentbox-backup.log 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/GITS/scripts/agentbox-backup.sh >> /tmp/agentbox-backup.log 2>&1") | crontab -
 ```
 
 Verify:
@@ -51,8 +51,8 @@ Done. Snapshots run every 3 hours and push to git.
 On a new or recovered machine:
 
 ```bash
-git clone <REPO_URL> AgentBoxGITS
-cd AgentBoxGITS
+git clone <REPO_URL> GITS
+cd GITS
 ./scripts/agentbox-restore.sh
 sudo systemctl restart openclaw-gateway
 ```
@@ -68,7 +68,7 @@ Log: `/tmp/agentbox-restore.log`
 ### Emergency manual restore
 
 ```bash
-cd /path/to/AgentBoxGITS
+cd /path/to/GITS
 LATEST=$(ls -1t snapshots/openclaw-*.tar.gz | head -1)
 mv ~/.openclaw ~/.openclaw.backup-$(date +%s)
 tar -xzf "$LATEST" -C ~/
@@ -79,7 +79,7 @@ sudo systemctl restart openclaw-gateway
 
 ```
 ~/.openclaw/                    # What gets backed up (the whole directory)
-~/.openclaw/backups/AgentBoxGITS/  # This repo (excluded from snapshots)
+~/.openclaw/backups/GITS/  # This repo (excluded from snapshots)
   ├── snapshots/                # Dated tarballs of ~/.openclaw
   │   ├── openclaw-2026-03-22_0200.tar.gz
   │   ├── openclaw-2026-03-22_0500.tar.gz

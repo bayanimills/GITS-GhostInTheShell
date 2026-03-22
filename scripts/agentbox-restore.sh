@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AgentBoxGITS Restore Script
+# GITS Restore Script
 # Restores an OpenClaw system from a snapshot tarball
 
 OPENCLAW_ROOT="$HOME/.openclaw"
@@ -130,7 +130,7 @@ EOF
 }
 
 main() {
-    log_message "=== Starting AgentBoxGITS restoration ==="
+    log_message "=== Starting GITS restoration ==="
 
     check_prerequisites
 
