@@ -1,205 +1,174 @@
-# AgentBoxGITS – Full System Snapshot Backup (AI‑First Documentation)
+# GITS (Ghost In The Shell) – OpenClaw Recovery System
 
-## Purpose
-This repository enables **complete disaster recovery** of an OpenClaw agent system. Use it when:
-- The host machine fails or is replaced
-- OpenClaw configuration is corrupted or accidentally deleted
-- You need to migrate agents to a new environment
-- A fresh installation requires rapid agent bootstrap
+Off-site backup of the entire `~/.openclaw` directory to GitHub. Every 3 hours, GITS creates a tarball of your OpenClaw installation and pushes it to this repo. If your machine dies, clone this repo on a new machine and restore everything.
 
-## Prerequisites
-- **OS**: Linux (tested on Ubuntu/Debian)
-- **Tools**: `bash` (4.0+), `tar`, `git`, `curl` (for gateway verification)
-- **OpenClaw**: Must be installed at `$HOME/.openclaw` (the restore script will create this directory if missing)
-- **Disk space**: At least 2x the size of the `workspaces/` directory
+## Setup Instructions
 
-## Quick Start – Restore in 3 Steps
+Follow these steps in order. Do not skip steps. Do not proceed past Step 0 without a PAT.
 
-```bash
-# 1. Clone the backup repository (skip if already present)
-git clone https://github.com/bayanimills/AgentBoxGITS.git
-cd AgentBoxGITS
+### Step 0: Get a GitHub PAT from the user
 
-# 2. Run the restore script (auto-detects latest backup date)
-./scripts/agentbox-restore.sh
+**STOP. A GitHub Personal Access Token (PAT) is required before anything else.**
 
-# 3. Restart the gateway
-sudo systemctl restart openclaw-gateway
-```
+If you are an AI agent and the user has not provided a PAT, ask them now:
 
-The restore script will:
-- Detect the most recent backup date from workspace tarballs
-- Copy configuration files to `$HOME/.openclaw/`
-- Extract all workspace tarballs for that date
-- Restore credentials (if a matching backup exists)
-- Validate the restoration and print next steps
+> I need a GitHub Personal Access Token to set up GITS backups.
+>
+> 1. Go to https://github.com/settings/tokens
+> 2. Click **Generate new token (classic)**
+> 3. Select the **`repo`** scope (full control of private repositories)
+> 4. Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`)
+>
+> Please paste the token here.
 
-If any step fails, check the log at `/tmp/agentbox-restore.log`.
+**Do not continue until you have a valid PAT.**
 
-## Repository Structure
-```
-AgentBoxGITS/
-├── README.md                # This file – restoration instructions
-├── config/                  # System configuration files
-│   ├── openclaw.json       # Main OpenClaw configuration
-│   ├── agents.list         # Agent definitions and permissions
-│   └── jobs.json           # Scheduled cron jobs
-├── workspaces/             # Compressed agent workspace tarballs
-│   ├── workspace-aria-YYYY-MM-DD.tar.gz
-│   ├── workspace-shelley-YYYY-MM-DD.tar.gz
-│   └── … (all other agents)
-├── credentials/            # Credential backups (encrypted tarballs)
-├── scripts/                # Restoration automation
-│   ├── agentbox-restore.sh # Primary restoration script
-│   └── agentbox-backup.sh  # Backup creation script (reference)
-└── logs/                   # Backup execution logs (for debugging)
-```
-
-## Detailed Restoration Protocol
-
-### Phase 1: Pre‑Restoration Validation
-
-Run the restore script with `--dry-run` to validate the backup before making changes, or perform manual checks:
+### Step 1: Clone this repo
 
 ```bash
-cd /path/to/AgentBoxGITS
-
-# Validate critical directories exist
-for dir in config workspaces scripts; do
-    [ -d "$dir" ] && echo "OK: $dir" || echo "MISSING: $dir"
-done
-
-# Check available backup dates
-ls workspaces/workspace-*.tar.gz | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort -u
+mkdir -p ~/.openclaw/backups
+git clone https://github.com/<OWNER>/GITS-GhostInTheShell.git ~/.openclaw/backups/GITS
 ```
 
-### Phase 2: Restoration Execution
+Replace `<OWNER>` with the GitHub username that owns this repo.
+
+### Step 2: Run setup with the PAT
 
 ```bash
-cd /path/to/AgentBoxGITS
-
-# Execute restoration with logging
-./scripts/agentbox-restore.sh 2>&1 | tee /tmp/agentbox-restore-$(date +%Y%m%d-%H%M%S).log
-RESTORE_EXIT=$?
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT>
 ```
 
-#### **Step 2.2 – Interpret Exit Codes**
-| Exit Code | Meaning | AI Action Required |
-|-----------|---------|-------------------|
-| **0** | Success | Proceed to Phase 3 (Verification) |
-| **1** | Prerequisite failure | Check system dependencies, retry |
-| **2** | Configuration error | Validate config files, manual fix may be needed |
-| **3** | Workspace extraction failure | Check disk space, tarball integrity |
-| **4** | Credential restoration issue | Review credentials directory, may need manual auth |
-| **>4** | Unknown error | Examine log file, consider partial restore |
+Replace `<PAT>` with the token from Step 0. The setup script will:
 
-### Phase 3: Post‑Restoration Verification
+1. Validate the PAT format
+2. Verify the PAT can access this repo (via GitHub API)
+3. Configure the git remote with the PAT for non-interactive pushes
+4. Verify `~/.openclaw` exists
+5. Configure git for cron (credential store, committer identity)
 
-Run these checks as a single script block so variables persist:
+**If setup fails, stop and report the error to the user.** Do not continue.
+
+### Step 3: Run the first backup
 
 ```bash
-#!/usr/bin/env bash
-OPENCLAW_ROOT="$HOME/.openclaw"
-
-# 1. Verify critical files were restored
-for path in "$OPENCLAW_ROOT/openclaw.json" "$OPENCLAW_ROOT/agents.list"; do
-    [ -f "$path" ] && echo "OK: $path" || echo "MISSING: $path"
-done
-
-# 2. Count restored workspaces
-AGENT_COUNT=$(ls -d "$OPENCLAW_ROOT"/workspace-* 2>/dev/null | wc -l)
-echo "Restored $AGENT_COUNT agent workspace(s)"
-
-# 3. Restart and verify gateway
-sudo systemctl restart openclaw-gateway 2>/dev/null || \
-    openclaw gateway restart 2>/dev/null || \
-    echo "WARNING: Could not restart gateway – may need manual intervention"
-
-sleep 5
-if curl -s http://localhost:18789/status 2>/dev/null | grep -q '"status":"ok"'; then
-    echo "SUCCESS: Gateway is responding"
-else
-    echo "WARNING: Gateway may not be running – check: journalctl -u openclaw-gateway -n 50"
-fi
-
-# 4. Test agent session
-openclaw sessions list --limit 1 2>/dev/null && echo "Agent session check passed" || echo "Agent session check failed"
+~/.openclaw/backups/GITS/scripts/gits-backup.sh
 ```
 
-### Phase 4: Error Handling & Recovery
+This creates a tarball of `~/.openclaw/`, commits it to this repo, and pushes to GitHub. Verify it succeeds — look for `"Successfully pushed to remote"` in the output.
 
-| Scenario | Symptoms | Resolution |
-|----------|----------|------------|
-| **Some agents missing** | Workspace tarballs absent for specific agents | Restore continues with available agents. Check older backup dates or recreate the agent manually. |
-| **Config version mismatch** | Gateway fails to start after restore | Back up current config, restore workspaces only, merge config settings manually. |
-| **Credentials expired** | Telegram bots / API calls fail post-restore | Re-authenticate each service. Restored credential files may contain stale tokens. |
-| **Disk space** | Extraction fails mid-way | Free space, then re-run the restore script (it's idempotent). |
+### Step 4: Schedule automatic backups
 
-## Maintenance
-
-### Weekly Verification
 ```bash
-cd /path/to/AgentBoxGITS
-git pull origin main
-
-# Verify latest tarball is not corrupted
-LATEST_TARBALL=$(ls -t workspaces/*.tar.gz 2>/dev/null | head -1)
-tar -tzf "$LATEST_TARBALL" >/dev/null 2>&1 && echo "OK" || echo "CORRUPTED: $LATEST_TARBALL"
+(crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/GITS/scripts/gits-backup.sh >> /tmp/gits-backup.log 2>&1") | crontab -
 ```
 
-### Pruning (automated by backup script)
-The backup script (`agentbox-backup.sh`) retains 7 days of tarballs locally. Git history preserves all prior versions.
+Verify:
 
-## Post‑Restoration Checklist
-- [ ] Gateway responds: `curl -s http://localhost:18789/status`
-- [ ] Agents can spawn sessions: `openclaw sessions list --limit 1`
-- [ ] Cron jobs scheduled: `openclaw cron list`
-- [ ] Telegram bots responding
-- [ ] Backup cron job resumes (check `crontab -l`)
+```bash
+crontab -l | grep gits-backup
+```
+
+Setup is complete. Backups will run every 3 hours and push to GitHub.
 
 ---
 
-## Emergency Recovery (Manual)
+## Restoring on a Different Machine
 
-If the restore script itself fails, do it by hand:
+When you need to recover OpenClaw on a new or rebuilt machine:
+
+### Step 1: Clone this repo with your PAT
 
 ```bash
-cd /path/to/AgentBoxGITS
+git clone https://<PAT>@github.com/<OWNER>/GITS-GhostInTheShell.git GITS
+```
 
-# Pick the latest backup date
-LATEST_DATE=$(ls workspaces/workspace-*.tar.gz | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort -ru | head -1)
+### Step 2: Restore from the latest snapshot
 
-# Restore configs
-mkdir -p ~/.openclaw/cron
-cp config/openclaw.json ~/.openclaw/
-cp config/agents.list ~/.openclaw/
-cp config/jobs.json ~/.openclaw/cron/jobs.json
+```bash
+cd GITS
+./scripts/gits-restore.sh
+```
 
-# Restore workspaces
-for TAR in workspaces/workspace-*-"$LATEST_DATE".tar.gz; do
-    tar -xzf "$TAR" -C ~/.openclaw/
-done
+This will:
+- Find the newest tarball in `snapshots/`
+- Back up any existing `~/.openclaw/` (renamed with `.backup-TIMESTAMP`)
+- Extract the snapshot to `~/.openclaw/`
+- Validate the restored files
 
-# Restore credentials
-tar -xzf credentials/credentials-"$LATEST_DATE".tar.gz -C ~/.openclaw/
+### Step 3: Restart OpenClaw
 
-# Restart
+```bash
+sudo systemctl restart openclaw-gateway
+openclaw gateway status
+```
+
+### Step 4: Re-establish backups on this machine
+
+The restored machine does not have backups configured yet. Set them up:
+
+```bash
+mkdir -p ~/.openclaw/backups
+cp -r GITS ~/.openclaw/backups/GITS
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT>
+~/.openclaw/backups/GITS/scripts/gits-backup.sh
+(crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/GITS/scripts/gits-backup.sh >> /tmp/gits-backup.log 2>&1") | crontab -
+```
+
+### Emergency manual restore
+
+If the restore script fails:
+
+```bash
+cd /path/to/GITS
+LATEST=$(ls -1t snapshots/openclaw-*.tar.gz | head -1)
+mv ~/.openclaw ~/.openclaw.backup-$(date +%s)
+tar -xzf "$LATEST" -C ~/
 sudo systemctl restart openclaw-gateway
 ```
 
-### Gateway Won't Start?
+---
+
+## What Gets Backed Up
+
+The entire `~/.openclaw/` directory as a single tarball — workspaces, agent definitions, configs, credentials, cron jobs, scripts, everything.
+
+Excluded from snapshots (to keep tarballs small):
+- `backups/` (avoids recursive backup)
+- `venv`, `node_modules`, `.git`
+- `*.log`, `*.tmp`
+
+## How It Works
+
+```
+~/.openclaw/                       # What gets backed up
+~/.openclaw/backups/GITS/          # This repo (excluded from snapshots)
+  ├── snapshots/                   # Dated tarballs
+  │   ├── openclaw-2026-03-22_0200.tar.gz
+  │   ├── openclaw-2026-03-22_0500.tar.gz
+  │   └── ...
+  ├── scripts/
+  │   ├── gits-setup.sh            # Validates PAT, configures auth
+  │   ├── gits-backup.sh           # Creates snapshot, commits, pushes
+  │   └── gits-restore.sh          # Extracts latest snapshot
+  ├── .gitignore
+  └── README.md
+```
+
+- **Retention**: 7 days of tarballs locally. Git history preserves all versions.
+- **Push retries**: Up to 3 attempts with rebase on conflict.
+- **Logs**: `/tmp/gits-backup.log`, `/tmp/gits-restore.log`, `/tmp/gits-setup.log`
+
+## Troubleshooting
+
+**Backup fails to push**: The PAT may be expired. Update it:
+```bash
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <NEW_PAT>
+```
+
+**Gateway won't start after restore**:
 ```bash
 openclaw gateway status
 journalctl -u openclaw-gateway -n 50
-tail -100 ~/.openclaw/logs/gateway.log
 ```
 
-## Contact
-- **Primary**: Bayani via Telegram
-- **OpenClaw community**: Discord
-- **Docs**: docs.openclaw.ai
-- **This repo**: github.com/bayanimills/AgentBoxGITS
-
----
-
-**Last Updated**: 2026-03-22
+**Restore to a specific date**: `ls snapshots/` and extract the desired tarball manually.

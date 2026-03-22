@@ -10,12 +10,14 @@ Thumbs.db
 *.log
 logs/
 
-# Local backups (tarballs) are kept in repository, but we ignore any stray files
-backup-*.tar.gz
-
 # System files
 .env
 .secret
+
+# Legacy backup directories (replaced by snapshots/)
+config/
+credentials/
+workspaces/
 
 # IDE
 .vscode/
