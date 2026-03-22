@@ -14,7 +14,14 @@ SNAPSHOTS_DIR="$BACKUP_ROOT/snapshots"
 LOG_FILE="/tmp/gits-backup.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 DATE_TAG=$(date '+%Y-%m-%d_%H%M')
+
+# Load retention setting from config (written by gits-setup.sh), default 7 days
 RETENTION_DAYS=7
+CONFIG_FILE="$BACKUP_ROOT/gits.conf"
+if [ -f "$CONFIG_FILE" ]; then
+    # shellcheck source=/dev/null
+    source "$CONFIG_FILE"
+fi
 
 # Standard exclusions — skip things that are regenerated or are the backup itself
 TAR_EXCLUDES=(

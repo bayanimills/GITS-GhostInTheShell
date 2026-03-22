@@ -1,10 +1,22 @@
 # GITS (Ghost In The Shell) – OpenClaw Recovery System
 
-Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates per-component snapshots of your OpenClaw installation and pushes them to this repo on a schedule you choose. Seven days of snapshots are kept locally for fast restores. If your machine dies, clone this repo on a new machine and restore everything — or just the specific agent or file you need.
+Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates per-component snapshots of your OpenClaw installation and pushes them to this repo on a schedule you choose. Snapshots are kept locally (duration configurable) for fast restores. If your machine dies, clone this repo on a new machine and restore everything — or just the specific agent or file you need.
 
 ## Setup Instructions
 
 You are reading this because a user asked you to set up GITS backups and gave you this repo's URL. Follow these steps in order.
+
+**Before you begin**, tell the user what you'll need from them:
+
+> To set up GITS backups, I'll need to ask you three things:
+>
+> 1. A **GitHub Personal Access Token** (PAT) for pushing backups
+> 2. How **often** you want backups to run
+> 3. How **long** to keep local snapshots on this machine
+>
+> Let's start with the first one.
+
+Then proceed through the questions **one at a time**, waiting for each answer before asking the next.
 
 ### Step 1: Get a GitHub PAT
 
@@ -21,7 +33,7 @@ Otherwise, **stop and ask the user now**:
 > 3. Select the **`repo`** scope (full control of private repositories)
 > 4. Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`)
 >
-> Paste the token here and I'll finish the setup.
+> Paste the token here and I'll move on to the next question.
 
 **Do not continue until you have a valid PAT.**
 
@@ -32,14 +44,31 @@ Ask the user how often they want backups to run:
 > How often should GITS back up your OpenClaw installation?
 >
 > - **1h** — Every hour
-> - **3h** — Every 3 hours (default)
+> - **3h** — Every 3 hours (recommended)
 > - **6h** — Every 6 hours
 > - **12h** — Every 12 hours
 > - **24h** — Once a day
 
 If the user doesn't have a preference, use `3h`.
 
-### Step 3: Clone this repo
+### Step 3: Ask for local retention period
+
+Ask the user how long to keep snapshots on the local machine:
+
+> How long should GITS keep backup snapshots on this machine? Local
+> snapshots let you restore quickly without pulling from GitHub. Older
+> snapshots are pruned from disk but stay in the GitHub repo's git
+> history forever.
+>
+> - **1 day** — Minimal disk usage
+> - **3 days** — Short-term safety net
+> - **7 days** — Good balance of coverage and disk usage (recommended)
+> - **2 weeks** — Extra local history
+> - **1 month** — Maximum local coverage
+
+If the user doesn't have a preference, use `7d` (7 days).
+
+### Step 4: Clone this repo
 
 Clone using the same URL the user gave you:
 
@@ -50,26 +79,26 @@ git clone <REPO_URL> ~/.openclaw/backups/GITS
 
 The `<REPO_URL>` is the GitHub URL the user provided when they asked you to set up GITS (e.g. `https://github.com/someone/GITS-GhostInTheShell.git`).
 
-### Step 4: Run setup with the PAT and frequency
+### Step 5: Run setup with the PAT, frequency, and retention
 
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY>
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY> <RETENTION>
 ```
 
-For example: `gits-setup.sh ghp_abc123 6h`
+For example: `gits-setup.sh ghp_abc123 6h 7d`
 
 The setup script will:
 
-1. Validate the PAT format
-2. Verify the PAT can access this repo (via GitHub API)
-3. Configure the git remote with the PAT for non-interactive pushes
-4. Verify `~/.openclaw` exists
-5. Configure git for cron (credential store, committer identity)
-6. Install the cron job at the chosen frequency
+1. Validate the PAT format and verify access to the repo
+2. Configure the git remote with the PAT for non-interactive pushes
+3. Verify `~/.openclaw` exists
+4. Configure git for cron (credential store, committer identity)
+5. Install the cron job at the chosen frequency
+6. Save the retention setting to `gits.conf`
 
 **If setup fails, stop and report the error to the user.** Do not continue.
 
-### Step 5: Run the first backup
+### Step 6: Run the first backup
 
 ```bash
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
@@ -79,8 +108,8 @@ This snapshots each component of `~/.openclaw/`, commits them to this repo, and 
 
 Setup is complete. Tell the user:
 - Backups will run automatically at the chosen frequency
-- 7 days of snapshots are kept locally for fast restores
-- Older snapshots are pruned locally but remain in the GitHub repo's git history
+- Local snapshots are kept for the chosen retention period for fast restores
+- Older snapshots are pruned locally but remain in the GitHub repo's git history indefinitely
 
 ---
 
@@ -157,7 +186,7 @@ The restored machine does not have backups configured yet. Set them up:
 ```bash
 mkdir -p ~/.openclaw/backups
 cp -r GITS ~/.openclaw/backups/GITS
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY>
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY> <RETENTION>
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
 ```
 
@@ -195,7 +224,8 @@ Excluded from snapshots (to keep tarballs small):
 ```
 ~/.openclaw/                       # What gets backed up
 ~/.openclaw/backups/GITS/          # This repo (excluded from snapshots)
-  ├── snapshots/                   # 7 days of local snapshots
+  ├── gits.conf                     # Retention config (written by setup)
+  ├── snapshots/                   # Local snapshots (retention configurable)
   │   ├── 2026-03-22_1430/
   │   │   ├── manifest.json
   │   │   ├── agents.tar.gz
@@ -213,7 +243,7 @@ Excluded from snapshots (to keep tarballs small):
 ```
 
 - **Frequency**: Configurable during setup (1h, 3h, 6h, 12h, 24h)
-- **Local retention**: 7 days of snapshots kept locally for fast restores
+- **Local retention**: Configurable during setup (1d, 3d, 7d, 14d, 30d — default 7d)
 - **Remote retention**: All snapshots preserved in GitHub git history indefinitely
 - **Push retries**: Up to 3 attempts with rebase on conflict
 - **Logs**: `/tmp/gits-backup.log`, `/tmp/gits-restore.log`, `/tmp/gits-setup.log`
@@ -222,14 +252,14 @@ Excluded from snapshots (to keep tarballs small):
 
 **Backup fails to push**: The PAT may be expired. Update it:
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <NEW_PAT> <FREQUENCY>
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <NEW_PAT> <FREQUENCY> <RETENTION>
 ```
 
-**Change backup frequency**:
+**Change backup frequency or retention**:
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> 6h
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> 6h 14d
 ```
-This replaces the existing cron job with the new schedule.
+This replaces the existing cron job and retention setting.
 
 **Gateway won't start after restore**:
 ```bash

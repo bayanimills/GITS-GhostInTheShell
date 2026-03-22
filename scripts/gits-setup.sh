@@ -5,9 +5,10 @@ set -euo pipefail
 # Configures this repo for automated backups to GitHub.
 # Requires a GitHub PAT with 'repo' scope.
 #
-# Usage: ./scripts/gits-setup.sh <GITHUB_PAT> [FREQUENCY]
+# Usage: ./scripts/gits-setup.sh <GITHUB_PAT> [FREQUENCY] [RETENTION]
 #
 # FREQUENCY is a cron-friendly interval: 1h, 3h, 6h, 12h, 24h (default: 3h)
+# RETENTION is how long to keep local snapshots: 1d, 3d, 7d, 14d, 30d (default: 7d)
 
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OPENCLAW_ROOT="$HOME/.openclaw"
@@ -35,6 +36,31 @@ frequency_to_cron() {
     esac
 }
 
+# Convert a retention label (e.g. "7d") to days.
+retention_to_days() {
+    local ret="$1"
+    case "$ret" in
+        1d)  echo "1" ;;
+        3d)  echo "3" ;;
+        7d)  echo "7" ;;
+        14d) echo "14" ;;
+        30d) echo "30" ;;
+        *)   echo "" ;;
+    esac
+}
+
+# Human-readable retention label.
+retention_label() {
+    local ret="$1"
+    case "$ret" in
+        1d)  echo "1 day" ;;
+        3d)  echo "3 days" ;;
+        7d)  echo "7 days" ;;
+        14d) echo "2 weeks" ;;
+        30d) echo "1 month" ;;
+    esac
+}
+
 # --- Step 1: Require PAT argument ---
 
 PAT="${1:-}"
@@ -49,9 +75,10 @@ GITS setup requires a GitHub Personal Access Token (PAT).
 4. Copy the token
 
 Then run:
-  ./scripts/gits-setup.sh <YOUR_PAT> [FREQUENCY]
+  ./scripts/gits-setup.sh <YOUR_PAT> [FREQUENCY] [RETENTION]
 
 FREQUENCY options: 1h, 3h (default), 6h, 12h, 24h
+RETENTION options: 1d, 3d, 7d (default), 14d, 30d
 
 EOF
     die "No PAT provided. Cannot proceed without GitHub authentication."
@@ -67,6 +94,17 @@ if [ -z "$CRON_SCHEDULE" ]; then
 fi
 
 log_message "Backup frequency: every $FREQUENCY ($CRON_SCHEDULE)"
+
+# --- Step 2b: Parse optional retention ---
+
+RETENTION="${3:-7d}"
+RETENTION_DAYS=$(retention_to_days "$RETENTION")
+
+if [ -z "$RETENTION_DAYS" ]; then
+    die "Invalid retention '$RETENTION'. Valid options: 1d, 3d, 7d, 14d, 30d"
+fi
+
+log_message "Local retention: $(retention_label "$RETENTION") ($RETENTION_DAYS days)"
 
 # --- Step 3: Validate PAT format ---
 
@@ -158,6 +196,17 @@ fi
 
 log_message "Cron job installed: $CRON_SCHEDULE"
 
+# --- Step 11: Write config file ---
+
+CONFIG_FILE="$BACKUP_ROOT/gits.conf"
+cat > "$CONFIG_FILE" <<CONF
+# GITS configuration — written by gits-setup.sh
+# Do not edit manually; re-run gits-setup.sh to change settings.
+RETENTION_DAYS=$RETENTION_DAYS
+CONF
+
+log_message "Configuration saved to $CONFIG_FILE"
+
 # --- Done ---
 
 cat <<EOF
@@ -169,12 +218,12 @@ cat <<EOF
   Backup from: $OPENCLAW_ROOT
   Backup to:   $BACKUP_ROOT/snapshots/ (local) + GitHub (remote)
   Frequency:   Every $FREQUENCY ($CRON_SCHEDULE)
-  Retention:   7 days of snapshots kept locally for fast restores
+  Retention:   $(retention_label "$RETENTION") of snapshots kept locally for fast restores
   Cron:        Installed and active
 
-Local snapshots are kept for 7 days so you can restore quickly
-without pulling from GitHub. Older snapshots are pruned automatically
-but remain available in the GitHub repo's git history.
+Local snapshots are kept for $(retention_label "$RETENTION") so you can restore
+quickly without pulling from GitHub. Older snapshots are pruned
+automatically but remain available in the GitHub repo's git history.
 
 Next step — run the first snapshot now:
 
