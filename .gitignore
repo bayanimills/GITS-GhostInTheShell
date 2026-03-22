@@ -14,6 +14,11 @@ logs/
 .env
 .secret
 
+# Legacy backup directories (replaced by snapshots/)
+config/
+credentials/
+workspaces/
+
 # IDE
 .vscode/
 .idea/
