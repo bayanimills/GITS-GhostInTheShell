@@ -1,23 +1,85 @@
-# AgentBoxGITS – Full System Snapshot Backup (AI‑First Documentation)
+# AgentBoxGITS – Automated Backup & Disaster Recovery for OpenClaw
 
-## Purpose
-This repository enables **complete disaster recovery** of an OpenClaw agent system. Use it when:
-- The host machine fails or is replaced
-- OpenClaw configuration is corrupted or accidentally deleted
-- You need to migrate agents to a new environment
-- A fresh installation requires rapid agent bootstrap
+Automated daily snapshots of your entire OpenClaw agent system — workspaces, configs, credentials, and cron jobs — committed to git so you can restore everything from a single repository.
 
 ## Prerequisites
-- **OS**: Linux (tested on Ubuntu/Debian)
-- **Tools**: `bash` (4.0+), `tar`, `git`, `curl` (for gateway verification)
-- **OpenClaw**: Must be installed at `$HOME/.openclaw` (the restore script will create this directory if missing)
-- **Disk space**: At least 2x the size of the `workspaces/` directory
 
-## Quick Start – Restore in 3 Steps
+- Linux (tested on Ubuntu/Debian)
+- `bash` 4.0+, `tar`, `git`, `curl`
+- OpenClaw installed at `$HOME/.openclaw`
+- A GitHub repo (fork this one or create your own)
+
+## Initial Setup
+
+### 1. Fork or clone this repo
 
 ```bash
-# 1. Clone the backup repository (skip if already present)
-git clone https://github.com/bayanimills/AgentBoxGITS.git
+# Fork on GitHub first, then:
+git clone https://github.com/YOUR_USERNAME/AgentBoxGITS.git
+cd AgentBoxGITS
+```
+
+### 2. Create your config files from the examples
+
+```bash
+cp config/openclaw.json.example config/openclaw.json
+cp config/agents.list.example config/agents.list
+cp config/jobs.json.example config/jobs.json
+```
+
+Edit each file with your own values:
+- **`config/openclaw.json`** — your API keys, bot tokens, agent definitions, gateway settings
+- **`config/agents.list`** — your agent IDs, names, and paths
+- **`config/jobs.json`** — your scheduled cron jobs (or leave empty)
+
+These files are `.gitignore`d so your secrets stay local.
+
+### 3. Place the repo where the backup script expects it
+
+```bash
+mkdir -p ~/.openclaw/backups
+mv AgentBoxGITS ~/.openclaw/backups/AgentBoxGITS
+```
+
+Or symlink if you prefer keeping it elsewhere:
+```bash
+ln -s /path/to/AgentBoxGITS ~/.openclaw/backups/AgentBoxGITS
+```
+
+### 4. Run your first backup manually
+
+```bash
+cd ~/.openclaw/backups/AgentBoxGITS
+./scripts/agentbox-backup.sh
+```
+
+This will:
+- Create tarballs of each `workspace-*` directory in `~/.openclaw/`
+- Copy your config files into the repo
+- Create credential backups
+- Commit and push to GitHub
+
+Check the output for errors. If it succeeds, your first snapshot is saved.
+
+### 5. Schedule daily backups with cron
+
+```bash
+# Edit crontab
+crontab -e
+
+# Add this line (runs at 2am daily, adjust timezone as needed):
+0 2 * * * cd ~/.openclaw/backups/AgentBoxGITS && ./scripts/agentbox-backup.sh >> /tmp/agentbox-backup.log 2>&1
+```
+
+You now have automated daily backups pushed to GitHub.
+
+## Restoring from Backup
+
+When you need to recover (new machine, corrupted install, migration):
+
+```bash
+# 1. Clone your backup repo
+git clone https://github.com/YOUR_USERNAME/AgentBoxGITS.git
 cd AgentBoxGITS
 
 # 2. Run the restore script (auto-detects latest backup date)
@@ -28,152 +90,99 @@ sudo systemctl restart openclaw-gateway
 ```
 
 The restore script will:
-- Detect the most recent backup date from workspace tarballs
-- Copy configuration files to `$HOME/.openclaw/`
-- Extract all workspace tarballs for that date
-- Restore credentials (if a matching backup exists)
-- Validate the restoration and print next steps
+- Find the most recent backup date from workspace tarballs
+- Copy config files to `~/.openclaw/` (backing up any existing files first)
+- Extract all workspace tarballs
+- Restore credentials if a backup exists
+- Validate and print results
 
-If any step fails, check the log at `/tmp/agentbox-restore.log`.
+Log: `/tmp/agentbox-restore.log`
+
+## How the Backup Works
+
+`scripts/agentbox-backup.sh` runs daily and:
+
+1. Validates git remote is configured and authenticated
+2. Creates `.tar.gz` of each `~/.openclaw/workspace-*` directory (excludes `venv`, `node_modules`, `.git`, logs)
+3. Copies `openclaw.json`, `agents.list`, and `cron/jobs.json` into the repo
+4. Creates a credential tarball from `~/.openclaw/credentials/`
+5. Prunes tarballs older than 7 days (git history preserves all versions)
+6. Commits and pushes to GitHub (retries up to 3 times on failure)
+
+## How the Restore Works
+
+`scripts/agentbox-restore.sh`:
+
+1. Checks prerequisites (`tar`, `git` installed; creates `~/.openclaw/` if missing)
+2. Finds the latest backup date from workspace filenames
+3. Restores config files (skips any that aren't present in the backup)
+4. Extracts all workspace tarballs for that date
+5. Restores credentials if available
+6. Validates the result
+
+**Exit codes:**
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Missing prerequisites or general failure |
 
 ## Repository Structure
+
 ```
 AgentBoxGITS/
-├── README.md                # This file – restoration instructions
-├── config/                  # System configuration files
-│   ├── openclaw.json       # Main OpenClaw configuration
-│   ├── agents.list         # Agent definitions and permissions
-│   └── jobs.json           # Scheduled cron jobs
-├── workspaces/             # Compressed agent workspace tarballs
-│   ├── workspace-aria-YYYY-MM-DD.tar.gz
-│   ├── workspace-shelley-YYYY-MM-DD.tar.gz
-│   └── … (all other agents)
-├── credentials/            # Credential backups (encrypted tarballs)
-├── scripts/                # Restoration automation
-│   ├── agentbox-restore.sh # Primary restoration script
-│   └── agentbox-backup.sh  # Backup creation script (reference)
-└── logs/                   # Backup execution logs (for debugging)
+├── README.md
+├── config/
+│   ├── openclaw.json.example   # Template — copy to openclaw.json
+│   ├── agents.list.example     # Template — copy to agents.list
+│   └── jobs.json.example       # Template — copy to jobs.json
+├── workspaces/                 # Daily workspace tarballs (auto-generated)
+├── credentials/                # Daily credential tarballs (auto-generated)
+├── scripts/
+│   ├── agentbox-backup.sh      # Run daily via cron
+│   └── agentbox-restore.sh     # Run to recover
+└── .gitignore                  # Excludes personal configs and credentials
 ```
 
-## Detailed Restoration Protocol
-
-### Phase 1: Pre‑Restoration Validation
-
-Run the restore script with `--dry-run` to validate the backup before making changes, or perform manual checks:
+## Post-Restore Verification
 
 ```bash
-cd /path/to/AgentBoxGITS
+# Check critical files exist
+ls ~/.openclaw/openclaw.json ~/.openclaw/agents.list
 
-# Validate critical directories exist
-for dir in config workspaces scripts; do
-    [ -d "$dir" ] && echo "OK: $dir" || echo "MISSING: $dir"
-done
+# Count restored workspaces
+ls -d ~/.openclaw/workspace-* | wc -l
 
-# Check available backup dates
-ls workspaces/workspace-*.tar.gz | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort -u
-```
-
-### Phase 2: Restoration Execution
-
-```bash
-cd /path/to/AgentBoxGITS
-
-# Execute restoration with logging
-./scripts/agentbox-restore.sh 2>&1 | tee /tmp/agentbox-restore-$(date +%Y%m%d-%H%M%S).log
-RESTORE_EXIT=$?
-```
-
-#### **Step 2.2 – Interpret Exit Codes**
-| Exit Code | Meaning | AI Action Required |
-|-----------|---------|-------------------|
-| **0** | Success | Proceed to Phase 3 (Verification) |
-| **1** | Prerequisite failure | Check system dependencies, retry |
-| **2** | Configuration error | Validate config files, manual fix may be needed |
-| **3** | Workspace extraction failure | Check disk space, tarball integrity |
-| **4** | Credential restoration issue | Review credentials directory, may need manual auth |
-| **>4** | Unknown error | Examine log file, consider partial restore |
-
-### Phase 3: Post‑Restoration Verification
-
-Run these checks as a single script block so variables persist:
-
-```bash
-#!/usr/bin/env bash
-OPENCLAW_ROOT="$HOME/.openclaw"
-
-# 1. Verify critical files were restored
-for path in "$OPENCLAW_ROOT/openclaw.json" "$OPENCLAW_ROOT/agents.list"; do
-    [ -f "$path" ] && echo "OK: $path" || echo "MISSING: $path"
-done
-
-# 2. Count restored workspaces
-AGENT_COUNT=$(ls -d "$OPENCLAW_ROOT"/workspace-* 2>/dev/null | wc -l)
-echo "Restored $AGENT_COUNT agent workspace(s)"
-
-# 3. Restart and verify gateway
-sudo systemctl restart openclaw-gateway 2>/dev/null || \
-    openclaw gateway restart 2>/dev/null || \
-    echo "WARNING: Could not restart gateway – may need manual intervention"
-
+# Check gateway
+sudo systemctl restart openclaw-gateway
 sleep 5
-if curl -s http://localhost:18789/status 2>/dev/null | grep -q '"status":"ok"'; then
-    echo "SUCCESS: Gateway is responding"
-else
-    echo "WARNING: Gateway may not be running – check: journalctl -u openclaw-gateway -n 50"
-fi
+curl -s http://localhost:18789/status
 
-# 4. Test agent session
-openclaw sessions list --limit 1 2>/dev/null && echo "Agent session check passed" || echo "Agent session check failed"
+# Test agent sessions
+openclaw sessions list --limit 1
 ```
 
-### Phase 4: Error Handling & Recovery
-
-| Scenario | Symptoms | Resolution |
-|----------|----------|------------|
-| **Some agents missing** | Workspace tarballs absent for specific agents | Restore continues with available agents. Check older backup dates or recreate the agent manually. |
-| **Config version mismatch** | Gateway fails to start after restore | Back up current config, restore workspaces only, merge config settings manually. |
-| **Credentials expired** | Telegram bots / API calls fail post-restore | Re-authenticate each service. Restored credential files may contain stale tokens. |
-| **Disk space** | Extraction fails mid-way | Free space, then re-run the restore script (it's idempotent). |
-
-## Maintenance
-
-### Weekly Verification
-```bash
-cd /path/to/AgentBoxGITS
-git pull origin main
-
-# Verify latest tarball is not corrupted
-LATEST_TARBALL=$(ls -t workspaces/*.tar.gz 2>/dev/null | head -1)
-tar -tzf "$LATEST_TARBALL" >/dev/null 2>&1 && echo "OK" || echo "CORRUPTED: $LATEST_TARBALL"
-```
-
-### Pruning (automated by backup script)
-The backup script (`agentbox-backup.sh`) retains 7 days of tarballs locally. Git history preserves all prior versions.
-
-## Post‑Restoration Checklist
-- [ ] Gateway responds: `curl -s http://localhost:18789/status`
-- [ ] Agents can spawn sessions: `openclaw sessions list --limit 1`
-- [ ] Cron jobs scheduled: `openclaw cron list`
+**Checklist:**
+- [ ] Gateway responds to status requests
+- [ ] Agents can spawn sessions
+- [ ] Cron jobs scheduled (`openclaw cron list`)
 - [ ] Telegram bots responding
-- [ ] Backup cron job resumes (check `crontab -l`)
+- [ ] Backup cron job is in `crontab -l`
 
----
+## Emergency Manual Recovery
 
-## Emergency Recovery (Manual)
-
-If the restore script itself fails, do it by hand:
+If the restore script fails:
 
 ```bash
 cd /path/to/AgentBoxGITS
 
-# Pick the latest backup date
 LATEST_DATE=$(ls workspaces/workspace-*.tar.gz | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort -ru | head -1)
 
-# Restore configs
+# Restore configs (if they exist in the backup)
 mkdir -p ~/.openclaw/cron
-cp config/openclaw.json ~/.openclaw/
-cp config/agents.list ~/.openclaw/
-cp config/jobs.json ~/.openclaw/cron/jobs.json
+[ -f config/openclaw.json ] && cp config/openclaw.json ~/.openclaw/
+[ -f config/agents.list ]   && cp config/agents.list ~/.openclaw/
+[ -f config/jobs.json ]     && cp config/jobs.json ~/.openclaw/cron/jobs.json
 
 # Restore workspaces
 for TAR in workspaces/workspace-*-"$LATEST_DATE".tar.gz; do
@@ -181,25 +190,26 @@ for TAR in workspaces/workspace-*-"$LATEST_DATE".tar.gz; do
 done
 
 # Restore credentials
-tar -xzf credentials/credentials-"$LATEST_DATE".tar.gz -C ~/.openclaw/
+[ -f credentials/credentials-"$LATEST_DATE".tar.gz ] && \
+    tar -xzf credentials/credentials-"$LATEST_DATE".tar.gz -C ~/.openclaw/
 
-# Restart
 sudo systemctl restart openclaw-gateway
 ```
 
-### Gateway Won't Start?
+## Troubleshooting
+
+**Gateway won't start:**
 ```bash
 openclaw gateway status
 journalctl -u openclaw-gateway -n 50
 tail -100 ~/.openclaw/logs/gateway.log
 ```
 
-## Contact
-- **Primary**: Bayani via Telegram
-- **OpenClaw community**: Discord
-- **Docs**: docs.openclaw.ai
-- **This repo**: github.com/bayanimills/AgentBoxGITS
+**Backup script fails to push:**
+- Check `git remote -v` points to your fork
+- Check GitHub authentication (`gh auth status` or SSH keys)
+- Check disk space (`df -h`)
 
----
-
-**Last Updated**: 2026-03-22
+**Missing workspaces after restore:**
+- Check which dates are available: `ls workspaces/ | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort -u`
+- Try an older date by editing the script or restoring manually

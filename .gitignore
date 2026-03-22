@@ -17,6 +17,14 @@ backup-*.tar.gz
 .env
 .secret
 
+# Personal config (use .example files as templates)
+config/openclaw.json
+config/agents.list
+config/jobs.json
+
+# Credential backups (instance-specific)
+credentials/*.tar.gz
+
 # IDE
 .vscode/
 .idea/

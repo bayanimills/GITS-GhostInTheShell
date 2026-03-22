@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "example-job-id",
+      "agentId": "main",
+      "name": "Example Daily Task",
+      "enabled": false,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "DAILY_TASK: Your prompt here"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Agent definitions — must match the agents in openclaw.json
+# Add one entry per agent. The id must match openclaw.json agents.list[].id
+- id: main
+  name: MyAgent
+  path: /home/agent/.openclaw/agents/main

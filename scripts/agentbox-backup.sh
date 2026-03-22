@@ -50,7 +50,8 @@ check_git_config() {
 create_workspace_tarballs() {
     local workspace_dir="$OPENCLAW_ROOT"
     local output_dir="$BACKUP_ROOT/workspaces"
-    
+    mkdir -p "$output_dir"
+
     # Find all workspace-* directories
     find "$workspace_dir" -maxdepth 1 -type d -name 'workspace-*' | while read -r workspace; do
         local workspace_name=$(basename "$workspace")
@@ -81,7 +82,8 @@ create_workspace_tarballs() {
 # Function to backup configuration files
 backup_config_files() {
     local config_dir="$BACKUP_ROOT/config"
-    
+    mkdir -p "$config_dir"
+
     # List of critical configuration files
     local config_files=(
         "openclaw.json"
@@ -106,7 +108,8 @@ backup_config_files() {
 backup_credentials() {
     local creds_source="$OPENCLAW_ROOT/credentials"
     local creds_dest="$BACKUP_ROOT/credentials"
-    
+    mkdir -p "$creds_dest"
+
     if [ -d "$creds_source" ]; then
         # Create tarball of credentials directory
         local tarball_name="credentials-${DATE_TAG}.tar.gz"
