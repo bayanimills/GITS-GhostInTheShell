@@ -3,23 +3,22 @@ set -euo pipefail
 
 # GITS Restore Script
 # Restores OpenClaw from component-level snapshots.
+# Components are discovered dynamically from the snapshot manifest —
+# whatever the backup found in ~/.openclaw is what you can restore.
 #
 # Usage:
-#   gits-restore.sh                          # restore all components from latest snapshot
-#   gits-restore.sh --component config       # restore only config from latest snapshot
-#   gits-restore.sh --component agents       # restore only agents
-#   gits-restore.sh --from 2026-03-22_1430   # restore all from a specific snapshot
-#   gits-restore.sh --component config --from 2026-03-22_1430
-#   gits-restore.sh --list                   # list available snapshots
-#   gits-restore.sh --show 2026-03-22_1430   # show manifest for a snapshot
+#   gits-restore.sh                                    restore all from latest
+#   gits-restore.sh --component agents                 restore one component
+#   gits-restore.sh --from 2026-03-22_1430             pick a specific snapshot
+#   gits-restore.sh --component agents --from 2026-03-22_1430
+#   gits-restore.sh --list                             list available snapshots
+#   gits-restore.sh --show 2026-03-22_1430             show manifest
 
 OPENCLAW_ROOT="$HOME/.openclaw"
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SNAPSHOTS_DIR="$BACKUP_ROOT/snapshots"
 LOG_FILE="/tmp/gits-restore.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
-
-VALID_COMPONENTS=(config agents workspaces credentials)
 
 log_message() {
     echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
@@ -30,17 +29,21 @@ usage() {
 Usage: gits-restore.sh [OPTIONS]
 
 Options:
-  --component NAME   Restore a single component (config, agents, workspaces, credentials)
+  --component NAME   Restore a single component by name (as listed in manifest)
   --from TAG         Restore from a specific snapshot (e.g. 2026-03-22_1430)
   --list             List available snapshots with their components
   --show TAG         Show the manifest for a specific snapshot
   -h, --help         Show this help message
 
+Components are discovered from the snapshot, not hardcoded. Run --list or
+--show to see what components are available in each snapshot.
+
 Examples:
   gits-restore.sh                                    Restore everything from latest
-  gits-restore.sh --component config                 Restore only config files
-  gits-restore.sh --component agents --from 2026-03-22_1430
-  gits-restore.sh --list
+  gits-restore.sh --component agents                 Restore only the agents directory
+  gits-restore.sh --component root-files             Restore only root-level config files
+  gits-restore.sh --list                             See what's available
+  gits-restore.sh --show 2026-03-22_1430             Inspect a snapshot's contents
 EOF
     exit 0
 }
@@ -58,16 +61,21 @@ check_prerequisites() {
     fi
 }
 
-is_valid_component() {
-    local name="$1"
-    for c in "${VALID_COMPONENTS[@]}"; do
-        [ "$c" = "$name" ] && return 0
-    done
-    return 1
+# List component names from a manifest file (one per line).
+manifest_components() {
+    local manifest="$1"
+    # Parse component keys from the "components" object — lightweight, no jq dependency
+    grep -oP '^\s*"\K[^"]+(?="\s*:\s*\{)' "$manifest" | grep -v 'components'
+}
+
+# Check if a component exists in a manifest.
+manifest_has_component() {
+    local manifest="$1"
+    local name="$2"
+    manifest_components "$manifest" | grep -qx "$name"
 }
 
 # Find the latest snapshot directory (or a legacy monolithic tarball).
-# Prints the path to stdout.
 find_latest_snapshot_dir() {
     if [ ! -d "$SNAPSHOTS_DIR" ]; then
         log_message "ERROR: Snapshots directory not found at $SNAPSHOTS_DIR"
@@ -130,12 +138,14 @@ list_snapshots() {
         found=1
         local tag
         tag=$(basename "$(dirname "$manifest")")
-        local ts components total
+        local ts total
         ts=$(grep '"timestamp"' "$manifest" | head -1 | sed 's/.*: *"\(.*\)".*/\1/')
-        components=$(grep '"component_count"' "$manifest" | head -1 | sed 's/[^0-9]//g')
         total=$(grep '"total_bytes"' "$manifest" | head -1 | sed 's/[^0-9]//g')
         local total_mb=$(( total / 1024 / 1024 ))
-        echo "  $tag  ($ts)  ${components} components, ${total_mb} MB"
+
+        echo "  $tag  ($ts)  ${total_mb} MB"
+        echo "    components: $(manifest_components "$manifest" | tr '\n' ' ')"
+        echo ""
     done
 
     # Legacy monolithic tarballs
@@ -167,78 +177,54 @@ show_manifest() {
 }
 
 # Restore a single component tarball into ~/.openclaw.
-# Only replaces the specific paths covered by that component.
 restore_component() {
     local component="$1"
     local snapshot_dir="$2"
-    local tarball="$snapshot_dir/${component}.tar.gz"
+    local manifest="$snapshot_dir/manifest.json"
 
-    if [ ! -f "$tarball" ]; then
+    # Validate component exists in this snapshot
+    if ! manifest_has_component "$manifest" "$component"; then
         log_message "ERROR: Component '$component' not found in snapshot"
+        log_message "Available components: $(manifest_components "$manifest" | tr '\n' ' ')"
+        return 1
+    fi
+
+    local tarball="$snapshot_dir/${component}.tar.gz"
+    if [ ! -f "$tarball" ]; then
+        log_message "ERROR: Tarball for '$component' missing despite being in manifest"
         return 1
     fi
 
     log_message "Restoring component: $component"
 
-    local src_base
-    src_base="$(basename "$OPENCLAW_ROOT")"
+    # Back up what's about to be overwritten
+    if [ "$component" = "root-files" ]; then
+        # Root files — back up each file individually
+        for f in "$OPENCLAW_ROOT"/*; do
+            [ -f "$f" ] && cp "$f" "${f}.pre-restore" 2>/dev/null || true
+        done
+    elif [ -d "$OPENCLAW_ROOT/$component" ]; then
+        mv "$OPENCLAW_ROOT/$component" "$OPENCLAW_ROOT/${component}.pre-restore" 2>/dev/null || true
+    fi
 
-    # Back up the specific component before overwriting
-    case "$component" in
-        config)
-            # Back up individual config files that will be overwritten
-            for f in "$OPENCLAW_ROOT"/*.json "$OPENCLAW_ROOT"/*.yaml "$OPENCLAW_ROOT"/*.yml "$OPENCLAW_ROOT"/*.conf; do
-                if [ -e "$f" ]; then
-                    cp "$f" "${f}.pre-restore" 2>/dev/null || true
-                fi
-            done
-            ;;
-        agents)
-            if [ -d "$OPENCLAW_ROOT/agents" ]; then
-                mv "$OPENCLAW_ROOT/agents" "$OPENCLAW_ROOT/agents.pre-restore" 2>/dev/null || true
-            fi
-            ;;
-        workspaces)
-            for d in "$OPENCLAW_ROOT"/workspace*; do
-                if [ -d "$d" ]; then
-                    mv "$d" "${d}.pre-restore" 2>/dev/null || true
-                fi
-            done
-            ;;
-        credentials)
-            if [ -d "$OPENCLAW_ROOT/credentials" ]; then
-                mv "$OPENCLAW_ROOT/credentials" "$OPENCLAW_ROOT/credentials.pre-restore" 2>/dev/null || true
-            fi
-            ;;
-    esac
-
-    # Extract the component tarball — it contains paths relative to the parent of OPENCLAW_ROOT
+    # Extract
     mkdir -p "$OPENCLAW_ROOT"
     if tar -xzf "$tarball" -C "$(dirname "$OPENCLAW_ROOT")" 2>/dev/null; then
         log_message "  $component: restored successfully"
     else
         log_message "  $component: ERROR extracting tarball"
-        # Attempt rollback
-        case "$component" in
-            agents)
-                [ -d "$OPENCLAW_ROOT/agents.pre-restore" ] && mv "$OPENCLAW_ROOT/agents.pre-restore" "$OPENCLAW_ROOT/agents"
-                ;;
-            credentials)
-                [ -d "$OPENCLAW_ROOT/credentials.pre-restore" ] && mv "$OPENCLAW_ROOT/credentials.pre-restore" "$OPENCLAW_ROOT/credentials"
-                ;;
-            workspaces)
-                for d in "$OPENCLAW_ROOT"/*.pre-restore; do
-                    [ -d "$d" ] && mv "$d" "${d%.pre-restore}"
-                done
-                ;;
-        esac
+        # Rollback
+        if [ -d "$OPENCLAW_ROOT/${component}.pre-restore" ]; then
+            mv "$OPENCLAW_ROOT/${component}.pre-restore" "$OPENCLAW_ROOT/$component"
+        fi
         return 1
     fi
 }
 
-# Restore all components from a component-based snapshot directory.
+# Restore all components from a component-based snapshot.
 restore_all_components() {
     local snapshot_dir="$1"
+    local manifest="$snapshot_dir/manifest.json"
 
     log_message "Restoring all components from $(basename "$snapshot_dir")..."
 
@@ -252,7 +238,7 @@ restore_all_components() {
     mkdir -p "$OPENCLAW_ROOT"
 
     local failed=0
-    for component in config agents workspaces credentials; do
+    while IFS= read -r component; do
         local tarball="$snapshot_dir/${component}.tar.gz"
         if [ -f "$tarball" ]; then
             if tar -xzf "$tarball" -C "$(dirname "$OPENCLAW_ROOT")" 2>/dev/null; then
@@ -262,7 +248,7 @@ restore_all_components() {
                 failed=$((failed + 1))
             fi
         fi
-    done
+    done < <(manifest_components "$manifest")
 
     if [ "$failed" -gt 0 ]; then
         log_message "WARNING: $failed component(s) failed to restore"
@@ -310,7 +296,7 @@ validate_restoration() {
     fi
 
     local workspace_count
-    workspace_count=$(find "$OPENCLAW_ROOT" -maxdepth 1 -type d -name 'workspace*' | wc -l)
+    workspace_count=$(find "$OPENCLAW_ROOT" -maxdepth 1 -type d -name 'workspace*' 2>/dev/null | wc -l)
     if [ "$workspace_count" -eq 0 ]; then
         log_message "WARNING: No workspace directories found"
         issues=$((issues + 1))
@@ -320,7 +306,7 @@ validate_restoration() {
 
     if [ -d "$OPENCLAW_ROOT/agents" ]; then
         local agent_count
-        agent_count=$(find "$OPENCLAW_ROOT/agents" -maxdepth 1 -mindepth 1 -type d | wc -l)
+        agent_count=$(find "$OPENCLAW_ROOT/agents" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l)
         log_message "Found $agent_count agent definition(s)"
     fi
 
@@ -395,12 +381,6 @@ main() {
                 ;;
         esac
     done
-
-    # Validate component name if given
-    if [ -n "$component" ] && ! is_valid_component "$component"; then
-        log_message "ERROR: Invalid component '$component'. Valid: ${VALID_COMPONENTS[*]}"
-        exit 1
-    fi
 
     case "$action" in
         list)

@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # GITS Backup Script
-# Creates per-component snapshots of ~/.openclaw and pushes to git.
-# Components: config, agents, workspaces, credentials
+# Dynamically discovers everything inside ~/.openclaw and creates one
+# tarball per top-level directory, plus one for loose root files.
+# Writes a manifest.json describing what was captured.
 # Run every 3 hours via cron.
 
 # Configuration
@@ -15,9 +16,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 DATE_TAG=$(date '+%Y-%m-%d_%H%M')
 RETENTION_DAYS=7
 
-COMPONENTS=(config agents workspaces credentials)
-
-# Standard exclusions applied to all component tarballs
+# Standard exclusions — skip things that are regenerated or are the backup itself
 TAR_EXCLUDES=(
     --exclude="backups"
     --exclude="venv"
@@ -54,7 +53,6 @@ check_git_config() {
         return 1
     }
 
-    # Verify the remote URL contains a PAT for non-interactive auth
     if [[ "$remote_url" != *"@github.com"* ]]; then
         log_message "ERROR: Remote URL missing PAT. Run: scripts/gits-setup.sh <PAT>"
         return 1
@@ -68,129 +66,95 @@ check_git_config() {
     return 0
 }
 
-# Create a tarball for a single component.
-# Usage: snapshot_component <component_name> <snapshot_dir>
-# Returns the size in bytes via stdout, or 0 if the component was skipped.
-snapshot_component() {
-    local component="$1"
-    local snapshot_dir="$2"
-    local tarball_path="$snapshot_dir/${component}.tar.gz"
-    local src_parent
-    src_parent="$(dirname "$OPENCLAW_ROOT")"
-    local src_base
-    src_base="$(basename "$OPENCLAW_ROOT")"
-
-    case "$component" in
-        config)
-            # Top-level config files (openclaw.json, jobs.json, etc.)
-            local config_files=()
-            for f in "$OPENCLAW_ROOT"/*.json "$OPENCLAW_ROOT"/*.yaml "$OPENCLAW_ROOT"/*.yml "$OPENCLAW_ROOT"/*.conf; do
-                [ -e "$f" ] && config_files+=("${src_base}/$(basename "$f")")
-            done
-            if [ ${#config_files[@]} -eq 0 ]; then
-                log_message "  config: no config files found, skipping"
-                echo 0
-                return 0
-            fi
-            tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-                -C "$src_parent" "${config_files[@]}" 2>/dev/null || {
-                    log_message "  config: ERROR creating tarball"
-                    rm -f "$tarball_path"
-                    echo 0
-                    return 1
-                }
-            ;;
-        agents)
-            if [ ! -d "$OPENCLAW_ROOT/agents" ]; then
-                log_message "  agents: directory not found, skipping"
-                echo 0
-                return 0
-            fi
-            tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-                -C "$src_parent" "${src_base}/agents" 2>/dev/null || {
-                    log_message "  agents: ERROR creating tarball"
-                    rm -f "$tarball_path"
-                    echo 0
-                    return 1
-                }
-            ;;
-        workspaces)
-            local ws_dirs=()
-            for d in "$OPENCLAW_ROOT"/workspace*; do
-                [ -d "$d" ] && ws_dirs+=("${src_base}/$(basename "$d")")
-            done
-            if [ ${#ws_dirs[@]} -eq 0 ]; then
-                log_message "  workspaces: no workspace directories found, skipping"
-                echo 0
-                return 0
-            fi
-            tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-                -C "$src_parent" "${ws_dirs[@]}" 2>/dev/null || {
-                    log_message "  workspaces: ERROR creating tarball"
-                    rm -f "$tarball_path"
-                    echo 0
-                    return 1
-                }
-            ;;
-        credentials)
-            if [ ! -d "$OPENCLAW_ROOT/credentials" ]; then
-                log_message "  credentials: directory not found, skipping"
-                echo 0
-                return 0
-            fi
-            tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-                -C "$src_parent" "${src_base}/credentials" 2>/dev/null || {
-                    log_message "  credentials: ERROR creating tarball"
-                    rm -f "$tarball_path"
-                    echo 0
-                    return 1
-                }
-            ;;
-        *)
-            log_message "  $component: unknown component, skipping"
-            echo 0
-            return 0
-            ;;
-    esac
-
-    local size
-    size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
-    echo "$size"
-}
-
 create_snapshot() {
     local snapshot_dir="$SNAPSHOTS_DIR/$DATE_TAG"
     mkdir -p "$snapshot_dir"
 
     log_message "Creating component snapshots of $OPENCLAW_ROOT..."
 
+    local src_parent
+    src_parent="$(dirname "$OPENCLAW_ROOT")"
+    local src_base
+    src_base="$(basename "$OPENCLAW_ROOT")"
+
     local manifest="$snapshot_dir/manifest.json"
     local total_size=0
     local component_count=0
+    local first=true
 
-    # Start building manifest
+    # Start manifest
     echo '{' > "$manifest"
     echo "  \"timestamp\": \"$TIMESTAMP\"," >> "$manifest"
     echo "  \"date_tag\": \"$DATE_TAG\"," >> "$manifest"
     echo "  \"source\": \"$OPENCLAW_ROOT\"," >> "$manifest"
     echo '  "components": {' >> "$manifest"
 
-    local first=true
-    for component in "${COMPONENTS[@]}"; do
-        local size
-        size=$(snapshot_component "$component" "$snapshot_dir")
+    # --- Snapshot each top-level directory as its own component ---
+    for entry in "$OPENCLAW_ROOT"/*/; do
+        [ -d "$entry" ] || continue
+        local dirname
+        dirname="$(basename "$entry")"
 
-        if [ "$size" -gt 0 ]; then
+        # Skip excluded directories
+        case "$dirname" in
+            backups|venv|node_modules|.git) continue ;;
+        esac
+
+        local tarball_path="$snapshot_dir/${dirname}.tar.gz"
+
+        if tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
+            -C "$src_parent" "${src_base}/${dirname}" 2>/dev/null; then
+
+            local size
+            size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
             [ "$first" = true ] || echo ',' >> "$manifest"
             first=false
-            printf '    "%s": {"file": "%s.tar.gz", "bytes": %s}' \
-                "$component" "$component" "$size" >> "$manifest"
+            printf '    "%s": {"file": "%s.tar.gz", "type": "directory", "bytes": %s}' \
+                "$dirname" "$dirname" "$size" >> "$manifest"
             total_size=$((total_size + size))
             component_count=$((component_count + 1))
-            log_message "  $component: $(( size / 1024 )) KB"
+            log_message "  $dirname/: $(( size / 1024 )) KB"
+        else
+            log_message "  $dirname/: ERROR creating tarball, skipping"
+            rm -f "$tarball_path"
         fi
     done
 
+    # --- Snapshot loose root files as a single "root-files" component ---
+    local root_files=()
+    for f in "$OPENCLAW_ROOT"/*; do
+        [ -f "$f" ] || continue
+        local fname
+        fname="$(basename "$f")"
+        # Skip log/tmp by extension
+        case "$fname" in
+            *.log|*.tmp) continue ;;
+        esac
+        root_files+=("${src_base}/${fname}")
+    done
+
+    if [ ${#root_files[@]} -gt 0 ]; then
+        local tarball_path="$snapshot_dir/root-files.tar.gz"
+
+        if tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
+            -C "$src_parent" "${root_files[@]}" 2>/dev/null; then
+
+            local size
+            size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
+            [ "$first" = true ] || echo ',' >> "$manifest"
+            first=false
+            printf '    "root-files": {"file": "root-files.tar.gz", "type": "files", "bytes": %s}' \
+                "$size" >> "$manifest"
+            total_size=$((total_size + size))
+            component_count=$((component_count + 1))
+            log_message "  root-files: $(( size / 1024 )) KB"
+        else
+            log_message "  root-files: ERROR creating tarball, skipping"
+            rm -f "$tarball_path"
+        fi
+    fi
+
+    # Close manifest
     echo '' >> "$manifest"
     echo '  },' >> "$manifest"
     echo "  \"total_bytes\": $total_size," >> "$manifest"
