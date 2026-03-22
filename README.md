@@ -6,58 +6,46 @@ Automated snapshots of the entire `~/.openclaw` directory every 3 hours, pushed 
 
 The entire `~/.openclaw/` directory as a single tarball — workspaces, agent definitions, configs, credentials, cron jobs, scripts, everything. Excludes `backups/` (to avoid recursion), `venv`, `node_modules`, `.git`, and log files.
 
-## Prerequisites
+## Setup
 
-A GitHub Personal Access Token (PAT) with `repo` scope is required. The PAT is used by git to push snapshots to GitHub — without it, cron jobs run non-interactively and have no way to authenticate.
+**A GitHub Personal Access Token (PAT) is required before setup can proceed.** Without a PAT, backups cannot push to GitHub and the entire system is useless.
 
-Create one at: https://github.com/settings/tokens
+### For the user (before running setup)
 
-## Setup (for AI agents)
+1. Go to https://github.com/settings/tokens
+2. Click **Generate new token (classic)**
+3. Select the **`repo`** scope (full control of private repositories)
+4. Copy the token — it starts with `ghp_`, `ghs_`, or `github_pat_`
 
-You are an AI agent being asked to enable automated backups for this OpenClaw system. Follow these steps:
+Provide this PAT to the agent or pass it directly to the setup script.
 
-### 1. Clone this repo into the backup location
+### For AI agents
 
-```bash
-mkdir -p ~/.openclaw/backups
-git clone https://<PAT>@github.com/<OWNER>/GITS-GhostInTheShell.git ~/.openclaw/backups/GITS
-```
+You are an AI agent being asked to enable automated backups. **Do not proceed without a valid GitHub PAT from the user.** If no PAT has been provided, stop here and ask the user to create one using the instructions above.
 
-Replace `<PAT>` with the GitHub Personal Access Token and `<OWNER>` with the GitHub username. Embedding the PAT in the clone URL ensures git stores it for future pushes.
-
-### 2. Verify OpenClaw is installed
+Once you have a PAT, run:
 
 ```bash
-ls ~/.openclaw/openclaw.json
+~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT>
 ```
 
-If this file doesn't exist, OpenClaw isn't configured yet — set that up first.
+The setup script will:
+1. Validate the PAT format
+2. Verify the PAT has access to this GitHub repo
+3. Configure the git remote with the PAT for non-interactive auth
+4. Verify OpenClaw is installed
+5. Configure git for cron (credential store, user identity)
 
-### 3. Configure git credentials
+If any step fails, the script exits with a clear error. Do not continue until setup succeeds.
 
-```bash
-cd ~/.openclaw/backups/GITS
-git config credential.helper store
-```
+### After setup succeeds
 
-This persists the PAT to `~/.git-credentials` so cron can push without interaction. Verify auth works:
-
-```bash
-git ls-remote origin
-```
-
-If this fails, the PAT is missing or expired. Re-clone with a valid token.
-
-### 4. Run the first snapshot
-
+Run the first snapshot:
 ```bash
 ~/.openclaw/backups/GITS/scripts/agentbox-backup.sh
 ```
 
-This creates a tarball of `~/.openclaw/` in the `snapshots/` directory, commits, and pushes to GitHub. Check output for errors.
-
-### 5. Schedule snapshots every 3 hours
-
+Schedule snapshots every 3 hours:
 ```bash
 (crontab -l 2>/dev/null; echo "0 */3 * * * ~/.openclaw/backups/GITS/scripts/agentbox-backup.sh >> /tmp/agentbox-backup.log 2>&1") | crontab -
 ```
@@ -66,8 +54,6 @@ Verify:
 ```bash
 crontab -l | grep agentbox
 ```
-
-Done. Snapshots run every 3 hours and push to GitHub.
 
 ## Restoring
 
@@ -108,6 +94,7 @@ sudo systemctl restart openclaw-gateway
   │   ├── openclaw-2026-03-22_0500.tar.gz
   │   └── ...
   ├── scripts/
+  │   ├── gits-setup.sh         # Validates PAT, configures auth
   │   ├── agentbox-backup.sh    # Creates snapshot, commits, pushes
   │   └── agentbox-restore.sh   # Extracts latest snapshot
   ├── .gitignore
