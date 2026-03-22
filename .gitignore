@@ -10,18 +10,9 @@ Thumbs.db
 *.log
 logs/
 
-# Local backups (tarballs) are kept in repository, but we ignore any stray files
-backup-*.tar.gz
-
 # System files
 .env
 .secret
-
-# Instance-specific files (populated by backup script via git add --force)
-config/openclaw.json
-config/agents.list
-config/jobs.json
-credentials/*.tar.gz
 
 # IDE
 .vscode/
