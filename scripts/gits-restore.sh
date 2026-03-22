@@ -7,7 +7,7 @@ set -euo pipefail
 OPENCLAW_ROOT="$HOME/.openclaw"
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SNAPSHOTS_DIR="$BACKUP_ROOT/snapshots"
-LOG_FILE="/tmp/agentbox-restore.log"
+LOG_FILE="/tmp/gits-restore.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 
 log_message() {
@@ -110,18 +110,23 @@ display_next_steps() {
 
 === RESTORATION COMPLETE ===
 
+Restored files are in: $OPENCLAW_ROOT
+
 Next steps:
+
 1. Restart the OpenClaw gateway:
    sudo systemctl restart openclaw-gateway
 
 2. Verify gateway status:
    openclaw gateway status
 
-3. Check agent sessions:
-   openclaw sessions list
+3. Re-establish automated backups on this machine:
+   $BACKUP_ROOT/scripts/gits-setup.sh <YOUR_PAT>
 
-4. Restored files are in:
-   $OPENCLAW_ROOT
+4. Schedule backups every 3 hours:
+   (crontab -l 2>/dev/null; echo "0 */3 * * * $BACKUP_ROOT/scripts/gits-backup.sh >> /tmp/gits-backup.log 2>&1") | crontab -
+
+Without steps 3-4, this machine will NOT push backups to GitHub.
 
 Note: If a previous installation was found, it was backed up
 with a .backup-TIMESTAMP suffix in the parent directory.

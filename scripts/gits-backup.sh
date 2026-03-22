@@ -9,7 +9,7 @@ set -euo pipefail
 OPENCLAW_ROOT="$HOME/.openclaw"
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SNAPSHOTS_DIR="$BACKUP_ROOT/snapshots"
-LOG_FILE="/tmp/agentbox-backup.log"
+LOG_FILE="/tmp/gits-backup.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 DATE_TAG=$(date '+%Y-%m-%d_%H%M')
 RETENTION_DAYS=7
@@ -43,7 +43,7 @@ check_git_config() {
 
     # Verify the remote URL contains a PAT for non-interactive auth
     if [[ "$remote_url" != *"@github.com"* ]]; then
-        log_message "ERROR: Remote URL missing PAT. Update with: git remote set-url origin https://<PAT>@github.com/<OWNER>/GITS-GhostInTheShell.git"
+        log_message "ERROR: Remote URL missing PAT. Run: scripts/gits-setup.sh <PAT>"
         return 1
     fi
 

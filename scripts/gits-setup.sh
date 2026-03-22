@@ -130,9 +130,9 @@ cat <<EOF
 Next steps:
 
   1. Run the first snapshot:
-     $BACKUP_ROOT/scripts/agentbox-backup.sh
+     $BACKUP_ROOT/scripts/gits-backup.sh
 
   2. Schedule snapshots every 3 hours:
-     (crontab -l 2>/dev/null; echo "0 */3 * * * $BACKUP_ROOT/scripts/agentbox-backup.sh >> /tmp/agentbox-backup.log 2>&1") | crontab -
+     (crontab -l 2>/dev/null; echo "0 */3 * * * $BACKUP_ROOT/scripts/gits-backup.sh >> /tmp/gits-backup.log 2>&1") | crontab -
 
 EOF
