@@ -17,6 +17,12 @@ backup-*.tar.gz
 .env
 .secret
 
+# Instance-specific files (populated by backup script via git add --force)
+config/openclaw.json
+config/agents.list
+config/jobs.json
+credentials/*.tar.gz
+
 # IDE
 .vscode/
 .idea/

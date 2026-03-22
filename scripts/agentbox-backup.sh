@@ -150,8 +150,8 @@ commit_and_push() {
         git checkout main 2>/dev/null || git checkout -b main
     fi
     
-    # Add all changes
-    git add .
+    # Add all changes (--force to include gitignored config/credential files)
+    git add --force .
     
     # Check if there are changes to commit
     if git status --porcelain | grep -q '.'; then
