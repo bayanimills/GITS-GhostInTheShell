@@ -26,12 +26,21 @@ If the user already provided a PAT along with this URL (it starts with `ghp_`, `
 
 Otherwise, **stop and ask the user now**:
 
-> I need a GitHub Personal Access Token to set up GITS backups. Here's how to create one:
+> I need a GitHub Personal Access Token (PAT) so GITS can push your
+> backups to this repository. A PAT is like a password that gives
+> specific, limited access to your GitHub account — it's safer than
+> using your actual password because you control exactly what it can do
+> and you can revoke it at any time.
 >
-> 1. Go to https://github.com/settings/tokens
-> 2. Click **Generate new token (classic)**
-> 3. Select the **`repo`** scope (full control of private repositories)
-> 4. Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`)
+> Here's how to create one:
+>
+> 1. Go to **https://github.com/settings/tokens** (you may need to log in)
+> 2. Click **"Generate new token (classic)"**
+> 3. Give it a descriptive name like **"GITS Backup"** so you remember what it's for
+> 4. Set an **expiration** — 90 days is a good default, or "No expiration" if you prefer (you can always revoke it manually later)
+> 5. Under **"Select scopes"**, check only the **`repo`** box — this grants read/write access to your private repositories, which GITS needs to push snapshot commits. You do **not** need any other scopes (no `admin`, `workflow`, `gist`, etc.)
+> 6. Click **"Generate token"** at the bottom of the page
+> 7. **Copy the token immediately** — GitHub will only show it once. It will start with `ghp_`, `ghs_`, or `github_pat_`
 >
 > Paste the token here and I'll move on to the next question.
 
