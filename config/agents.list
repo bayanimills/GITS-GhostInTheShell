@@ -1,21 +1,29 @@
-# Agents list restored: 2026-02-15 09:50 UTC
+# Agents list – updated: 2026-03-22
+# Must match agent definitions in openclaw.json
 - id: main
-  configured: false
+  name: Jarvis
   path: /home/agent/.openclaw/agents/main
-  sessions: 188
-  last_session: 2026-02-15 08:40:00
-- id: aria
-  configured: false
-  path: /home/agent/.openclaw/agents/aria
-  sessions: 8
-  last_session: 2026-02-15 08:36:07
-- id: shelley
-  configured: false
-  path: /home/agent/.openclaw/agents/shelley
-  sessions: 9
-  last_session: 2026-02-15 08:36:07
 - id: kaira
-  configured: false
+  name: Kaira
   path: /home/agent/.openclaw/agents/kaira
-  sessions: 60
-  last_session: 2026-02-15 08:36:07
+- id: shelley
+  name: Shelley
+  path: /home/agent/.openclaw/agents/shelley
+- id: aria
+  name: Aria
+  path: /home/agent/.openclaw/agents/aria
+- id: donna
+  name: Donna
+  path: /home/agent/.openclaw/agents/donna
+- id: doc
+  name: Doc
+  path: /home/agent/.openclaw/agents/doc
+- id: danny
+  name: Danny
+  path: /home/agent/.openclaw/agents/danny
+- id: abby
+  name: Abby
+  path: /home/agent/.openclaw/agents/abby
+- id: kimi-agent
+  name: Kimi Agent (wrapper)
+  path: /home/agent/.openclaw/agents/kimi-agent

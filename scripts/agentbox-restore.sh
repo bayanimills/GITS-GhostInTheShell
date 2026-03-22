@@ -74,7 +74,10 @@ restore_config_files() {
     for config_file in "${config_files[@]}"; do
         local source_path="$config_dir/$(basename "$config_file")"
         local dest_path="$OPENCLAW_ROOT/$config_file"
-        
+
+        # Ensure destination directory exists (e.g. cron/)
+        mkdir -p "$(dirname "$dest_path")"
+
         if [ -f "$source_path" ]; then
             # Backup existing file if it exists
             if [ -f "$dest_path" ]; then
@@ -95,26 +98,42 @@ restore_config_files() {
 restore_workspace_tarballs() {
     local workspaces_dir="$BACKUP_ROOT/workspaces"
     local latest_date="$1"
-    
+    local restore_failed=0
+
     log_message "Restoring workspace tarballs for date $latest_date..."
-    
-    # Find all tarballs for the latest date
-    find "$workspaces_dir" -name "*-${latest_date}.tar.gz" | while read -r tarball; do
-        local basename=$(basename "$tarball")
-        
+
+    # Find all tarballs for the latest date (avoid subshell so failures propagate)
+    local tarballs=()
+    while IFS= read -r -d '' tarball; do
+        tarballs+=("$tarball")
+    done < <(find "$workspaces_dir" -name "*-${latest_date}.tar.gz" -print0)
+
+    if [ ${#tarballs[@]} -eq 0 ]; then
+        log_message "WARNING: No workspace tarballs found for date $latest_date"
+        return 1
+    fi
+
+    for tarball in "${tarballs[@]}"; do
+        local tarball_basename=$(basename "$tarball")
+
         # Determine workspace name (workspace-NAME-YYYY-MM-DD.tar.gz)
-        local workspace_name=$(echo "$basename" | sed -E 's/-(20[0-9]{2}-[0-9]{2}-[0-9]{2})\.tar\.gz$//')
-        
+        local workspace_name=$(echo "$tarball_basename" | sed -E 's/-(20[0-9]{2}-[0-9]{2}-[0-9]{2})\.tar\.gz$//')
+
         log_message "Restoring $workspace_name..."
-        
+
         # Extract tarball to OpenClaw root
-        tar -xzf "$tarball" -C "$OPENCLAW_ROOT" 2>/dev/null || {
+        if tar -xzf "$tarball" -C "$OPENCLAW_ROOT" 2>/dev/null; then
+            log_message "Restored $workspace_name"
+        else
             log_message "ERROR: Failed to extract $tarball"
-            exit 1
-        }
-        
-        log_message "Restored $workspace_name"
+            restore_failed=1
+        fi
     done
+
+    if [ "$restore_failed" -ne 0 ]; then
+        log_message "ERROR: One or more workspace tarballs failed to extract"
+        return 1
+    fi
 }
 
 # Function to restore credentials
@@ -222,7 +241,9 @@ main() {
     restore_config_files "$LATEST_DATE"
     
     # Restore workspace tarballs
-    restore_workspace_tarballs "$LATEST_DATE"
+    if ! restore_workspace_tarballs "$LATEST_DATE"; then
+        log_message "WARNING: Some workspace restorations failed – continuing with remaining steps"
+    fi
     
     # Restore credentials
     restore_credentials "$LATEST_DATE"
