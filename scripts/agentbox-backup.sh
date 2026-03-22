@@ -35,13 +35,20 @@ check_prerequisites() {
 check_git_config() {
     cd "$BACKUP_ROOT"
 
-    if ! git remote get-url origin >/dev/null 2>&1; then
+    local remote_url
+    remote_url=$(git remote get-url origin 2>/dev/null) || {
         log_message "ERROR: Git remote 'origin' not configured"
+        return 1
+    }
+
+    # Verify the remote URL contains a PAT for non-interactive auth
+    if [[ "$remote_url" != *"@github.com"* ]]; then
+        log_message "ERROR: Remote URL missing PAT. Update with: git remote set-url origin https://<PAT>@github.com/<OWNER>/GITS-GhostInTheShell.git"
         return 1
     fi
 
     if ! git ls-remote origin >/dev/null 2>&1; then
-        log_message "ERROR: Cannot authenticate with remote repository"
+        log_message "ERROR: Cannot authenticate with GitHub. PAT may be expired or revoked"
         return 1
     fi
 
