@@ -1,6 +1,6 @@
 # GITS (Ghost In The Shell) – OpenClaw Recovery System
 
-Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates per-component snapshots of your OpenClaw installation and pushes them to this repo on a schedule you choose. If your machine dies, clone this repo on a new machine and restore everything — or just the parts you need.
+Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates per-component snapshots of your OpenClaw installation and pushes them to this repo on a schedule you choose. Seven days of snapshots are kept locally for fast restores. If your machine dies, clone this repo on a new machine and restore everything — or just the specific agent or file you need.
 
 ## Setup Instructions
 
@@ -77,7 +77,10 @@ The setup script will:
 
 This snapshots each component of `~/.openclaw/`, commits them to this repo, and pushes to GitHub. Verify it succeeds — look for `"Successfully pushed to remote"` in the output.
 
-Setup is complete. Backups will run automatically at the chosen frequency and push to GitHub. Local snapshots are deleted after each successful push to save disk space.
+Setup is complete. Tell the user:
+- Backups will run automatically at the chosen frequency
+- 7 days of snapshots are kept locally for fast restores
+- Older snapshots are pruned locally but remain in the GitHub repo's git history
 
 ---
 
@@ -104,15 +107,15 @@ This will:
 - Extract all components to `~/.openclaw/`
 - Validate the restored files
 
-### Selective restore
+### Selective restore — by component
 
 Restore only the component you need:
 
 ```bash
-# See what's available
+# See what snapshots are available
 ./scripts/gits-restore.sh --list
 
-# Inspect a specific snapshot
+# Inspect a specific snapshot's manifest
 ./scripts/gits-restore.sh --show 2026-03-22_1430
 
 # Restore just one component
@@ -120,7 +123,25 @@ Restore only the component you need:
 ./scripts/gits-restore.sh --component credentials --from 2026-03-22_1430
 ```
 
-Components are discovered dynamically from the snapshot manifest — whatever directories and files were in `~/.openclaw/` at backup time are available as individual components.
+### Selective restore — by specific item
+
+Restore a single agent, workspace, or file from within a component:
+
+```bash
+# See what's inside the agents component
+./scripts/gits-restore.sh --contents agents
+
+# Restore just the kaira agent
+./scripts/gits-restore.sh --component agents --item kaira
+
+# Restore a specific agent from a specific snapshot
+./scripts/gits-restore.sh --component agents --item kaira --from 2026-03-22_1430
+
+# Restore a specific root-level config file
+./scripts/gits-restore.sh --component root-files --item openclaw.json
+```
+
+Existing files are backed up with a `.pre-restore` suffix before being overwritten.
 
 ### Step 3: Restart OpenClaw
 
@@ -174,23 +195,26 @@ Excluded from snapshots (to keep tarballs small):
 ```
 ~/.openclaw/                       # What gets backed up
 ~/.openclaw/backups/GITS/          # This repo (excluded from snapshots)
-  ├── snapshots/                   # Temporary — cleared after push
-  │   └── 2026-03-22_1430/
-  │       ├── manifest.json
-  │       ├── agents.tar.gz
-  │       ├── credentials.tar.gz
-  │       ├── root-files.tar.gz
+  ├── snapshots/                   # 7 days of local snapshots
+  │   ├── 2026-03-22_1430/
+  │   │   ├── manifest.json
+  │   │   ├── agents.tar.gz
+  │   │   ├── credentials.tar.gz
+  │   │   ├── root-files.tar.gz
+  │   │   └── ...
+  │   └── 2026-03-22_1130/
   │       └── ...
   ├── scripts/
   │   ├── gits-setup.sh            # Validates PAT, configures auth + cron
-  │   ├── gits-backup.sh           # Creates snapshots, commits, pushes, cleans up
-  │   └── gits-restore.sh          # Restores all or individual components
+  │   ├── gits-backup.sh           # Creates snapshots, commits, pushes
+  │   └── gits-restore.sh          # Restores all, by component, or by item
   ├── .gitignore
   └── README.md
 ```
 
 - **Frequency**: Configurable during setup (1h, 3h, 6h, 12h, 24h)
-- **Local cleanup**: Snapshots are deleted after successful push to GitHub
+- **Local retention**: 7 days of snapshots kept locally for fast restores
+- **Remote retention**: All snapshots preserved in GitHub git history indefinitely
 - **Push retries**: Up to 3 attempts with rebase on conflict
 - **Logs**: `/tmp/gits-backup.log`, `/tmp/gits-restore.log`, `/tmp/gits-setup.log`
 
@@ -211,6 +235,12 @@ This replaces the existing cron job with the new schedule.
 ```bash
 openclaw gateway status
 journalctl -u openclaw-gateway -n 50
+```
+
+**Restore a specific agent**:
+```bash
+./scripts/gits-restore.sh --contents agents
+./scripts/gits-restore.sh --component agents --item kaira
 ```
 
 **Restore to a specific date**: Use `--list` and `--from`:

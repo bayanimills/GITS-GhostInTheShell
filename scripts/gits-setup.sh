@@ -167,9 +167,14 @@ cat <<EOF
   Repository:  $OWNER/$REPO
   PAT:         ${PAT:0:10}...${PAT: -4} (validated)
   Backup from: $OPENCLAW_ROOT
-  Backup to:   $BACKUP_ROOT/snapshots/
+  Backup to:   $BACKUP_ROOT/snapshots/ (local) + GitHub (remote)
   Frequency:   Every $FREQUENCY ($CRON_SCHEDULE)
+  Retention:   7 days of snapshots kept locally for fast restores
   Cron:        Installed and active
+
+Local snapshots are kept for 7 days so you can restore quickly
+without pulling from GitHub. Older snapshots are pruned automatically
+but remain available in the GitHub repo's git history.
 
 Next step — run the first snapshot now:
 

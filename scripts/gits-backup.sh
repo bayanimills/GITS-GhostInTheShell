@@ -15,7 +15,6 @@ LOG_FILE="/tmp/gits-backup.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 DATE_TAG=$(date '+%Y-%m-%d_%H%M')
 RETENTION_DAYS=7
-CURRENT_SNAPSHOT_DIR=""  # set by create_snapshot, cleaned after push
 
 # Standard exclusions — skip things that are regenerated or are the backup itself
 TAR_EXCLUDES=(
@@ -162,20 +161,14 @@ create_snapshot() {
     echo "  \"component_count\": $component_count" >> "$manifest"
     echo '}' >> "$manifest"
 
-    CURRENT_SNAPSHOT_DIR="$snapshot_dir"
     log_message "Snapshot $DATE_TAG: $component_count components, $((total_size/1024/1024)) MB total"
 }
 
-cleanup_local_snapshots() {
-    # After a successful push, local snapshots are redundant — delete them.
-    # The snapshot has been committed to git and pushed to GitHub.
-    if [ -d "$SNAPSHOTS_DIR" ]; then
-        # Remove component-based snapshot directories
-        find "$SNAPSHOTS_DIR" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
-        # Remove any legacy monolithic tarballs
-        find "$SNAPSHOTS_DIR" -maxdepth 1 -name "openclaw-*.tar.gz" -type f -delete 2>/dev/null || true
-        log_message "Cleaned up local snapshots (pushed to GitHub)"
-    fi
+prune_old_snapshots() {
+    # Keep 7 days of local snapshots for quick restores without pulling from GitHub
+    find "$SNAPSHOTS_DIR" -maxdepth 1 -mindepth 1 -type d -mtime +$RETENTION_DAYS -exec rm -rf {} + 2>/dev/null || true
+    find "$SNAPSHOTS_DIR" -maxdepth 1 -name "openclaw-*.tar.gz" -type f -mtime +$RETENTION_DAYS -delete 2>/dev/null || true
+    log_message "Pruned local snapshots older than $RETENTION_DAYS days"
 }
 
 commit_and_push() {
@@ -227,12 +220,12 @@ main() {
     check_git_config || exit 1
 
     create_snapshot
+    prune_old_snapshots
 
     if commit_and_push; then
-        cleanup_local_snapshots
         log_message "Backup completed successfully"
     else
-        log_message "ERROR: Backup failed — local snapshots retained"
+        log_message "ERROR: Backup failed"
         exit 1
     fi
 
