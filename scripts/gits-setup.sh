@@ -3,7 +3,8 @@ set -euo pipefail
 
 # GITS Setup Script
 # Configures this repo for automated backups to GitHub.
-# Requires a GitHub PAT with 'repo' scope.
+# Requires a GitHub PAT with Contents read/write on this repo (fine-grained)
+# or 'repo' scope (classic). See README.md § Prerequisites for details.
 #
 # Usage: GITS_PAT='<TOKEN>' ./scripts/gits-setup.sh [FREQUENCY] [RETENTION]
 #
@@ -139,9 +140,9 @@ if [ "$HTTP_CODE" = "200" ]; then
 elif [ "$HTTP_CODE" = "401" ]; then
     die "PAT is invalid or expired. Generate a new one at https://github.com/settings/tokens"
 elif [ "$HTTP_CODE" = "403" ]; then
-    die "PAT does not have permission to access $OWNER/$REPO. Ensure it has 'repo' scope."
+    die "PAT does not have permission to access $OWNER/$REPO. Ensure it has Contents read/write (fine-grained) or 'repo' scope (classic)."
 elif [ "$HTTP_CODE" = "404" ]; then
-    die "Repository $OWNER/$REPO not found, or PAT lacks access. Check the repo exists and the PAT has 'repo' scope."
+    die "Repository $OWNER/$REPO not found, or PAT lacks access. Check the repo exists and the PAT has Contents read/write (fine-grained) or 'repo' scope (classic)."
 else
     die "Unexpected response from GitHub API (HTTP $HTTP_CODE). Check network connectivity."
 fi

@@ -10,12 +10,38 @@ Automated off-site backup of your entire `~/.openclaw` directory to GitHub. GITS
 - **Local retention** — recent snapshots are kept on disk (configurable: 1–30 days) for fast restores without pulling from GitHub. Older snapshots are pruned automatically but remain in the repo's git history indefinitely
 - **Pre-restore safety** — existing files are backed up with a `.pre-restore` or `.backup-TIMESTAMP` suffix before being overwritten, with automatic rollback on extraction failure
 - **Push resilience** — up to 3 push attempts with rebase-on-conflict if the remote has diverged
-- **PAT-based auth** — uses a GitHub Personal Access Token (classic or fine-grained) passed via environment variable, never on the command line
+- **PAT-based auth** — uses a GitHub Personal Access Token passed via environment variable, never on the command line. Fine-grained tokens (recommended) can be locked to just this repo with only Contents read/write; classic tokens need the `repo` scope
 - **Idempotent setup** — re-running setup detects an existing installation and offers to update just the PAT, change the schedule, or do a full reinstall
+
+## Prerequisites
+
+You need a GitHub repo and a PAT before running setup. **Order matters** — the repo must exist before you can create a fine-grained PAT scoped to it.
+
+### 1. Create the GitHub repo
+
+If this repo doesn't exist yet, create it on GitHub first (an empty private repo is fine). You can do this via the GitHub web UI or the CLI:
+
+```bash
+gh repo create GITS-GhostInTheShell --private
+```
+
+### 2. Create a PAT scoped to this repo
+
+Go to **https://github.com/settings/tokens** and create a token:
+
+| | Fine-grained (recommended) | Classic |
+|---|---|---|
+| **Click** | *"Generate new token" → "Fine-grained token"* | *"Generate new token (classic)"* |
+| **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box |
+| **Why** | Locked to just this one repo, minimum permissions | Simpler, but grants access to all your repos |
+
+Name it **"GITS Backup"**, set expiration to **90 days** (or your preference), and copy it immediately — GitHub only shows it once.
+
+> **Why Contents read/write?** The setup script validates the PAT by reading repo metadata (`api.github.com/repos/OWNER/REPO`), and the backup script pushes commits (`git push`). Contents read/write covers both operations. No other permissions are needed.
 
 ## Quick Start
 
-GITS is designed to be set up by an LLM agent (Claude, etc.) — just give it this repo's URL and say "set up GITS backups." The agent follows the [Setup Instructions](#setup-instructions) below.
+GITS is designed to be set up by an LLM agent (Claude, etc.) — just give it this repo's URL and say "set up GITS backups." The agent follows the [Setup Instructions](#setup-instructions-for-llm-agents) below.
 
 To set it up manually:
 
@@ -208,7 +234,7 @@ Then proceed through the questions **one at a time**, waiting for each answer be
 
 ### Step 1: Get a GitHub PAT
 
-A GitHub Personal Access Token (PAT) with `repo` (classic) or **Contents: Read and write** (fine-grained) permission is required for GITS to push backups.
+A GitHub Personal Access Token (PAT) is required for GITS to push backups. The minimum scope is **Contents: Read and write** on this repo only (fine-grained) or **`repo`** (classic). See the [Prerequisites](#prerequisites) section above for the full scoping table and why these permissions are needed.
 
 If the user already provided a PAT along with this URL (it starts with `ghp_`, `ghs_`, or `github_pat_`), skip straight to **validation** below, then to Step 2.
 
@@ -220,13 +246,17 @@ Otherwise, **stop and ask the user now**:
 >
 > **Create one here → https://github.com/settings/tokens**
 >
-> You have two options:
+> **Important:** If you're creating a fine-grained token (recommended),
+> the repo must already exist on GitHub — fine-grained tokens are scoped
+> to specific repos, so there's nothing to select if the repo hasn't been
+> created yet. If you haven't created the repo, do that first, then come
+> back to create the token.
 >
 > | | Fine-grained (recommended) | Classic |
 > |---|---|---|
 > | **Click** | *"Generate new token" → "Fine-grained token"* | *"Generate new token (classic)"* |
-> | **Scope** | Set **Repository access** to *"Only select repositories"* and pick this repo, then under **Permissions → Repository permissions**, set **Contents** to *"Read and write"* | Check the **`repo`** box (no other scopes needed) |
-> | **Advantage** | Locked to just this one repo | Simpler, fewer clicks |
+> | **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box (no other scopes needed) |
+> | **Minimum access** | Contents read/write on this repo only | `repo` scope (all your repos) |
 >
 > For both: name it **"GITS Backup"**, set expiration to **90 days**
 > (or your preference), then click **Generate token** and copy it
