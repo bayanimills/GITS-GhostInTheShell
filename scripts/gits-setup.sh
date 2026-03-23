@@ -5,7 +5,10 @@ set -euo pipefail
 # Configures this repo for automated backups to GitHub.
 # Requires a GitHub PAT with 'repo' scope.
 #
-# Usage: ./scripts/gits-setup.sh <GITHUB_PAT> [FREQUENCY] [RETENTION]
+# Usage: GITS_PAT='<TOKEN>' ./scripts/gits-setup.sh [FREQUENCY] [RETENTION]
+#
+# The PAT is read from the GITS_PAT environment variable (not a CLI argument)
+# so it stays out of shell history and `ps` output.
 #
 # FREQUENCY is a cron-friendly interval: 1h, 3h, 6h, 12h, 24h (default: 3h)
 # RETENTION is how long to keep local snapshots: 1d, 3d, 7d, 14d, 30d (default: 7d)
@@ -61,32 +64,28 @@ retention_label() {
     esac
 }
 
-# --- Step 1: Require PAT argument ---
+# --- Step 1: Require PAT from environment ---
 
-PAT="${1:-}"
+PAT="${GITS_PAT:-}"
 
 if [ -z "$PAT" ]; then
     cat <<'EOF'
 GITS setup requires a GitHub Personal Access Token (PAT).
 
-1. Go to: https://github.com/settings/tokens
-2. Click "Generate new token (classic)"
-3. Select the "repo" scope (full control of private repositories)
-4. Copy the token
+Pass it via the GITS_PAT environment variable:
 
-Then run:
-  ./scripts/gits-setup.sh <YOUR_PAT> [FREQUENCY] [RETENTION]
+  GITS_PAT='ghp_...' ./scripts/gits-setup.sh [FREQUENCY] [RETENTION]
 
 FREQUENCY options: 1h, 3h (default), 6h, 12h, 24h
 RETENTION options: 1d, 3d, 7d (default), 14d, 30d
 
 EOF
-    die "No PAT provided. Cannot proceed without GitHub authentication."
+    die "No PAT provided. Set GITS_PAT in the environment."
 fi
 
 # --- Step 2: Parse optional frequency ---
 
-FREQUENCY="${2:-3h}"
+FREQUENCY="${1:-3h}"
 CRON_SCHEDULE=$(frequency_to_cron "$FREQUENCY")
 
 if [ -z "$CRON_SCHEDULE" ]; then
@@ -97,7 +96,7 @@ log_message "Backup frequency: every $FREQUENCY ($CRON_SCHEDULE)"
 
 # --- Step 2b: Parse optional retention ---
 
-RETENTION="${3:-7d}"
+RETENTION="${2:-7d}"
 RETENTION_DAYS=$(retention_to_days "$RETENTION")
 
 if [ -z "$RETENTION_DAYS" ]; then

@@ -20,31 +20,39 @@ Then proceed through the questions **one at a time**, waiting for each answer be
 
 ### Step 1: Get a GitHub PAT
 
-A GitHub Personal Access Token (PAT) with `repo` scope is required for GITS to push backups.
+A GitHub Personal Access Token (PAT) with `repo` (classic) or **Contents: Read and write** (fine-grained) permission is required for GITS to push backups.
 
-If the user already provided a PAT along with this URL (it starts with `ghp_`, `ghs_`, or `github_pat_`), skip to Step 2.
+If the user already provided a PAT along with this URL (it starts with `ghp_`, `ghs_`, or `github_pat_`), skip straight to **validation** below, then to Step 2.
 
 Otherwise, **stop and ask the user now**:
 
-> I need a GitHub Personal Access Token (PAT) so GITS can push your
-> backups to this repository. A PAT is like a password that gives
-> specific, limited access to your GitHub account — it's safer than
-> using your actual password because you control exactly what it can do
-> and you can revoke it at any time.
+> GITS needs a GitHub Personal Access Token (PAT) to push backups to
+> this repo. A PAT is a scoped, revocable credential — safer than a
+> password because you control exactly what it can access.
 >
-> Here's how to create one:
+> **Create one here → https://github.com/settings/tokens**
 >
-> 1. Go to **https://github.com/settings/tokens** (you may need to log in)
-> 2. Click **"Generate new token (classic)"**
-> 3. Give it a descriptive name like **"GITS Backup"** so you remember what it's for
-> 4. Set an **expiration** — 90 days is a good default, or "No expiration" if you prefer (you can always revoke it manually later)
-> 5. Under **"Select scopes"**, check only the **`repo`** box — this grants read/write access to your private repositories, which GITS needs to push snapshot commits. You do **not** need any other scopes (no `admin`, `workflow`, `gist`, etc.)
-> 6. Click **"Generate token"** at the bottom of the page
-> 7. **Copy the token immediately** — GitHub will only show it once. It will start with `ghp_`, `ghs_`, or `github_pat_`
+> You have two options:
 >
-> Paste the token here and I'll move on to the next question.
+> | | Fine-grained (recommended) | Classic |
+> |---|---|---|
+> | **Click** | *"Generate new token" → "Fine-grained token"* | *"Generate new token (classic)"* |
+> | **Scope** | Set **Repository access** to *"Only select repositories"* and pick this repo, then under **Permissions → Repository permissions**, set **Contents** to *"Read and write"* | Check the **`repo`** box (no other scopes needed) |
+> | **Advantage** | Locked to just this one repo | Simpler, fewer clicks |
+>
+> For both: name it **"GITS Backup"**, set expiration to **90 days**
+> (or your preference), then click **Generate token** and copy it
+> immediately — GitHub only shows it once.
+>
+> Paste the token here when you're ready.
 
-**Do not continue until you have a valid PAT.**
+#### Validation
+
+When the user provides a token:
+
+1. **Format check** — verify it matches one of: `ghp_[A-Za-z0-9]{36,}`, `ghs_[A-Za-z0-9]{36,}`, or `github_pat_[A-Za-z0-9_]{22,}`. If not, tell the user the value doesn't look like a GitHub token and ask them to try again.
+2. **Never echo the token.** Do not repeat the token back in your response, do not include it in code blocks, and do not log it. Refer to it only as "your token" or "the PAT."
+3. **Do not continue until validation passes.**
 
 ### Step 2: Ask for backup frequency
 
@@ -90,11 +98,15 @@ The `<REPO_URL>` is the GitHub URL the user provided when they asked you to set 
 
 ### Step 5: Run setup with the PAT, frequency, and retention
 
+Pass the PAT through an environment variable so it does not appear in shell history or `ps` output:
+
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY> <RETENTION>
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
 ```
 
-For example: `gits-setup.sh ghp_abc123 6h 7d`
+For example: `GITS_PAT='...' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 6h 7d`
+
+**Important:** When constructing this command, substitute the user's actual token into the `GITS_PAT` value. Do **not** echo or log the token anywhere else.
 
 The setup script will:
 
@@ -195,7 +207,7 @@ The restored machine does not have backups configured yet. Set them up:
 ```bash
 mkdir -p ~/.openclaw/backups
 cp -r GITS ~/.openclaw/backups/GITS
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> <FREQUENCY> <RETENTION>
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
 ```
 
@@ -261,12 +273,12 @@ Excluded from snapshots (to keep tarballs small):
 
 **Backup fails to push**: The PAT may be expired. Update it:
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <NEW_PAT> <FREQUENCY> <RETENTION>
+GITS_PAT='<NEW_PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
 ```
 
 **Change backup frequency or retention**:
 ```bash
-~/.openclaw/backups/GITS/scripts/gits-setup.sh <PAT> 6h 14d
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 6h 14d
 ```
 This replaces the existing cron job and retention setting.
 
