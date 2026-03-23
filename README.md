@@ -10,34 +10,32 @@ Automated off-site backup of your entire `~/.openclaw` directory to GitHub. GITS
 - **Local retention** — recent snapshots are kept on disk (configurable: 1–30 days) for fast restores without pulling from GitHub. Older snapshots are pruned automatically but remain in the repo's git history indefinitely
 - **Pre-restore safety** — existing files are backed up with a `.pre-restore` or `.backup-TIMESTAMP` suffix before being overwritten, with automatic rollback on extraction failure
 - **Push resilience** — up to 3 push attempts with rebase-on-conflict if the remote has diverged
-- **PAT-based auth** — uses a GitHub Personal Access Token passed via environment variable, never on the command line. Fine-grained tokens (recommended) can be locked to just this repo with only Contents read/write; classic tokens need the `repo` scope
+- **PAT-based auth** — uses a GitHub Personal Access Token passed via environment variable, never on the command line. Works with fine-grained tokens (scoped to specific repos) or classic tokens (`repo` scope) — see [Prerequisites](#prerequisites)
 - **Idempotent setup** — re-running setup detects an existing installation and offers to update just the PAT, change the schedule, or do a full reinstall
 
 ## Prerequisites
 
-You need a GitHub repo and a PAT before running setup. **Order matters** — the repo must exist before you can create a fine-grained PAT scoped to it.
+GITS needs two things: a GitHub repo to push to, and a PAT that can read and write its contents. How you set those up is your call — the sections below cover the two most common approaches.
 
 ### 1. Create the GitHub repo
 
-If this repo doesn't exist yet, create it on GitHub first (an empty private repo is fine). You can do this via the GitHub web UI or the CLI:
+If this repo doesn't exist yet on GitHub, create it first (an empty private repo is fine):
 
 ```bash
 gh repo create GITS-GhostInTheShell --private
 ```
 
-### 2. Create a PAT scoped to this repo
+### 2. Create a PAT
 
-Go to **https://github.com/settings/tokens** and create a token:
+Go to **https://github.com/settings/tokens**. GITS needs the ability to read repo metadata and `git push` — that translates to:
 
-| | Fine-grained (recommended) | Classic |
+| | Fine-grained token | Classic token |
 |---|---|---|
 | **Click** | *"Generate new token" → "Fine-grained token"* | *"Generate new token (classic)"* |
 | **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box |
-| **Why** | Locked to just this one repo, minimum permissions | Simpler, but grants access to all your repos |
+| **Trade-off** | Locked to specific repo(s), minimum permissions — but the repo must already exist on GitHub before you can select it | Simpler setup, works immediately — but grants access to all your repos |
 
-Name it **"GITS Backup"**, set expiration to **90 days** (or your preference), and copy it immediately — GitHub only shows it once.
-
-> **Why Contents read/write?** The setup script validates the PAT by reading repo metadata (`api.github.com/repos/OWNER/REPO`), and the backup script pushes commits (`git push`). Contents read/write covers both operations. No other permissions are needed.
+Name it something recognizable (e.g. "GITS Backup"), set expiration to your preference, and copy it immediately — GitHub only shows it once.
 
 ## Quick Start
 
@@ -234,7 +232,7 @@ Then proceed through the questions **one at a time**, waiting for each answer be
 
 ### Step 1: Get a GitHub PAT
 
-A GitHub Personal Access Token (PAT) is required for GITS to push backups. The minimum scope is **Contents: Read and write** on this repo only (fine-grained) or **`repo`** (classic). See the [Prerequisites](#prerequisites) section above for the full scoping table and why these permissions are needed.
+A GitHub Personal Access Token (PAT) is required for GITS to push backups. GITS needs **Contents read/write** access to this repo — how the user achieves that (fine-grained token scoped to this repo, classic token with `repo` scope, etc.) is up to them. See the [Prerequisites](#prerequisites) section for the full comparison.
 
 If the user already provided a PAT along with this URL (it starts with `ghp_`, `ghs_`, or `github_pat_`), skip straight to **validation** below, then to Step 2.
 
@@ -246,21 +244,16 @@ Otherwise, **stop and ask the user now**:
 >
 > **Create one here → https://github.com/settings/tokens**
 >
-> **Important:** If you're creating a fine-grained token (recommended),
-> the repo must already exist on GitHub — fine-grained tokens are scoped
-> to specific repos, so there's nothing to select if the repo hasn't been
-> created yet. If you haven't created the repo, do that first, then come
-> back to create the token.
+> GITS needs the ability to read repo metadata and push commits.
+> There are two token types — pick whichever fits your setup:
 >
-> | | Fine-grained (recommended) | Classic |
+> | | Fine-grained token | Classic token |
 > |---|---|---|
-> | **Click** | *"Generate new token" → "Fine-grained token"* | *"Generate new token (classic)"* |
-> | **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box (no other scopes needed) |
-> | **Minimum access** | Contents read/write on this repo only | `repo` scope (all your repos) |
+> | **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box |
+> | **Trade-off** | Locked to specific repo(s), minimum permissions — but the repo must already exist on GitHub before you can select it | Simpler setup — but grants access to all your repos |
 >
-> For both: name it **"GITS Backup"**, set expiration to **90 days**
-> (or your preference), then click **Generate token** and copy it
-> immediately — GitHub only shows it once.
+> Set expiration to your preference, then click **Generate token** and
+> copy it immediately — GitHub only shows it once.
 >
 > Paste the token here when you're ready.
 
