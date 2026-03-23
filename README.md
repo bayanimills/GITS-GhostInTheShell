@@ -1,8 +1,131 @@
 # GITS (Ghost In The Shell) – OpenClaw Recovery System
 
-Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates per-component snapshots of your OpenClaw installation and pushes them to this repo on a schedule you choose. Snapshots are kept locally (duration configurable) for fast restores. If your machine dies, clone this repo on a new machine and restore everything — or just the specific agent or file you need.
+Automated off-site backup of your entire `~/.openclaw` directory to GitHub. GITS snapshots your OpenClaw installation on a schedule, pushes to this repo, and lets you restore everything — or just the specific agent or file you need — on any machine.
 
-## Setup Instructions
+## Features
+
+- **Automated scheduled backups** — runs via cron at your chosen interval (every 1h, 3h, 6h, 12h, or 24h)
+- **Per-component snapshots** — each top-level directory in `~/.openclaw` (agents, credentials, workspaces, etc.) gets its own tarball, plus a `root-files.tar.gz` for loose config files. A `manifest.json` records what was captured and component sizes
+- **Granular restore** — restore everything, a single component (`--component agents`), or a single item within a component (`--component agents --item kaira`)
+- **Local retention** — recent snapshots are kept on disk (configurable: 1–30 days) for fast restores without pulling from GitHub. Older snapshots are pruned automatically but remain in the repo's git history indefinitely
+- **Pre-restore safety** — existing files are backed up with a `.pre-restore` or `.backup-TIMESTAMP` suffix before being overwritten, with automatic rollback on extraction failure
+- **Push resilience** — up to 3 push attempts with rebase-on-conflict if the remote has diverged
+- **PAT-based auth** — uses a GitHub Personal Access Token (classic or fine-grained) passed via environment variable, never on the command line
+- **Idempotent setup** — re-running setup detects an existing installation and offers to update just the PAT, change the schedule, or do a full reinstall
+
+## Quick Start
+
+GITS is designed to be set up by an LLM agent (Claude, etc.) — just give it this repo's URL and say "set up GITS backups." The agent follows the [Setup Instructions](#setup-instructions) below.
+
+To set it up manually:
+
+```bash
+# 1. Clone this repo
+git clone https://github.com/<OWNER>/GITS-GhostInTheShell.git ~/.openclaw/backups/GITS
+
+# 2. Run setup (creates cron job, configures git auth)
+GITS_PAT='ghp_...' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h 7d
+
+# 3. Run first backup
+~/.openclaw/backups/GITS/scripts/gits-backup.sh
+```
+
+To restore on a new machine:
+
+```bash
+git clone https://<PAT>@github.com/<OWNER>/GITS-GhostInTheShell.git GITS
+cd GITS && ./scripts/gits-restore.sh
+```
+
+## How It Works
+
+### Backup cycle (`gits-backup.sh`)
+
+1. **Prerequisites** — verifies `~/.openclaw` exists and `tar`/`git` are available
+2. **Auth check** — confirms the git remote has a PAT embedded and can reach GitHub (via `git ls-remote`)
+3. **Snapshot** — iterates every top-level directory in `~/.openclaw` (skipping `backups/`, `venv/`, `node_modules/`, `.git/`), creates a `.tar.gz` per directory. Loose root files (e.g. `openclaw.json`) are bundled into `root-files.tar.gz`. Writes `manifest.json` with timestamps, component names, and byte sizes
+4. **Prune** — deletes local snapshot directories and legacy tarballs older than `RETENTION_DAYS` (read from `gits.conf`, default 7) using `find -mtime`
+5. **Commit & push** — switches to `main` branch, stages everything with `git add --force`, commits with a timestamped message, and pushes. On push failure, retries up to 3 times with `git pull --rebase` between attempts
+
+### Setup (`gits-setup.sh`)
+
+1. Reads PAT from `GITS_PAT` environment variable (not a CLI argument — stays out of shell history and `ps`)
+2. Validates PAT format (must start with `ghp_`, `ghs_`, or `github_pat_`)
+3. Validates PAT against the GitHub API — checks HTTP response code: 200 (ok), 401 (invalid/expired), 403 (insufficient scope), 404 (repo not found)
+4. Rewrites the git remote URL to embed the PAT for non-interactive pushes
+5. Verifies push access with `git ls-remote`
+6. Confirms `~/.openclaw` exists
+7. Configures git: sets `credential.helper store`, committer name (`GITS Backup`), and email (`gits-backup@localhost`)
+8. Installs a cron job at the chosen frequency (replaces any existing GITS cron entry)
+9. Writes `RETENTION_DAYS` to `gits.conf`
+
+### Restore (`gits-restore.sh`)
+
+| Command | Effect |
+|---|---|
+| `gits-restore.sh` | Restore all components from the latest snapshot |
+| `--component agents` | Restore just the `agents/` directory |
+| `--component agents --item kaira` | Restore just the `kaira` agent |
+| `--from 2026-03-22_1430` | Use a specific snapshot instead of latest |
+| `--list` | List available snapshots with sizes |
+| `--show TAG` | Print a snapshot's `manifest.json` |
+| `--contents agents` | List items inside a component tarball |
+
+**Safety features:**
+- Before a full restore, the existing `~/.openclaw` is renamed to `~/.openclaw.backup-YYYYMMDD-HHMMSS`
+- Before a component restore, the existing component dir is renamed with `.pre-restore`
+- Before an item restore, the existing item is copied/moved to `.pre-restore`
+- On extraction failure, the backup is rolled back automatically
+- After restore, validates the result: checks for `openclaw.json`, counts workspaces and agent definitions
+- Warns if running as root (not recommended)
+- Supports legacy monolithic tarballs (`openclaw-*.tar.gz`) for backwards compatibility
+
+### Directory structure
+
+```
+~/.openclaw/backups/GITS/          # This repo
+  ├── gits.conf                     # Retention config (written by setup)
+  ├── snapshots/                   # Local snapshots (pruned by retention)
+  │   ├── 2026-03-22_1430/
+  │   │   ├── manifest.json
+  │   │   ├── agents.tar.gz
+  │   │   ├── credentials.tar.gz
+  │   │   ├── root-files.tar.gz
+  │   │   └── ...
+  │   └── 2026-03-22_1130/
+  │       └── ...
+  ├── scripts/
+  │   ├── gits-setup.sh            # Validates PAT, configures auth + cron
+  │   ├── gits-backup.sh           # Creates snapshots, commits, pushes
+  │   └── gits-restore.sh          # Restores all, by component, or by item
+  ├── .gitignore
+  └── README.md
+```
+
+### What gets backed up
+
+Everything in `~/.openclaw/`, split into per-component tarballs:
+
+- Each top-level directory (e.g. `agents/`, `credentials/`, workspace dirs) → its own `.tar.gz`
+- Loose root files (e.g. `openclaw.json`, `jobs.json`) → `root-files.tar.gz`
+- A `manifest.json` listing all components with sizes
+
+Excluded from snapshots (to keep tarballs small):
+- `backups/` (avoids recursive backup)
+- `venv`, `node_modules`, `.git`
+- `*.log`, `*.tmp`
+
+### Configuration
+
+- **Frequency**: 1h, 3h (default), 6h, 12h, 24h — stored as a cron schedule
+- **Local retention**: 1d, 3d, 7d (default), 14d, 30d — stored in `gits.conf` as `RETENTION_DAYS`
+- **Remote retention**: All snapshots preserved in GitHub git history indefinitely
+- **Push retries**: Up to 3 attempts with `git pull --rebase` on conflict
+- **Logs**: `/tmp/gits-setup.log`, `/tmp/gits-backup.log`, `/tmp/gits-restore.log`
+
+---
+
+## Setup Instructions (for LLM agents)
 
 You are reading this because a user asked you to set up GITS backups and gave you this repo's URL. **Before doing anything else**, check whether GITS is already installed.
 
@@ -291,48 +414,6 @@ sudo systemctl restart openclaw-gateway
 ```
 
 ---
-
-## What Gets Backed Up
-
-Everything in `~/.openclaw/`, split into per-component tarballs:
-
-- Each top-level directory (e.g. `agents/`, `credentials/`, workspace dirs) → its own `.tar.gz`
-- Loose root files (e.g. `openclaw.json`, `jobs.json`) → `root-files.tar.gz`
-- A `manifest.json` listing all components with sizes
-
-Excluded from snapshots (to keep tarballs small):
-- `backups/` (avoids recursive backup)
-- `venv`, `node_modules`, `.git`
-- `*.log`, `*.tmp`
-
-## How It Works
-
-```
-~/.openclaw/                       # What gets backed up
-~/.openclaw/backups/GITS/          # This repo (excluded from snapshots)
-  ├── gits.conf                     # Retention config (written by setup)
-  ├── snapshots/                   # Local snapshots (retention configurable)
-  │   ├── 2026-03-22_1430/
-  │   │   ├── manifest.json
-  │   │   ├── agents.tar.gz
-  │   │   ├── credentials.tar.gz
-  │   │   ├── root-files.tar.gz
-  │   │   └── ...
-  │   └── 2026-03-22_1130/
-  │       └── ...
-  ├── scripts/
-  │   ├── gits-setup.sh            # Validates PAT, configures auth + cron
-  │   ├── gits-backup.sh           # Creates snapshots, commits, pushes
-  │   └── gits-restore.sh          # Restores all, by component, or by item
-  ├── .gitignore
-  └── README.md
-```
-
-- **Frequency**: Configurable during setup (1h, 3h, 6h, 12h, 24h)
-- **Local retention**: Configurable during setup (1d, 3d, 7d, 14d, 30d — default 7d)
-- **Remote retention**: All snapshots preserved in GitHub git history indefinitely
-- **Push retries**: Up to 3 attempts with rebase on conflict
-- **Logs**: `/tmp/gits-backup.log`, `/tmp/gits-restore.log`, `/tmp/gits-setup.log`
 
 ## Troubleshooting
 

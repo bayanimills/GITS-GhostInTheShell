@@ -459,7 +459,7 @@ Next steps:
    openclaw gateway status
 
 3. Re-establish automated backups on this machine:
-   $BACKUP_ROOT/scripts/gits-setup.sh <YOUR_PAT> <FREQUENCY>
+   GITS_PAT='<YOUR_PAT>' $BACKUP_ROOT/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
 
 Without step 3, this machine will NOT push backups to GitHub.
 
