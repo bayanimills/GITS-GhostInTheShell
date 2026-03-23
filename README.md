@@ -10,16 +10,25 @@ Follow these steps in order. Do not skip steps. Do not proceed past Step 0 witho
 
 **STOP. A GitHub Personal Access Token (PAT) is required before anything else.**
 
+GITS needs the ability to read repo metadata and push commits. That means **Contents read/write** access to this repo. There are two token types — the user picks whichever fits their setup:
+
+| | Fine-grained token | Classic token |
+|---|---|---|
+| **Create** | [github.com/settings/tokens](https://github.com/settings/tokens) → *"Fine-grained token"* | [github.com/settings/tokens](https://github.com/settings/tokens) → *"Generate new token (classic)"* |
+| **Scope** | **Repository access** → *"Only select repositories"* → pick this repo, then **Permissions → Contents** → *"Read and write"* | Check the **`repo`** box |
+| **Trade-off** | Locked to specific repo(s), minimum permissions — but the repo must already exist on GitHub before you can select it | Simpler setup — but grants access to all your repos |
+
 If you are an AI agent and the user has not provided a PAT, ask them now:
 
 > I need a GitHub Personal Access Token to set up GITS backups.
 >
-> 1. Go to https://github.com/settings/tokens
-> 2. Click **Generate new token (classic)**
-> 3. Select the **`repo`** scope (full control of private repositories)
-> 4. Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`)
+> Go to https://github.com/settings/tokens and create a token.
+> GITS needs Contents read/write access — you can use either:
 >
-> Please paste the token here.
+> - **Fine-grained token** — scope it to just this repo (the repo must already exist on GitHub to select it)
+> - **Classic token** — check the `repo` box
+>
+> Copy the token (it starts with `ghp_`, `ghs_`, or `github_pat_`) and paste it here.
 
 **Do not continue until you have a valid PAT.**
 
