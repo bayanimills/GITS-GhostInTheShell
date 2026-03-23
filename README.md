@@ -4,7 +4,72 @@ Off-site backup of the entire `~/.openclaw` directory to GitHub. GITS creates pe
 
 ## Setup Instructions
 
-You are reading this because a user asked you to set up GITS backups and gave you this repo's URL. Follow these steps in order.
+You are reading this because a user asked you to set up GITS backups and gave you this repo's URL. **Before doing anything else**, check whether GITS is already installed.
+
+### Step 0: Detect existing installation
+
+Run this check silently (do not show the command output to the user):
+
+```bash
+ls -d ~/.openclaw/backups/GITS 2>/dev/null && echo "INSTALLED" || echo "NOT_INSTALLED"
+```
+
+**If `NOT_INSTALLED`** — this is a fresh setup. Continue to **Step 1** below.
+
+**If `INSTALLED`** — GITS is already on this machine. Do **not** re-clone or start from scratch. Instead, tell the user:
+
+> GITS is already installed on this machine. What would you like to do?
+>
+> - **Update PAT** — Replace the token (e.g. it expired)
+> - **Change schedule** — Update backup frequency or local retention
+> - **Full reinstall** — Remove the existing installation and start fresh
+
+Then follow the appropriate path:
+
+#### Path: Update PAT
+
+1. Ask for the new PAT (follow the **Step 1** prompt and validation below)
+2. Run `gits-setup.sh` with the new PAT and the **existing** settings:
+   ```bash
+   # Read current settings from gits.conf
+   source ~/.openclaw/backups/GITS/gits.conf
+   ```
+   Then look up the current cron frequency from the crontab. If you can't determine existing values, ask the user to confirm them.
+   ```bash
+   GITS_PAT='<NEW_PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
+   ```
+3. Run a test backup to verify: `~/.openclaw/backups/GITS/scripts/gits-backup.sh`
+4. Tell the user the PAT has been updated and backups are working.
+
+#### Path: Change schedule
+
+1. Ask whichever question applies — frequency (Step 2 prompt) and/or retention (Step 3 prompt)
+2. Re-run `gits-setup.sh` with the existing PAT (already embedded in the git remote) and the new settings. To reuse the current PAT without asking for it again:
+   ```bash
+   # Extract the PAT already stored in the remote URL
+   EXISTING_PAT=$(git -C ~/.openclaw/backups/GITS remote get-url origin | sed -n 's|https://\([^@]*\)@.*|\1|p')
+   ```
+   Then:
+   ```bash
+   GITS_PAT="$EXISTING_PAT" ~/.openclaw/backups/GITS/scripts/gits-setup.sh <NEW_FREQUENCY> <NEW_RETENTION>
+   ```
+3. Tell the user the schedule has been updated.
+
+#### Path: Full reinstall
+
+1. Confirm with the user: *"This will remove the existing GITS installation and set it up again from scratch. Your backup history on GitHub is safe — only the local copy is removed. Proceed?"*
+2. If confirmed:
+   ```bash
+   # Remove existing cron entry
+   crontab -l 2>/dev/null | grep -v 'gits-backup\.sh' | crontab -
+   # Remove local installation
+   rm -rf ~/.openclaw/backups/GITS
+   ```
+3. Continue with **Step 1** below (fresh setup).
+
+---
+
+### Fresh Setup (Steps 1–6)
 
 **Before you begin**, tell the user what you'll need from them:
 
