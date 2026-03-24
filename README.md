@@ -84,12 +84,21 @@ GITS requires `bash` (4.0+), `tar`, `git`, and `curl` — all standard on Linux.
 
 GITS backs up everything in `~/.openclaw/`, split into per-component tarballs. Each top-level directory (agents, credentials, workspaces, etc.) gets its own archive. Loose config files are bundled into `root-files.tar.gz`. A `manifest.json` records what was captured and sizes.
 
-**Excluded from snapshots** (build artifacts that can be regenerated):
+**Excluded from snapshots** (build artifacts and regenerable data):
+- `browser/` — browser state and cache (typically hundreds of MB, regenerated on launch)
 - `backups/` — avoids backing up the backup tool itself
 - `venv/` — Python virtual environments, recreated with `pip install`
 - `node_modules/` — Node.js packages, recreated with `npm install`
 - `.git/` — git metadata within OpenClaw directories
-- `*.log`, `*.tmp` — temporary files
+- `Cache/`, `CacheStorage/`, `GPUCache/`, `Service Worker/` — browser/runtime caches
+- `__pycache__/`, `*.pyc` — Python bytecode
+- `*.log`, `*.tmp`, `*.sqlite-wal`, `*.sqlite-shm`, `*.pack`, `*.wasm` — ephemeral/large files
+
+**Size gate:** Any individual component tarball exceeding 95 MB (configurable) is automatically dropped from the snapshot, since GitHub rejects files over 100 MB. Customize in `gits.conf`:
+```bash
+GITS_SKIP_COMPONENTS="browser large-models"   # skip entire directories
+MAX_COMPONENT_MB=95                            # per-tarball size limit (0 = disable)
+```
 
 ### Backup cycle
 
@@ -155,11 +164,21 @@ GITS_PAT='ghp_...' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h 7d
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
 ```
 
-To restore on a new machine:
+## Restoring on a New Machine (One-Liner for Your LLM)
+
+After installing OpenClaw on a blank machine, give your AI agent this single prompt:
+
+```
+Restore my OpenClaw from GITS backup: clone https://github.com/<YOU>/<YOUR-BACKUP-REPO> using PAT, run scripts/gits-restore.sh, restart the gateway, then re-establish backups following https://github.com/bayanimills/GITS-GhostInTheShell/blob/main/SETUP.md
+```
+
+Or run it manually:
 
 ```bash
-git clone https://<PAT>@github.com/<YOU>/<YOUR-BACKUP-REPO>.git GITS
-cd GITS && ./scripts/gits-restore.sh
+git clone https://<PAT>@github.com/<YOU>/<YOUR-BACKUP-REPO>.git ~/.openclaw/backups/GITS
+~/.openclaw/backups/GITS/scripts/gits-restore.sh
+sudo systemctl restart openclaw-gateway
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h 7d
 ```
 
 ## Troubleshooting

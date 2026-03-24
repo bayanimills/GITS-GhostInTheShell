@@ -15,15 +15,7 @@ LOG_FILE="/tmp/gits-backup.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
 DATE_TAG=$(date '+%Y-%m-%d_%H%M')
 
-# Load retention setting from config (written by gits-setup.sh), default 7 days
-RETENTION_DAYS=7
-CONFIG_FILE="$BACKUP_ROOT/gits.conf"
-if [ -f "$CONFIG_FILE" ]; then
-    # shellcheck source=/dev/null
-    source "$CONFIG_FILE"
-fi
-
-# Standard exclusions — skip things that are regenerated or are the backup itself
+# Standard exclusions — skip things that are regenerated or bulky ephemeral data
 TAR_EXCLUDES=(
     --exclude="backups"
     --exclude="venv"
@@ -31,7 +23,37 @@ TAR_EXCLUDES=(
     --exclude=".git"
     --exclude="*.log"
     --exclude="*.tmp"
+    --exclude="__pycache__"
+    --exclude="*.pyc"
+    --exclude="Cache"
+    --exclude="CacheStorage"
+    --exclude="GPUCache"
+    --exclude="Service Worker"
+    --exclude="*.sqlite-wal"
+    --exclude="*.sqlite-shm"
+    --exclude="*.pack"
+    --exclude="*.wasm"
 )
+
+# Top-level directories to skip entirely — these are regenerable or too large
+# for a GitHub-based backup. Override in gits.conf with GITS_SKIP_COMPONENTS.
+DEFAULT_SKIP_COMPONENTS="browser"
+
+# Maximum tarball size in MB before it is dropped from the snapshot.
+# GitHub rejects files > 100 MB; default 95 MB leaves headroom.
+# Override in gits.conf with MAX_COMPONENT_MB=0 to disable the check.
+MAX_COMPONENT_MB=95
+
+# Load config (written by gits-setup.sh)
+RETENTION_DAYS=7
+CONFIG_FILE="$BACKUP_ROOT/gits.conf"
+if [ -f "$CONFIG_FILE" ]; then
+    # shellcheck source=/dev/null
+    source "$CONFIG_FILE"
+fi
+
+# Merge default and user-configured skip lists
+SKIP_COMPONENTS="${GITS_SKIP_COMPONENTS:-$DEFAULT_SKIP_COMPONENTS}"
 
 log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S %Z')] $1" | tee -a "$LOG_FILE"
@@ -107,6 +129,12 @@ create_snapshot() {
             backups|venv|node_modules|.git) continue ;;
         esac
 
+        # Skip components in the skip list
+        if echo " $SKIP_COMPONENTS " | grep -q " $dirname "; then
+            log_message "  $dirname/: skipped (in GITS_SKIP_COMPONENTS)"
+            continue
+        fi
+
         local tarball_path="$snapshot_dir/${dirname}.tar.gz"
 
         if tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
@@ -114,6 +142,16 @@ create_snapshot() {
 
             local size
             size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
+            local size_mb=$(( size / 1024 / 1024 ))
+
+            # Enforce size gate — GitHub rejects files > 100 MB
+            if [ "$MAX_COMPONENT_MB" -gt 0 ] 2>/dev/null && [ "$size_mb" -ge "$MAX_COMPONENT_MB" ]; then
+                log_message "  $dirname/: ${size_mb} MB exceeds ${MAX_COMPONENT_MB} MB limit, DROPPED"
+                log_message "    → Add '$dirname' to GITS_SKIP_COMPONENTS in gits.conf to silence this"
+                rm -f "$tarball_path"
+                continue
+            fi
+
             [ "$first" = true ] || echo ',' >> "$manifest"
             first=false
             printf '    "%s": {"file": "%s.tar.gz", "type": "directory", "bytes": %s}' \

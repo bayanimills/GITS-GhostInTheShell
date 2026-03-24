@@ -185,22 +185,40 @@ Tell the user:
 
 ---
 
-## Restoring on a Different Machine
+## Restoring on a New / Blank Machine
 
-```bash
-git clone https://<PAT>@github.com/<OWNER>/<REPO>.git GITS
-cd GITS
-./scripts/gits-restore.sh
-sudo systemctl restart openclaw-gateway
+This is the pathway when OpenClaw is freshly installed and you need to restore from a GITS backup.
+
+### One-liner for your LLM
+
+After OpenClaw is installed on the new machine, give your AI agent this prompt:
+
+```
+Restore my OpenClaw from GITS backup: clone https://github.com/<OWNER>/<BACKUP-REPO> using PAT, run scripts/gits-restore.sh, restart the gateway, then re-establish automated backups following https://github.com/bayanimills/GITS-GhostInTheShell/blob/main/SETUP.md
 ```
 
-Re-establish backups:
+The agent will ask for your PAT, clone the backup repo, restore everything, and set up scheduled backups on the new machine.
+
+### Manual restore steps
+
 ```bash
-mkdir -p ~/.openclaw/backups
-cp -r GITS ~/.openclaw/backups/GITS
+# 1. Clone the backup repo (contains your snapshots)
+git clone https://<PAT>@github.com/<OWNER>/<BACKUP-REPO>.git ~/.openclaw/backups/GITS
+
+# 2. Restore everything from the latest snapshot
+~/.openclaw/backups/GITS/scripts/gits-restore.sh
+
+# 3. Restart the gateway to pick up restored config
+sudo systemctl restart openclaw-gateway
+
+# 4. Re-establish automated backups on this machine
 GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
+
+# 5. Verify with a test backup
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
 ```
+
+Without step 4, the new machine will NOT push backups to GitHub.
 
 ### Selective restore
 

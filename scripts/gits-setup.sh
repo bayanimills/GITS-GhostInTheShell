@@ -201,8 +201,17 @@ log_message "Cron job installed: $CRON_SCHEDULE"
 CONFIG_FILE="$BACKUP_ROOT/gits.conf"
 cat > "$CONFIG_FILE" <<CONF
 # GITS configuration — written by gits-setup.sh
-# Do not edit manually; re-run gits-setup.sh to change settings.
+# Re-run gits-setup.sh to change frequency/retention, or edit below for tuning.
 RETENTION_DAYS=$RETENTION_DAYS
+
+# Space-separated list of ~/.openclaw top-level directories to skip entirely.
+# Default skips "browser" (regenerable cache, typically hundreds of MB).
+# Examples: GITS_SKIP_COMPONENTS="browser large-models"
+# GITS_SKIP_COMPONENTS="browser"
+
+# Maximum tarball size in MB. Components exceeding this are dropped from the
+# snapshot (GitHub rejects files > 100 MB). Set to 0 to disable the check.
+# MAX_COMPONENT_MB=95
 CONF
 
 log_message "Configuration saved to $CONFIG_FILE"
