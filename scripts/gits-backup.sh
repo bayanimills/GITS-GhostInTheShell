@@ -2,33 +2,33 @@
 set -euo pipefail
 
 # GITS Backup Script
-# Dynamically discovers everything inside ~/.openclaw and creates one
-# tarball per top-level directory, plus one for loose root files.
-# Writes a manifest.json describing what was captured.
+# Syncs ~/.openclaw directly into data/ and lets git handle compression,
+# deduplication, and history.  No tarballs — every file is a first-class
+# git object, so unchanged files cost zero across commits.
+#
 # Run on a schedule via cron (frequency set by gits-setup.sh).
 
 # Configuration
 OPENCLAW_ROOT="$HOME/.openclaw"
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SNAPSHOTS_DIR="$BACKUP_ROOT/snapshots"
+DATA_DIR="$BACKUP_ROOT/data"
 LOG_FILE="/tmp/gits-backup.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
-DATE_TAG=$(date '+%Y-%m-%d_%H%M')
 
 # Standard exclusions — skip things that are regenerated or bulky ephemeral data
-TAR_EXCLUDES=(
+RSYNC_EXCLUDES=(
     --exclude="backups"
-    --exclude="venv"
-    --exclude="node_modules"
-    --exclude=".git"
+    --exclude="venv/"
+    --exclude="node_modules/"
+    --exclude=".git/"
     --exclude="*.log"
     --exclude="*.tmp"
-    --exclude="__pycache__"
+    --exclude="__pycache__/"
     --exclude="*.pyc"
-    --exclude="Cache"
-    --exclude="CacheStorage"
-    --exclude="GPUCache"
-    --exclude="Service Worker"
+    --exclude="Cache/"
+    --exclude="CacheStorage/"
+    --exclude="GPUCache/"
+    --exclude="Service Worker/"
     --exclude="*.sqlite-wal"
     --exclude="*.sqlite-shm"
     --exclude="*.pack"
@@ -39,13 +39,12 @@ TAR_EXCLUDES=(
 # for a GitHub-based backup. Override in gits.conf with GITS_SKIP_COMPONENTS.
 DEFAULT_SKIP_COMPONENTS="browser"
 
-# Maximum tarball size in MB before it is dropped from the snapshot.
-# GitHub rejects files > 100 MB; default 95 MB leaves headroom.
-# Override in gits.conf with MAX_COMPONENT_MB=0 to disable the check.
-MAX_COMPONENT_MB=95
+# Maximum individual file size in MB. Files exceeding this are excluded from
+# the sync (GitHub rejects files > 100 MB). Override in gits.conf with MAX_FILE_MB=0 to disable.
+MAX_FILE_MB=90
 
 # Load config (written by gits-setup.sh)
-RETENTION_DAYS=7
+RETENTION_DAYS=7  # legacy — kept for backward compat, not used by backup
 CONFIG_FILE="$BACKUP_ROOT/gits.conf"
 if [ -f "$CONFIG_FILE" ]; then
     # shellcheck source=/dev/null
@@ -65,7 +64,7 @@ check_prerequisites() {
         exit 1
     fi
 
-    for cmd in tar git; do
+    for cmd in rsync git; do
         if ! command -v "$cmd" >/dev/null 2>&1; then
             log_message "ERROR: Required command '$cmd' not found"
             exit 1
@@ -95,36 +94,75 @@ check_git_config() {
     return 0
 }
 
-create_snapshot() {
-    local snapshot_dir="$SNAPSHOTS_DIR/$DATE_TAG"
-    mkdir -p "$snapshot_dir"
+# One-time migration from tar-based snapshots to direct-file backup.
+migrate_from_tar() {
+    if [ -d "$BACKUP_ROOT/snapshots" ]; then
+        log_message "Migrating from tar-based snapshots to direct-file backup..."
+        cd "$BACKUP_ROOT"
+        git rm -r --cached snapshots/ 2>/dev/null || true
+        rm -rf "$BACKUP_ROOT/snapshots"
+        log_message "Migration complete. Old snapshots removed from working tree."
+        log_message "They remain accessible in git history if needed."
+    fi
+}
 
-    log_message "Creating component snapshots of $OPENCLAW_ROOT..."
+# Build a list of oversized files to exclude from the sync.
+find_oversized_files() {
+    local source_dir="$1"
+    local max_bytes=$(( MAX_FILE_MB * 1024 * 1024 ))
 
-    local src_parent
-    src_parent="$(dirname "$OPENCLAW_ROOT")"
-    local src_base
-    src_base="$(basename "$OPENCLAW_ROOT")"
+    if [ "$MAX_FILE_MB" -le 0 ] 2>/dev/null; then
+        return
+    fi
 
-    local manifest="$snapshot_dir/manifest.json"
+    find "$source_dir" -type f -size +"${max_bytes}c" 2>/dev/null | while IFS= read -r filepath; do
+        # Make path relative to source_dir's parent for rsync exclude
+        local relpath="${filepath#"$source_dir"/}"
+        echo "$relpath"
+    done
+}
+
+sync_data() {
+    mkdir -p "$DATA_DIR"
+
+    log_message "Syncing $OPENCLAW_ROOT to $DATA_DIR..."
+
     local total_size=0
     local component_count=0
-    local first=true
+    local skipped_components=""
+    local skipped_large_files=()
 
-    # Start manifest
-    echo '{' > "$manifest"
-    echo "  \"timestamp\": \"$TIMESTAMP\"," >> "$manifest"
-    echo "  \"date_tag\": \"$DATE_TAG\"," >> "$manifest"
-    echo "  \"source\": \"$OPENCLAW_ROOT\"," >> "$manifest"
-    echo '  "components": {' >> "$manifest"
+    # Build per-component skip excludes for rsync
+    local skip_excludes=()
+    for skip in $SKIP_COMPONENTS; do
+        skip_excludes+=(--exclude="$skip/")
+        if [ -z "$skipped_components" ]; then
+            skipped_components="$skip"
+        else
+            skipped_components="$skipped_components $skip"
+        fi
+    done
 
-    # --- Snapshot each top-level directory as its own component ---
+    # Find oversized files to exclude
+    local oversize_excludes=()
+    if [ "$MAX_FILE_MB" -gt 0 ] 2>/dev/null; then
+        while IFS= read -r bigfile; do
+            [ -z "$bigfile" ] && continue
+            oversize_excludes+=(--exclude="$bigfile")
+            skipped_large_files+=("$bigfile")
+            local fsize
+            fsize=$(stat -c%s "$OPENCLAW_ROOT/$bigfile" 2>/dev/null || echo "0")
+            log_message "  SKIPPED (>${MAX_FILE_MB} MB): $bigfile ($(( fsize / 1024 / 1024 )) MB)"
+        done < <(find_oversized_files "$OPENCLAW_ROOT")
+    fi
+
+    # --- Sync each top-level directory as its own component ---
     for entry in "$OPENCLAW_ROOT"/*/; do
         [ -d "$entry" ] || continue
         local dirname
         dirname="$(basename "$entry")"
 
-        # Skip excluded directories
+        # Skip standard exclusions
         case "$dirname" in
             backups|venv|node_modules|.git) continue ;;
         esac
@@ -135,85 +173,119 @@ create_snapshot() {
             continue
         fi
 
-        local tarball_path="$snapshot_dir/${dirname}.tar.gz"
+        mkdir -p "$DATA_DIR/$dirname"
+        rsync -a --delete \
+            "${RSYNC_EXCLUDES[@]}" \
+            "${oversize_excludes[@]}" \
+            "$entry" "$DATA_DIR/$dirname/" 2>/dev/null || {
+            log_message "  $dirname/: ERROR during sync, skipping"
+            continue
+        }
 
-        if tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-            -C "$src_parent" "${src_base}/${dirname}" 2>/dev/null; then
-
-            local size
-            size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
-            local size_mb=$(( size / 1024 / 1024 ))
-
-            # Enforce size gate — GitHub rejects files > 100 MB
-            if [ "$MAX_COMPONENT_MB" -gt 0 ] 2>/dev/null && [ "$size_mb" -ge "$MAX_COMPONENT_MB" ]; then
-                log_message "  $dirname/: ${size_mb} MB exceeds ${MAX_COMPONENT_MB} MB limit, DROPPED"
-                log_message "    → Add '$dirname' to GITS_SKIP_COMPONENTS in gits.conf to silence this"
-                rm -f "$tarball_path"
-                continue
-            fi
-
-            [ "$first" = true ] || echo ',' >> "$manifest"
-            first=false
-            printf '    "%s": {"file": "%s.tar.gz", "type": "directory", "bytes": %s}' \
-                "$dirname" "$dirname" "$size" >> "$manifest"
-            total_size=$((total_size + size))
-            component_count=$((component_count + 1))
-            log_message "  $dirname/: $(( size / 1024 )) KB"
-        else
-            log_message "  $dirname/: ERROR creating tarball, skipping"
-            rm -f "$tarball_path"
-        fi
+        local size
+        size=$(du -sb "$DATA_DIR/$dirname" 2>/dev/null | cut -f1)
+        local file_count
+        file_count=$(find "$DATA_DIR/$dirname" -type f 2>/dev/null | wc -l)
+        component_count=$((component_count + 1))
+        total_size=$((total_size + size))
+        log_message "  $dirname/: $file_count files, $(( size / 1024 )) KB"
     done
 
-    # --- Snapshot loose root files as a single "root-files" component ---
-    local root_files=()
+    # --- Sync loose root files ---
+    mkdir -p "$DATA_DIR/root-files"
+    # Clear old root-files first, then copy current ones
+    rm -rf "$DATA_DIR/root-files/"*
+
+    local root_file_count=0
     for f in "$OPENCLAW_ROOT"/*; do
         [ -f "$f" ] || continue
         local fname
         fname="$(basename "$f")"
-        # Skip log/tmp by extension
         case "$fname" in
             *.log|*.tmp) continue ;;
         esac
-        root_files+=("${src_base}/${fname}")
+
+        # Check file size
+        if [ "$MAX_FILE_MB" -gt 0 ] 2>/dev/null; then
+            local fsize
+            fsize=$(stat -c%s "$f" 2>/dev/null || echo "0")
+            local max_bytes=$(( MAX_FILE_MB * 1024 * 1024 ))
+            if [ "$fsize" -gt "$max_bytes" ]; then
+                skipped_large_files+=("$fname")
+                log_message "  SKIPPED (>${MAX_FILE_MB} MB): $fname ($(( fsize / 1024 / 1024 )) MB)"
+                continue
+            fi
+        fi
+
+        cp -a "$f" "$DATA_DIR/root-files/"
+        root_file_count=$((root_file_count + 1))
     done
 
-    if [ ${#root_files[@]} -gt 0 ]; then
-        local tarball_path="$snapshot_dir/root-files.tar.gz"
-
-        if tar -czf "$tarball_path" "${TAR_EXCLUDES[@]}" \
-            -C "$src_parent" "${root_files[@]}" 2>/dev/null; then
-
-            local size
-            size=$(stat -c%s "$tarball_path" 2>/dev/null || echo "0")
-            [ "$first" = true ] || echo ',' >> "$manifest"
-            first=false
-            printf '    "root-files": {"file": "root-files.tar.gz", "type": "files", "bytes": %s}' \
-                "$size" >> "$manifest"
-            total_size=$((total_size + size))
-            component_count=$((component_count + 1))
-            log_message "  root-files: $(( size / 1024 )) KB"
-        else
-            log_message "  root-files: ERROR creating tarball, skipping"
-            rm -f "$tarball_path"
-        fi
+    if [ "$root_file_count" -gt 0 ]; then
+        local size
+        size=$(du -sb "$DATA_DIR/root-files" 2>/dev/null | cut -f1)
+        component_count=$((component_count + 1))
+        total_size=$((total_size + size))
+        log_message "  root-files/: $root_file_count files, $(( size / 1024 )) KB"
     fi
 
-    # Close manifest
-    echo '' >> "$manifest"
-    echo '  },' >> "$manifest"
-    echo "  \"total_bytes\": $total_size," >> "$manifest"
-    echo "  \"component_count\": $component_count" >> "$manifest"
-    echo '}' >> "$manifest"
+    # --- Remove data/ directories for components that no longer exist in source ---
+    for data_entry in "$DATA_DIR"/*/; do
+        [ -d "$data_entry" ] || continue
+        local dname
+        dname="$(basename "$data_entry")"
+        [ "$dname" = "root-files" ] && continue
 
-    log_message "Snapshot $DATE_TAG: $component_count components, $((total_size/1024/1024)) MB total"
-}
+        if [ ! -d "$OPENCLAW_ROOT/$dname" ]; then
+            log_message "  $dname/: removed (no longer in source)"
+            rm -rf "$data_entry"
+        fi
+    done
 
-prune_old_snapshots() {
-    # Prune local snapshots past the configured retention period
-    find "$SNAPSHOTS_DIR" -maxdepth 1 -mindepth 1 -type d -mtime +$RETENTION_DAYS -exec rm -rf {} + 2>/dev/null || true
-    find "$SNAPSHOTS_DIR" -maxdepth 1 -name "openclaw-*.tar.gz" -type f -mtime +$RETENTION_DAYS -delete 2>/dev/null || true
-    log_message "Pruned local snapshots older than $RETENTION_DAYS days"
+    # --- Write manifest.json ---
+    local manifest="$BACKUP_ROOT/manifest.json"
+    {
+        echo '{'
+        echo "  \"timestamp\": \"$TIMESTAMP\","
+        echo "  \"source\": \"$OPENCLAW_ROOT\","
+        echo "  \"components\": {"
+
+        local first=true
+        for data_entry in "$DATA_DIR"/*/; do
+            [ -d "$data_entry" ] || continue
+            local dname
+            dname="$(basename "$data_entry")"
+            local dsize
+            dsize=$(du -sb "$data_entry" 2>/dev/null | cut -f1)
+            local dfiles
+            dfiles=$(find "$data_entry" -type f 2>/dev/null | wc -l)
+            local dtype="directory"
+            [ "$dname" = "root-files" ] && dtype="files"
+
+            [ "$first" = true ] || echo ','
+            first=false
+            printf '    "%s": {"type": "%s", "files": %s, "bytes": %s}' \
+                "$dname" "$dtype" "$dfiles" "$dsize"
+        done
+
+        echo ''
+        echo '  },'
+        echo "  \"total_bytes\": $total_size,"
+        echo "  \"component_count\": $component_count,"
+
+        # Skipped large files
+        printf '  "skipped_large_files": ['
+        local sfirst=true
+        for sf in "${skipped_large_files[@]+"${skipped_large_files[@]}"}"; do
+            [ "$sfirst" = true ] || printf ', '
+            sfirst=false
+            printf '"%s"' "$sf"
+        done
+        echo ']'
+        echo '}'
+    } > "$manifest"
+
+    log_message "Sync complete: $component_count components, $((total_size/1024/1024)) MB total"
 }
 
 commit_and_push() {
@@ -264,8 +336,8 @@ main() {
     check_prerequisites
     check_git_config || exit 1
 
-    create_snapshot
-    prune_old_snapshots
+    migrate_from_tar
+    sync_data
 
     if commit_and_push; then
         log_message "Backup completed successfully"

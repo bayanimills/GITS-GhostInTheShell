@@ -10,3 +10,20 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Safety net for data/ — rsync excludes handle these too, but belt and suspenders
+data/**/*.log
+data/**/*.tmp
+data/**/__pycache__/
+data/**/*.pyc
+data/**/Cache/
+data/**/CacheStorage/
+data/**/GPUCache/
+data/**/Service Worker/
+data/**/*.sqlite-wal
+data/**/*.sqlite-shm
+data/**/*.pack
+data/**/*.wasm
+data/**/node_modules/
+data/**/venv/
+data/**/.git/

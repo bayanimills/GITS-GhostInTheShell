@@ -173,6 +173,21 @@ fi
 
 log_message "OpenClaw directory found at $OPENCLAW_ROOT"
 
+# --- Step 8b: Detect existing backup data (restore scenario) ---
+
+DATA_DIR="$BACKUP_ROOT/data"
+if [ -d "$DATA_DIR" ] && [ "$(ls -A "$DATA_DIR" 2>/dev/null)" ]; then
+    log_message ""
+    log_message "Existing backup data detected in this repo."
+    log_message "If you're setting up on a new machine, restore first:"
+    log_message ""
+    log_message "  $BACKUP_ROOT/scripts/gits-restore.sh"
+    log_message ""
+    log_message "Then re-run this setup to establish automated backups."
+    log_message "(Continuing with setup...)"
+    log_message ""
+fi
+
 # --- Step 9: Configure git for non-interactive use ---
 
 git -C "$BACKUP_ROOT" config credential.helper store
@@ -202,16 +217,18 @@ CONFIG_FILE="$BACKUP_ROOT/gits.conf"
 cat > "$CONFIG_FILE" <<CONF
 # GITS configuration — written by gits-setup.sh
 # Re-run gits-setup.sh to change frequency/retention, or edit below for tuning.
-RETENTION_DAYS=$RETENTION_DAYS
+
+# Legacy setting — git history is now used for retention. Kept for reference.
+# RETENTION_DAYS=$RETENTION_DAYS
 
 # Space-separated list of ~/.openclaw top-level directories to skip entirely.
 # Default skips "browser" (regenerable cache, typically hundreds of MB).
 # Examples: GITS_SKIP_COMPONENTS="browser large-models"
 # GITS_SKIP_COMPONENTS="browser"
 
-# Maximum tarball size in MB. Components exceeding this are dropped from the
-# snapshot (GitHub rejects files > 100 MB). Set to 0 to disable the check.
-# MAX_COMPONENT_MB=95
+# Maximum individual file size in MB. Files exceeding this are excluded from
+# the backup (GitHub rejects files > 100 MB). Set to 0 to disable the check.
+# MAX_FILE_MB=90
 CONF
 
 log_message "Configuration saved to $CONFIG_FILE"
@@ -225,17 +242,23 @@ cat <<EOF
   Repository:  $OWNER/$REPO
   PAT:         ${PAT:0:10}...${PAT: -4} (validated)
   Backup from: $OPENCLAW_ROOT
-  Backup to:   $BACKUP_ROOT/snapshots/ (local) + GitHub (remote)
+  Backup to:   $BACKUP_ROOT/data/ (local) + GitHub (remote)
   Frequency:   Every $FREQUENCY ($CRON_SCHEDULE)
-  Retention:   $(retention_label "$RETENTION") of snapshots kept locally for fast restores
+  History:     All snapshots preserved in git history
   Cron:        Installed and active
 
-Local snapshots are kept for $(retention_label "$RETENTION") so you can restore
-quickly without pulling from GitHub. Older snapshots are pruned
-automatically but remain available in the GitHub repo's git history.
+Files are synced directly into data/ — git handles compression,
+deduplication, and history. Every commit is a restorable snapshot.
 
-Next step — run the first snapshot now:
+Next step — run the first backup now:
 
   $BACKUP_ROOT/scripts/gits-backup.sh
+
+=== Your Restore One-Liner (save this) ===
+
+  Restore my OpenClaw from https://github.com/$OWNER/$REPO
+
+On a new machine, give this to your AI agent with your PAT. The backup
+repo contains everything needed — scripts, data, and full history.
 
 EOF

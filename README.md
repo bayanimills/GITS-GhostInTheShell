@@ -1,8 +1,28 @@
 # GITS (Ghost In The Shell) – OpenClaw Recovery System
 
-Automated off-site backup of your entire OpenClaw installation to a private GitHub repo. GITS snapshots your system on a schedule, pushes to GitHub, and lets you restore everything — or just the specific agent or file you need — on any machine.
+Automated off-site backup of your entire OpenClaw installation to a private GitHub repo. GITS syncs your system on a schedule, pushes to GitHub, and lets you restore everything — or just the specific agent or file you need — on any machine.
 
-## Quick Start
+## Restoring from this Repo
+
+If this repo contains a `data/` directory, it has your backup. Clone it and restore.
+
+**One-liner for your LLM:**
+
+```
+Restore my OpenClaw from https://github.com/<YOU>/<THIS-REPO> using PAT,
+then re-establish backups.
+```
+
+**Manual restore:**
+
+```bash
+git clone https://<PAT>@github.com/<YOU>/<THIS-REPO>.git ~/.openclaw/backups/GITS
+~/.openclaw/backups/GITS/scripts/gits-restore.sh
+sudo systemctl restart openclaw-gateway
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h
+```
+
+## Quick Start (Fresh Setup)
 
 Tell your OpenClaw agent:
 
@@ -14,9 +34,11 @@ That's it. The agent reads the deployment instructions, walks you through a few 
 
 ## What is GITS?
 
-GITS is a disaster recovery system for [OpenClaw](https://docs.openclaw.ai). It takes a snapshot of your entire `~/.openclaw` directory at regular intervals and pushes it to a private GitHub repository. If your machine dies, you clone the repo on a new machine and restore — fully or selectively, down to a single agent.
+GITS is a disaster recovery system for [OpenClaw](https://docs.openclaw.ai). It syncs your entire `~/.openclaw` directory to a private GitHub repository at regular intervals. If your machine dies, you clone the repo on a new machine and restore — fully or selectively, down to a single agent.
 
-It's designed to be installed by an AI agent. You give your agent this repo's URL, it asks you a few questions (your backup repo URL, a GitHub token, backup frequency, and how long to keep local copies), and sets everything up automatically.
+Files are stored directly in git (no tarballs). Git handles compression, deduplication, and history natively — unchanged files cost zero across commits, and every commit is a point-in-time snapshot you can restore from.
+
+It's designed to be installed by an AI agent. You give your agent this repo's URL, it asks you a few questions (your backup repo URL, a GitHub token, backup frequency), and sets everything up automatically.
 
 ## Security Notice
 
@@ -26,7 +48,7 @@ Your agent should explain what data is being backed up, where it's stored, and w
 
 - **Your backup repo must be PRIVATE.** A public repo would expose your entire OpenClaw configuration — API keys, credentials, agent data — to anyone on the internet. When creating the repo on GitHub, always select **Private**.
 - GITS uses a **GitHub Personal Access Token (PAT)** to push backups — see [What is a PAT?](#what-is-a-pat) below.
-- Backup snapshots contain everything in `~/.openclaw`, including sensitive files. The security of your backups depends on the security of your GitHub account.
+- Backup data contains everything in `~/.openclaw`, including sensitive files. The security of your backups depends on the security of your GitHub account.
 
 ## What is a PAT?
 
@@ -34,7 +56,7 @@ A **Personal Access Token (PAT)** is like a special-purpose password for your Gi
 
 Think of it like a house key that only opens one door, instead of a master key that opens everything. If you lose it, you can change just that one lock.
 
-**Why GITS needs one:** GITS runs automatically in the background (via a scheduled task). It needs a way to push your backup snapshots to GitHub without you typing your password every time. A PAT lets it do that safely.
+**Why GITS needs one:** GITS runs automatically in the background (via a scheduled task). It needs a way to push your backup data to GitHub without you typing your password every time. A PAT lets it do that safely.
 
 **How to create one:**
 
@@ -56,13 +78,13 @@ The token will start with `ghp_`, `ghs_`, or `github_pat_`. Keep it safe — tre
 ## Features
 
 - **Automated scheduled backups** — runs via cron at your chosen interval (1h, 3h, 6h, 12h, or 24h)
-- **Per-component snapshots** — each directory in `~/.openclaw` gets its own tarball, plus `root-files.tar.gz` for config files. A `manifest.json` records what was captured
+- **Direct file sync** — files stored natively in git, no tarballs. Git handles compression and deduplication — unchanged files cost zero across backups
 - **Granular restore** — restore everything, a single component (`--component agents`), or a single item within a component (`--component agents --item agentname`)
-- **Local retention** — configurable (1 day to 1 month) for fast restores without pulling from GitHub
+- **Point-in-time restore** — every backup commit is a snapshot; restore from any commit with `--from`
 - **Pre-restore safety** — existing files are backed up before overwriting, with automatic rollback on failure
 - **Push resilience** — up to 3 push attempts with rebase-on-conflict
 - **Secure auth** — PAT passed via environment variable, never on the command line
-- **Idempotent setup** — re-running detects an existing installation and offers to update PAT, change schedule, or full reinstall
+- **Self-contained** — after first backup, your repo has everything needed to restore on any machine
 
 ## Prerequisites
 
@@ -78,13 +100,15 @@ See [What is a PAT?](#what-is-a-pat) above for a full explanation and step-by-st
 
 ### 3. System requirements
 
-GITS requires `bash` (4.0+), `tar`, `git`, and `curl` — all standard on Linux. No additional packages need to be installed.
+GITS requires `bash` (4.0+), `rsync`, `git`, and `curl` — all standard on Linux. No additional packages need to be installed.
 
 ## How It Works
 
-GITS backs up everything in `~/.openclaw/`, split into per-component tarballs. Each top-level directory (agents, credentials, workspaces, etc.) gets its own archive. Loose config files are bundled into `root-files.tar.gz`. A `manifest.json` records what was captured and sizes.
+GITS syncs everything in `~/.openclaw/` directly into `data/` in the backup repo. Each top-level directory (agents, credentials, workspaces, etc.) becomes a subdirectory in `data/`. Loose config files go into `data/root-files/`. A `manifest.json` records what was captured and file sizes.
 
-**Excluded from snapshots** (build artifacts and regenerable data):
+Git handles the heavy lifting: compression, delta-based deduplication, and full history. If 99% of your files haven't changed since the last backup, the commit is tiny.
+
+**Excluded from backups** (build artifacts and regenerable data):
 - `browser/` — browser state and cache (typically hundreds of MB, regenerated on launch)
 - `backups/` — avoids backing up the backup tool itself
 - `venv/` — Python virtual environments, recreated with `pip install`
@@ -94,25 +118,26 @@ GITS backs up everything in `~/.openclaw/`, split into per-component tarballs. E
 - `__pycache__/`, `*.pyc` — Python bytecode
 - `*.log`, `*.tmp`, `*.sqlite-wal`, `*.sqlite-shm`, `*.pack`, `*.wasm` — ephemeral/large files
 
-**Size gate:** Any individual component tarball exceeding 95 MB (configurable) is automatically dropped from the snapshot, since GitHub rejects files over 100 MB. Customize in `gits.conf`:
+**Per-file size gate:** Individual files exceeding 90 MB (configurable) are automatically excluded, since GitHub rejects files over 100 MB. Customize in `gits.conf`:
 ```bash
 GITS_SKIP_COMPONENTS="browser large-models"   # skip entire directories
-MAX_COMPONENT_MB=95                            # per-tarball size limit (0 = disable)
+MAX_FILE_MB=90                                 # per-file size limit (0 = disable)
 ```
 
 ### Backup cycle
 
-Every interval (configurable), `gits-backup.sh` runs: creates component tarballs, writes a manifest, prunes old local snapshots past the retention period, commits everything, and pushes to GitHub. On push failure, retries up to 3 times with rebase.
+Every interval (configurable), `gits-backup.sh` runs: syncs files from `~/.openclaw` into `data/`, writes a manifest, commits, and pushes to GitHub. On push failure, retries up to 3 times with rebase.
 
 ### Restore options
 
 | Command | Effect |
 |---|---|
-| `gits-restore.sh` | Restore everything from latest snapshot |
+| `gits-restore.sh` | Restore everything from latest |
 | `--component agents` | Restore just the agents directory |
 | `--component agents --item agentname` | Restore just one specific agent |
-| `--from 2026-03-22_1430` | Restore from a specific snapshot |
-| `--list` | List available snapshots |
+| `--from abc1234` | Restore from a specific commit |
+| `--from 2026-03-22` | Restore from a specific date |
+| `--list` | List available snapshots (git history) |
 | `--contents agents` | List items inside a component |
 
 Existing files are always backed up before overwriting (`.pre-restore` suffix), with automatic rollback on failure.
@@ -122,24 +147,23 @@ Existing files are always backed up before overwriting (`.pre-restore` suffix), 
 | Setting | Options | Default |
 |---|---|---|
 | Backup frequency | 1h, 3h, 6h, 12h, 24h | 3h |
-| Local retention | 1 day, 3 days, 7 days, 2 weeks, 1 month | 7 days |
-| Remote retention | Indefinite (git history) | — |
+| History retention | Indefinite (git history) | — |
 
 ### Directory structure
 
 ```
 ~/.openclaw/backups/GITS/
   ├── gits.conf               # Settings (written by setup)
-  ├── snapshots/               # Local snapshots (pruned by retention)
-  │   └── 2026-03-22_1430/
-  │       ├── manifest.json
-  │       ├── agents.tar.gz
-  │       ├── credentials.tar.gz
-  │       ├── root-files.tar.gz
-  │       └── ...
+  ├── manifest.json            # Metadata about latest backup
+  ├── data/                    # Mirror of ~/.openclaw
+  │   ├── agents/
+  │   ├── credentials/
+  │   ├── workspaces/
+  │   ├── root-files/          # Loose config files
+  │   └── ...
   ├── scripts/
   │   ├── gits-setup.sh        # Validates PAT, configures auth + cron
-  │   ├── gits-backup.sh       # Creates snapshots, commits, pushes
+  │   ├── gits-backup.sh       # Syncs files, commits, pushes
   │   └── gits-restore.sh      # Restores all, by component, or by item
   ├── SETUP.md                 # LLM deployment instructions
   ├── .gitignore
@@ -158,39 +182,22 @@ git clone https://github.com/bayanimills/GITS-GhostInTheShell.git ~/.openclaw/ba
 git -C ~/.openclaw/backups/GITS remote set-url origin https://github.com/<YOU>/<YOUR-BACKUP-REPO>.git
 
 # 3. Run setup (validates PAT, configures git auth + cron)
-GITS_PAT='ghp_...' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h 7d
+GITS_PAT='ghp_...' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h
 
 # 4. Run first backup
 ~/.openclaw/backups/GITS/scripts/gits-backup.sh
-```
-
-## Restoring on a New Machine (One-Liner for Your LLM)
-
-After installing OpenClaw on a blank machine, give your AI agent this single prompt:
-
-```
-Restore my OpenClaw from GITS backup: clone https://github.com/<YOU>/<YOUR-BACKUP-REPO> using PAT, run scripts/gits-restore.sh, restart the gateway, then re-establish backups following https://github.com/bayanimills/GITS-GhostInTheShell/blob/main/SETUP.md
-```
-
-Or run it manually:
-
-```bash
-git clone https://<PAT>@github.com/<YOU>/<YOUR-BACKUP-REPO>.git ~/.openclaw/backups/GITS
-~/.openclaw/backups/GITS/scripts/gits-restore.sh
-sudo systemctl restart openclaw-gateway
-GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h 7d
 ```
 
 ## Troubleshooting
 
 **Backup fails to push**: The PAT may be expired. Re-run setup with a new one:
 ```bash
-GITS_PAT='<NEW_PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh <FREQUENCY> <RETENTION>
+GITS_PAT='<NEW_PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 3h
 ```
 
-**Change backup frequency or retention**:
+**Change backup frequency**:
 ```bash
-GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 6h 14d
+GITS_PAT='<PAT>' ~/.openclaw/backups/GITS/scripts/gits-setup.sh 6h
 ```
 
 **Gateway won't start after restore**:
@@ -208,7 +215,9 @@ journalctl -u openclaw-gateway -n 50
 **Restore to a specific date**:
 ```bash
 ./scripts/gits-restore.sh --list
-./scripts/gits-restore.sh --from 2026-03-22_1430
+./scripts/gits-restore.sh --from 2026-03-22
 ```
+
+**Repo getting large**: Over time, git history grows. Run `git gc --aggressive` periodically, or if history is not needed, squash old commits.
 
 **Logs**: `/tmp/gits-setup.log`, `/tmp/gits-backup.log`, `/tmp/gits-restore.log`
