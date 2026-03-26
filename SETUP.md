@@ -73,10 +73,9 @@ Then follow the appropriate path:
 ### Path: Full reinstall
 
 1. Confirm: *"This removes the local installation. Backup history on GitHub is safe. Proceed?"*
-2. If yes:
+2. If yes, run the uninstall script:
    ```bash
-   crontab -l 2>/dev/null | grep -v 'gits-backup\.sh' | crontab -
-   rm -rf ~/.openclaw/backups/GITS
+   ~/.openclaw/backups/GITS/scripts/gits-uninstall.sh --yes
    ```
 3. Continue to Step 1.
 

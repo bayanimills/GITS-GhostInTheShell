@@ -221,3 +221,13 @@ journalctl -u openclaw-gateway -n 50
 **Repo getting large**: Over time, git history grows. Run `git gc --aggressive` periodically, or if history is not needed, squash old commits.
 
 **Logs**: `/tmp/gits-setup.log`, `/tmp/gits-backup.log`, `/tmp/gits-restore.log`
+
+## Uninstalling
+
+To completely remove GITS from this machine:
+
+```bash
+~/.openclaw/backups/GITS/scripts/gits-uninstall.sh
+```
+
+This removes the cron job, log files, and the installation directory. Your GitHub backup repo is **not** affected — all history is preserved. Use `--yes` to skip the confirmation prompt.
