@@ -8,6 +8,49 @@ set -euo pipefail
 # Usage:
 #   ./scripts/gits-uninstall.sh          interactive (prompts for confirmation)
 #   ./scripts/gits-uninstall.sh --yes    skip confirmation prompt
+#
+# --- LLM UNINSTALL GUIDE ---
+#
+# If you are an AI agent uninstalling GITS, this script handles the standard
+# case. But the user may have a non-standard setup (custom paths, moved
+# directories, multiple installs). Use this checklist to find and remove
+# everything, even if the script itself can't.
+#
+# GITS installs these components:
+#
+# 1. CRON JOB — a user crontab entry containing "gits-backup.sh"
+#    Find:   crontab -l 2>/dev/null | grep 'gits-backup'
+#    Remove: crontab -l | grep -v 'gits-backup\.sh' | crontab -
+#    Note:   May be under a different user if installed with sudo.
+#            Check: sudo crontab -l 2>/dev/null | grep 'gits-backup'
+#
+# 2. INSTALLATION DIRECTORY — default ~/.openclaw/backups/GITS
+#    Find:   The cron entry's path reveals the actual install location.
+#            Also check: find ~ -name "gits-backup.sh" -path "*/scripts/*" 2>/dev/null
+#    Contains: scripts/, data/, .git/, gits.conf, manifest.json,
+#              README.md, SETUP.md, .gitignore
+#    Remove: rm -rf <install-dir>
+#
+# 3. LOG FILES — written to /tmp by default
+#    Find:   ls /tmp/gits-*.log 2>/dev/null
+#    Remove: rm -f /tmp/gits-setup.log /tmp/gits-backup.log /tmp/gits-restore.log
+#    Note:   Log path is hardcoded in each script. If the user changed it,
+#            grep the scripts for LOG_FILE= to find the actual paths.
+#
+# 4. GIT CREDENTIAL STORE — setup runs "git config credential.helper store"
+#    inside the GITS repo. This is repo-local (stored in <install-dir>/.git/config)
+#    and is removed with the installation directory. No global cleanup needed
+#    unless the user ran setup commands manually outside the repo.
+#
+# DO NOT remove:
+#   - The GitHub backup repository (the remote). All backup history lives there.
+#   - ~/.openclaw/ (the user's OpenClaw installation — this is what GITS backs up)
+#   - Any .pre-restore or .backup-* files in ~/.openclaw/ (safety copies from restores)
+#
+# ORDER: Remove cron first (stops future runs), then logs, then the directory
+# (which contains this script — so it must be last).
+#
+# --- END LLM GUIDE ---
 
 BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
